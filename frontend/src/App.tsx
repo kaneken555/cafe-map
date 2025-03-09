@@ -1,28 +1,16 @@
-import { useEffect, useState } from 'react';
-import axios from 'axios';
+// src/App.tsx
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import HomePage from "./pages/HomePage";
 
-function App() {
-  const [message, setMessage] = useState('');
-
-  useEffect(() => {
-    axios.get('http://localhost:8000/api/')
-      .then(response => {
-        setMessage(response.data.message);
-      })
-      .catch(error => {
-        console.error("API request error:", error);
-        setMessage("API error");
-      });
-  }, []);
-
+const App: React.FC = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>My Cafe Map</h1>
-        <p>API Response: {message}</p>
-      </header>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+      </Routes>
+    </Router>
   );
-}
+};
 
 export default App;
