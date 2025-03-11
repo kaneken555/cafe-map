@@ -10,3 +10,8 @@ export const fetchCafeLocations = async (lat: number, lng: number) => {
   const data = await response.json();
   return data.cafes; // { lat: number, lng: number, name: string }[]
 };
+
+export const getCafePhotoUrl = async (photoReference: string) => {
+  return `http://localhost:8000/api/get-cafe-photo?photo_reference=${photoReference}`;
+
+};
