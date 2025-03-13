@@ -58,3 +58,34 @@ def get_cafe_photo(request):
         return HttpResponse(response.content, content_type=response.headers['Content-Type'])
     else:
         return JsonResponse({"error": "Failed to fetch photo"}, status=500)
+    
+def get_cafe_detail(request):
+    place_id = request.GET.get("place_id")
+    if not place_id:
+        return JsonResponse({"error": "place_id is required"}, status=400)
+
+    url = "https://maps.googleapis.com/maps/api/place/details/json"
+    params = {
+        "place_id": place_id,
+        "fields": "name,formatted_address,formatted_phone_number,opening_hours,photos",
+        "language": "ja",
+        "key": GOOGLE_MAPS_API_KEY,
+    }
+
+    response = requests.get(url, params=params)
+    
+    if response.status_code == 200:
+        data = response.json()
+        if data.get("status") == "OK":
+            result = data.get("result", {})
+            return JsonResponse({
+                "name": result.get("name", ""),
+                "address": result.get("formatted_address", ""),
+                "rating": result.get("rating", ""),
+                "opening_hours": result.get("opening_hours", {}).get("weekday_text", []),
+                "photos": [
+                    f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference={photo['photo_reference']}&key={GOOGLE_MAPS_API_KEY}"
+                    for photo in result.get("photos", [])[:5]
+                ]
+            })
+    return JsonResponse({"error": "Failed to fetch cafe details"}, status=500)

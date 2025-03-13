@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { APIProvider, Map, Marker } from "@vis.gl/react-google-maps";
-import { getGoogleMapsApiKey, fetchCafeLocations, getCafePhotoUrl } from "../services/api";
+import { getGoogleMapsApiKey, fetchCafeLocations, getCafePhotoUrl, fetchCafeDetailsFromBackend } from "../services/api";
 
 const containerStyle = {
   width: "100%",
@@ -21,9 +21,19 @@ interface Cafe {
   photo_reference?: string;
 }
 
+interface CafeDetails {
+  name: string;
+  address: string;
+  rating?: number;
+  opening_hours?: string[];
+  photos?: string[];
+}
+
 const MapComponent: React.FC = () => {
   const [apiKey, setApiKey] = useState<string | null>(null);
   const [cafes, setCafes] = useState<Cafe[]>([]);
+  const [selectedCafe, setSelectedCafe] = useState<CafeDetails | null>(null);
+
 
   // TODO: apiKeyのアクセス制限を設定する
   useEffect(() => {
@@ -59,6 +69,21 @@ const MapComponent: React.FC = () => {
       });
     }
   }, [apiKey]);
+
+  const fetchCafeDetails = async (placeId: string) => {
+    try {
+      const cafeDetails = await fetchCafeDetailsFromBackend(placeId);
+      setSelectedCafe(cafeDetails);
+    } catch (error) {
+      console.error("カフェ詳細情報の取得に失敗:", error);
+    }
+  };
+
+  const handleCafeSelect = (placeId: string) => {
+    fetchCafeDetails(placeId);
+  };
+
+  const closeDetails = () => setSelectedCafe(null);
 
 
   // Canvasを使用して丸形アイコンを作成
@@ -104,18 +129,53 @@ const MapComponent: React.FC = () => {
 
   return (
     <APIProvider apiKey={apiKey}>
-      <Map center={defaultCenter} zoom={16} style={containerStyle}>
-        {cafes.map((cafe) => (
-          <Marker
-            key={cafe.place_id}
-            position={{ lat: cafe.lat, lng: cafe.lng }}
-            icon={{
-              url: cafe.photo_url!,
-              scaledSize: new window.google.maps.Size(50, 50),
-            }}
-          />
-        ))}
-      </Map>
+      <div className="relative w-full h-screen flex">
+        <div
+          className={`absolute top-0 left-0 h-full w-1/3 bg-white shadow-lg transition-transform duration-300 ease-in-out ${
+            selectedCafe ? "translate-x-0" : "-translate-x-full"
+          }`}
+        >
+          {selectedCafe && (
+            <div className="p-4">
+              <button onClick={closeDetails} className="absolute top-2 right-2 text-xl">✖</button>
+              <h2 className="text-xl font-bold">{selectedCafe.name}</h2>
+              <div>
+                {selectedCafe.photos && selectedCafe.photos.length > 0 && (
+                <img src={selectedCafe.photos[0]} alt={selectedCafe.name} className="w-full mt-2 rounded-lg" />
+              )}</div>
+              <p>{selectedCafe.address}</p>
+              {selectedCafe.rating && <p>評価: ⭐{selectedCafe.rating}</p>}
+              {selectedCafe.opening_hours && selectedCafe.opening_hours.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold mt-2">営業時間:</h3>
+                  <ul className="list-disc list-inside">
+                    {selectedCafe.opening_hours?.map((hour, index) => (
+                      <li key={index}>{hour}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+            </div>
+          )}
+        </div>
+
+        <div className="flex-1">
+          <Map center={defaultCenter} zoom={16} style={containerStyle}>
+            {cafes.map((cafe) => (
+              <Marker
+                key={cafe.place_id}
+                position={{ lat: cafe.lat, lng: cafe.lng }}
+                icon={{
+                  url: cafe.photo_url!,
+                  scaledSize: new window.google.maps.Size(50, 50),
+                }}
+                onClick={() => handleCafeSelect(cafe.place_id)} // 修正
+              />
+            ))}
+          </Map>
+        </div>
+      </div>
     </APIProvider>
   );
 };
