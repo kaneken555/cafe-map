@@ -81,6 +81,7 @@ def get_cafe_detail(request):
             return JsonResponse({
                 "name": result.get("name", ""),
                 "address": result.get("formatted_address", ""),
+                "place_id": place_id,
                 "rating": result.get("rating", ""),
                 "opening_hours": result.get("opening_hours", {}).get("weekday_text", []),
                 "photos": [

@@ -25,6 +25,7 @@ interface Cafe {
 interface CafeDetails {
   name: string;
   address: string;
+  place_id: string; // Place ID を追加
   rating?: number;
   opening_hours?: string[];
   photos?: string[];
@@ -135,6 +136,7 @@ const MapComponent: React.FC = () => {
             <CafeDetailPanel
               name={selectedCafe.name}
               address={selectedCafe.address}
+              placeId={selectedCafe.place_id}  // Place ID を渡す
               rating={selectedCafe.rating}
               opening_hours={selectedCafe.opening_hours}
               photos={selectedCafe.photos}
