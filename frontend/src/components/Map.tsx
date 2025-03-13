@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { APIProvider, Map, Marker } from "@vis.gl/react-google-maps";
 import { getGoogleMapsApiKey, fetchCafeLocations, getCafePhotoUrl, fetchCafeDetailsFromBackend } from "../services/api";
+import CafeDetailPanel from "./CafeDetailPanel"; 
 
 const containerStyle = {
   width: "100%",
@@ -130,36 +131,16 @@ const MapComponent: React.FC = () => {
   return (
     <APIProvider apiKey={apiKey}>
       <div className="relative w-full h-screen flex">
-        <div
-          className={`absolute top-0 left-0 h-full w-1/3 bg-white shadow-lg transition-transform duration-300 ease-in-out ${
-            selectedCafe ? "translate-x-0" : "-translate-x-full"
-          }`}
-        >
-          {selectedCafe && (
-            <div className="p-4">
-              <button onClick={closeDetails} className="absolute top-2 right-2 text-xl">✖</button>
-              <h2 className="text-xl font-bold">{selectedCafe.name}</h2>
-              <div>
-                {selectedCafe.photos && selectedCafe.photos.length > 0 && (
-                <img src={selectedCafe.photos[0]} alt={selectedCafe.name} className="w-full mt-2 rounded-lg" />
-              )}</div>
-              <p>{selectedCafe.address}</p>
-              {selectedCafe.rating && <p>評価: ⭐{selectedCafe.rating}</p>}
-              {selectedCafe.opening_hours && selectedCafe.opening_hours.length > 0 && (
-                <div>
-                  <h3 className="text-lg font-semibold mt-2">営業時間:</h3>
-                  <ul className="list-disc list-inside">
-                    {selectedCafe.opening_hours?.map((hour, index) => (
-                      <li key={index}>{hour}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-            </div>
+        {selectedCafe && (
+            <CafeDetailPanel
+              name={selectedCafe.name}
+              address={selectedCafe.address}
+              rating={selectedCafe.rating}
+              opening_hours={selectedCafe.opening_hours}
+              photos={selectedCafe.photos}
+              onClose={() => setSelectedCafe(null)} // 閉じる処理
+            />
           )}
-        </div>
-
         <div className="flex-1">
           <Map center={defaultCenter} zoom={16} style={containerStyle}>
             {cafes.map((cafe) => (
