@@ -15,3 +15,16 @@ export const getCafePhotoUrl = async (photoReference: string) => {
   return `http://localhost:8000/api/get-cafe-photo?photo_reference=${photoReference}`;
 
 };
+
+// カフェの詳細情報をバックエンド経由で取得
+export const fetchCafeDetailsFromBackend = async (placeId: string) => {
+  try {
+    const response = await axios.get(`http://localhost:8000/api/cafe-detail/`, {
+      params: { place_id: placeId }, // クエリパラメータとして送信
+    });
+    return response.data;
+  } catch (error) {
+    console.error("fetchCafeDetailsFromBackend エラー:", error);
+    throw error;
+  }
+};
