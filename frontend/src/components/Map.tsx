@@ -136,7 +136,7 @@ const MapComponent: React.FC = () => {
             <CafeDetailPanel
               name={selectedCafe.name}
               address={selectedCafe.address}
-              placeId={selectedCafe.place_id}  // Place ID を渡す
+              placeId={selectedCafe.place_id} 
               rating={selectedCafe.rating}
               opening_hours={selectedCafe.opening_hours}
               photos={selectedCafe.photos}
@@ -153,7 +153,7 @@ const MapComponent: React.FC = () => {
                   url: cafe.photo_url!,
                   scaledSize: new window.google.maps.Size(50, 50),
                 }}
-                onClick={() => handleCafeSelect(cafe.place_id)} // 修正
+                onClick={() => handleCafeSelect(cafe.place_id)}
               />
             ))}
           </Map>

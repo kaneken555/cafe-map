@@ -6,9 +6,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
 
-
 def get_google_maps_api_key(request):
-    api_key = os.getenv("GOOGLE_MAPS_API_KEY", "")
+    api_key = GOOGLE_MAPS_API_KEY
     return JsonResponse({"apiKey": api_key})
 
 
@@ -16,7 +15,6 @@ def get_cafes(request):
     lat = request.GET.get("lat")
     lng = request.GET.get("lng")
     radius = 1000  # 1km以内のカフェを検索
-
 
     url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json"
     params = {
@@ -49,6 +47,7 @@ def get_cafe_photo(request):
     if not photo_reference:
         return JsonResponse({"photo_url": None})
 
+    # TODO: フォーマットを修正
     photo_url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference={photo_reference}&key={GOOGLE_MAPS_API_KEY}"
     response = requests.get(photo_url, stream=True)
 
@@ -58,6 +57,7 @@ def get_cafe_photo(request):
         return HttpResponse(response.content, content_type=response.headers['Content-Type'])
     else:
         return JsonResponse({"error": "Failed to fetch photo"}, status=500)
+    
     
 def get_cafe_detail(request):
     place_id = request.GET.get("place_id")

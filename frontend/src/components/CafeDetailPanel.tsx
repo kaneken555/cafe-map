@@ -33,7 +33,6 @@ const CafeDetailPanel: React.FC<CafeDetails> = ({ name, address,placeId, rating,
             </a>
         </div>
 
-
         <h2 className="text-xl font-bold">{name}</h2>
         {photos && photos.length > 0 && (
           <img src={photos[0]} alt={name} className="w-full mt-2 rounded-lg" />
