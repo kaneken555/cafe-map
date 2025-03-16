@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .views import MapAPIView, MapDetailAPIView, CafeAPIView, CafeDetailAPIView, TagAPIView, TagDetailAPIView, CafeTagAPIView, CafeTagDetailAPIView, CafeMemoAPIView
 
 urlpatterns = [
     # TODO: エンドポイントを修正(RESTful APIの設計に従う)
@@ -8,5 +9,17 @@ urlpatterns = [
     path("api/get-cafe-photo", views.get_cafe_photo, name="get_cafe_photo"),
     path("api/cafe-detail/", views.get_cafe_detail, name="cafe_detail"),
     path('api/guest-login/', views.guest_login, name='guest-login'),
+
+    # APIViewを使用したエンドポイント
+    path('api/maps/', MapAPIView.as_view(), name='maps'),
+    path('api/maps/<int:map_id>/', MapDetailAPIView.as_view(), name='map'),
+    path('api/maps/<int:map_id>/cafes/', CafeAPIView.as_view(), name='cafes'),
+    path('api/maps/<int:map_id>/cafes/<int:cafe_id>/', CafeDetailAPIView.as_view(), name='cafe'),
+    path('api/tags/', TagAPIView.as_view(), name='tags'),
+    path('api/tags/<int:tag_id>/', TagDetailAPIView.as_view(), name='tag'),
+    path('api/maps/<int:map_id>/cafes/<int:cafe_id>/tags/', CafeTagAPIView.as_view(), name='cafe_tags'),
+    path('api/maps/<int:map_id>/cafes/<int:cafe_id>/tags/<int:tag_id>/', CafeTagDetailAPIView.as_view(), name='cafe_tag'),
+    path('api/maps/<int:map_id>/cafes/<int:cafe_id>/memos/', CafeMemoAPIView.as_view(), name='cafe_memos'),
+    path('api/maps/<int:map_id>/cafes/<int:cafe_id>/memos/<int:memo_id>/', CafeMemoAPIView.as_view(), name='cafe_memo'),
 
 ]
