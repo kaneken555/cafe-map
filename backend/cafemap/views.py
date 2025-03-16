@@ -2,6 +2,12 @@ from django.http import HttpResponse, JsonResponse
 import os
 import requests
 from django.views.decorators.csrf import csrf_exempt
+from django.utils.crypto import get_random_string
+from django.contrib.auth import login
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+from .models import User  # Userモデルをインポート
+from rest_framework import status
 
 
 GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
@@ -90,3 +96,21 @@ def get_cafe_detail(request):
                 ]
             })
     return JsonResponse({"error": "Failed to fetch cafe details"}, status=500)
+
+
+@api_view(['POST'])
+def guest_login(request):
+    try:
+        # ゲストユーザーを作成
+        guest_name = f"guest_{get_random_string(8)}"
+        guest_user = User.objects.create(name=guest_name)
+
+        # ログイン処理
+        login(request, guest_user)
+
+        print(f"ゲストユーザー作成成功: {guest_user.name}")  # 追加
+        return Response({"name": guest_user.name}, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        print(f"ゲストログインエラー: {e}")  # 追加
+        return Response({"error": "Internal Server Error", "message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

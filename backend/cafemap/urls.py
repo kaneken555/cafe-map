@@ -7,5 +7,6 @@ urlpatterns = [
     path('api/cafes/', views.get_cafes, name='cafes'),
     path("api/get-cafe-photo", views.get_cafe_photo, name="get_cafe_photo"),
     path("api/cafe-detail/", views.get_cafe_detail, name="cafe_detail"),
+    path('api/guest-login/', views.guest_login, name='guest-login'),
 
 ]

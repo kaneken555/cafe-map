@@ -1,11 +1,35 @@
 from django.db import models
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
-class User(models.Model):
-    name = models.CharField(max_length=255)
-    # email = models.EmailField(unique=True)
-    # password_hash = models.CharField(max_length=255)
+
+class CustomUserManager(BaseUserManager):
+    def create_user(self, name, password=None):
+        if not name:
+            raise ValueError("ユーザー名は必須です")
+
+        user = self.model(name=name)
+        
+        # パスワードを設定
+        if password:
+            user.set_password(password)
+        else:
+            user.set_unusable_password()  # ゲストユーザー用にパスワードなしを許可
+        
+        user.save(using=self._db)
+        return user
+    
+class User(AbstractBaseUser):  # AbstractBaseUserを継承
+    name = models.CharField(max_length=255, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    objects = CustomUserManager()
+
+    USERNAME_FIELD = 'name'
+
+    def __str__(self):
+        return self.name
+
 
 class Map(models.Model):
     name = models.CharField(max_length=255)

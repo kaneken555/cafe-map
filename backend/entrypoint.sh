@@ -9,6 +9,7 @@ done
 echo "Database started"
 
 # マイグレーションを実行
+python manage.py makemigrations
 python manage.py migrate
 
 # Gunicorn を起動
