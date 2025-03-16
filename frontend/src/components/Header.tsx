@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "../styles/Header.css"; // TODO: styleの統一&css修正
+import GuestLoginButton from "../components/GuestLoginButton";
 
 
 const Header: React.FC = () => {
+  const [loggedIn, setLoggedIn] = useState<boolean>(false);
+
   return (
     <header className="header">
         <div className="left">
@@ -19,8 +22,13 @@ const Header: React.FC = () => {
         
             <button id="myCafeButton">MyCafe</button>
             <button id="myCafeMapButton">MyCafeMap</button>
-            <button id="mapButton">Map作成</button>
-            <button id="myMapListButton">📋 マップ一覧</button>
+            {!loggedIn ? (
+              <GuestLoginButton setLoggedIn={setLoggedIn} />
+            ) : (
+              <button>マップ作成</button>
+            )}
+            {/* <button id="mapButton">Map作成</button> */}
+            {/* <button id="myMapListButton">📋 マップ一覧</button> */}
 
             {/* プルダウンメニュー */}
             <select id="map-select" style={{ display: "none" }}>

@@ -1,10 +1,18 @@
-from django.http import HttpResponse, JsonResponse
 import os
 import requests
+from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.utils.crypto import get_random_string
+from django.contrib.auth import login
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+from rest_framework.views import APIView
+from .models import User
 
 
 GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
+
 
 def get_google_maps_api_key(request):
     api_key = GOOGLE_MAPS_API_KEY
@@ -90,3 +98,146 @@ def get_cafe_detail(request):
                 ]
             })
     return JsonResponse({"error": "Failed to fetch cafe details"}, status=500)
+
+
+@api_view(['POST'])
+def guest_login(request):
+    try:
+        # ゲストユーザーを作成
+        guest_name = f"guest_{get_random_string(8)}"
+        guest_user = User.objects.create(name=guest_name)
+
+        # ログイン処理
+        login(request, guest_user)
+
+        print(f"ゲストユーザー作成成功: {guest_user.name}")  # 追加
+        return Response({"name": guest_user.name}, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        print(f"ゲストログインエラー: {e}")  # 追加
+        return Response({"error": "Internal Server Error", "message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+# マップ登録・一覧取得用のAPIViewを実装
+# TODO: MapAPIViewとMapDetailAPIViewを実装
+# /api/maps/
+class MapAPIView(APIView):
+    def get(self, request, *args, **kwargs):
+        """ マップの一覧を取得 """
+        return Response({"message": "GET request received"}, status=status.HTTP_200_OK)
+
+    def post(self, request, *args, **kwargs):
+        """ 新しいマップを作成 """
+        return Response({"message": "POST request received"}, status=status.HTTP_201_CREATED)
+
+# /api/maps/<int:map_id>/
+class MapDetailAPIView(APIView):
+    def get(self, request, *args, **kwargs):
+        """ 特定のマップを取得 """
+        return Response({"message": "GET request received"}, status=status.HTTP_200_OK)
+
+    def put(self, request, *args, **kwargs):
+        """ マップ情報を更新 """
+        return Response({"message": "PUT request received"}, status=status.HTTP_200_OK)
+
+    def delete(self, request, *args, **kwargs):
+        """ マップ情報を削除 """
+        return Response({"message": "DELETE request received"}, status=status.HTTP_204_NO_CONTENT)
+
+
+# カフェ登録・一覧取得用のAPIViewを実装
+# TODO: CafeAPIViewとCafeDetailAPIViewを実装
+# /api/maps/<int:map_id>/cafes/
+class CafeAPIView(APIView):
+    def get(self, request, *args, **kwargs):
+        """ カフェの一覧を取得 """
+        return Response({"message": "GET request received"}, status=status.HTTP_200_OK)
+    
+# /api/maps/<int:map_id>/cafes/<int:cafe_id>/
+class CafeDetailAPIView(APIView):
+    def get(self, request, *args, **kwargs):
+        """ 特定のカフェを取得 """
+        return Response({"message": "GET request received"}, status=status.HTTP_200_OK)
+
+    def post(self, request, *args, **kwargs):
+        """ 新しいカフェを作成 """
+        return Response({"message": "POST request received"}, status=status.HTTP_201_CREATED)
+
+    def put(self, request, *args, **kwargs):
+        """ カフェ情報を更新 """
+        return Response({"message": "PUT request received"}, status=status.HTTP_200_OK)
+
+    def delete(self, request, *args, **kwargs):
+        """ カフェ情報を削除 """
+        return Response({"message": "DELETE request received"}, status=status.HTTP_204_NO_CONTENT)
+    
+
+# タグ登録・一覧取得用のAPIViewを実装
+# TODO: TagAPIViewとTagDetailAPIViewを実装
+# /api/tags/
+class TagAPIView(APIView):
+    def get(self, request, *args, **kwargs):
+        """ タグの一覧を取得 """
+        return Response({"message": "GET request received"}, status=status.HTTP_200_OK)
+    
+    def post(self, request, *args, **kwargs):
+        """ 新しいタグを作成 """
+        return Response({"message": "POST request received"}, status=status.HTTP_201_CREATED)
+    
+# /api/tags/<int:tag_id>/
+class TagDetailAPIView(APIView):
+    def get(self, request, *args, **kwargs):
+        """ 特定のタグを取得 """
+        return Response({"message": "GET request received"}, status=status.HTTP_200_OK)
+    
+    def put(self, request, *args, **kwargs):
+        """ タグ情報を更新 """
+        return Response({"message": "PUT request received"}, status=status.HTTP_200_OK)
+    
+    def delete(self, request, *args, **kwargs):
+        """ タグ情報を削除 """
+        return Response({"message": "DELETE request received"}, status=status.HTTP_204_NO_CONTENT)
+    
+
+
+# カフェのタグ登録・一覧取得用のAPIViewを実装
+# TODO: CafeTagAPIViewとCafeTagDetailAPIViewを実装
+# /api/maps/<int:map_id>/cafes/<int:cafe_id>/tags/
+class CafeTagAPIView(APIView):
+    def get(self, request, *args, **kwargs):
+        """ カフェのタグ一覧を取得 """
+        return Response({"message": "GET request received"}, status=status.HTTP_200_OK)
+    
+    def post(self, request, *args, **kwargs):
+        """ カフェにタグを追加 """
+        return Response({"message": "POST request received"}, status=status.HTTP_201_CREATED)
+    
+# /api/maps/<int:map_id>/cafes/<int:cafe_id>/tags/<int:tag_id>/
+class CafeTagDetailAPIView(APIView):
+    def delete(self, request, *args, **kwargs):
+        """ カフェのタグを削除 """
+        return Response({"message": "DELETE request received"}, status=status.HTTP_204_NO_CONTENT)
+    
+
+
+# カフェのメモ登録・一覧取得用のAPIViewを実装
+# TODO: CafeMemoAPIViewとCafeMemoDetailAPIViewを実装
+# /api/maps/<int:map_id>/cafes/<int:cafe_id>/memos/
+class CafeMemoAPIView(APIView):
+    def get(self, request, *args, **kwargs):
+        """ カフェのメモ一覧を取得 """
+        return Response({"message": "GET request received"}, status=status.HTTP_200_OK)
+    
+    def post(self, request, *args, **kwargs):
+        """ カフェにメモを追加 """
+        return Response({"message": "POST request received"}, status=status.HTTP_201_CREATED)
+    
+# /api/maps/<int:map_id>/cafes/<int:cafe_id>/memos/<int:memo_id>/
+class CafeMemoDetailAPIView(APIView):
+    def get(self, request, *args, **kwargs):
+        """ 特定のメモを取得 """
+        return Response({"message": "GET request received"}, status=status.HTTP_200_OK)
+    
+    def delete(self, request, *args, **kwargs):
+        """ カフェのメモを削除 """
+        return Response({"message": "DELETE request received"}, status=status.HTTP_204_NO_CONTENT)
