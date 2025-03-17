@@ -5,6 +5,7 @@ export const getGoogleMapsApiKey = async (): Promise<string> => {
   return response.data.apiKey;
 };
 
+// TODO: axios を使ってバックエンドからカフェの情報を取得する
 export const fetchCafeLocations = async (lat: number, lng: number) => {
   const response = await fetch(`http://localhost:8000/api/cafes?lat=${lat}&lng=${lng}`);
   const data = await response.json();
