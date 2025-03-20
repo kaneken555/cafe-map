@@ -1,5 +1,7 @@
 import axios from "axios";
 
+// TODO:URLを変更する(環境変数を使う)
+
 export const getGoogleMapsApiKey = async (): Promise<string> => {
   const response = await axios.get("http://localhost:8000/api/google-maps-key/");
   return response.data.apiKey;
