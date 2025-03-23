@@ -22,4 +22,7 @@ urlpatterns = [
     path('api/maps/<int:map_id>/cafes/<int:cafe_id>/memos/', CafeMemoAPIView.as_view(), name='cafe_memos'),
     path('api/maps/<int:map_id>/cafes/<int:cafe_id>/memos/<int:memo_id>/', CafeMemoAPIView.as_view(), name='cafe_memo'),
 
+    path("api/csrf/", views.csrf_token_view, name="csrf_token"),
+
+
 ]

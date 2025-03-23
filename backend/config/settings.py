@@ -28,7 +28,51 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'your-secret-key')
 DEBUG = os.getenv("DJANGO_DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
-CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
+
+# ------------------------------
+# CORS 設定
+# ------------------------------
+CORS_ALLOW_ALL_ORIGINS = False  # すべてのオリジンを許可しない
+CORS_ALLOW_CREDENTIALS = True  # クッキーを含めたリクエストを許可
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # フロントエンドのURL
+]
+CORS_ALLOW_HEADERS = [
+    "authorization",
+    "content-type",
+    "x-csrftoken",  # CSRF トークンの送信を許可
+]
+
+# ------------------------------
+# CSRF 設定
+# ------------------------------
+CSRF_TRUSTED_ORIGINS = ["http://localhost:3000"]  # フロントエンドのURL
+CSRF_COOKIE_SAMESITE = "None"  
+CSRF_COOKIE_SECURE = True  # クロスサイトリクエストには Secure 必須
+CSRF_COOKIE_HTTPONLY = True  # JavaScript からのアクセスを禁止
+
+# ------------------------------
+# セッション管理
+# ------------------------------
+# SESSION_COOKIE_HTTPONLY = True  # JavaScript からのアクセスを禁止
+SESSION_COOKIE_SECURE = True  # `SESSION_COOKIE_SAMESITE = "None"` の場合は True にする
+SESSION_COOKIE_SAMESITE = "None" 
+SESSION_ENGINE = "django.contrib.sessions.backends.db"
+
+
+
+# ------------------------------
+# Django REST Framework 認証
+# ------------------------------
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',  # セッション認証
+        'rest_framework.authentication.BasicAuthentication',  # BASIC認証
+    ),
+        'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',  # 認証が必須
+    ],
+}
 
 
 # Application definition
@@ -137,3 +181,4 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'cafemap.User'
+
