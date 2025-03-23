@@ -2,11 +2,16 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "../styles/Header.css"; // TODO: styleの統一&css修正
 import GuestLoginButton from "../components/GuestLoginButton";
+// import MapCreateModal from "../components/MapCreateModal"; // 追加
+import MapListModal from "../components/MapListModal"; // 追加
 
 
 const Header: React.FC = () => {
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
+  const [isMapModalOpen, setIsMapModalOpen] = useState<boolean>(false);
+  const [selectedMap, setSelectedMap] = useState<{ id: number; name: string } | null>(null);
 
+  
   return (
     <header className="header">
         <div className="left">
@@ -25,10 +30,14 @@ const Header: React.FC = () => {
             {!loggedIn ? (
               <GuestLoginButton setLoggedIn={setLoggedIn} />
             ) : (
-              <button>マップ作成</button>
+              <button onClick={() => setIsMapModalOpen(true)}>📋 マップ一覧</button>
             )}
-            {/* <button id="mapButton">Map作成</button> */}
-            {/* <button id="myMapListButton">📋 マップ一覧</button> */}
+            {/* マップ一覧モーダルを表示 */}
+            <MapListModal
+              isOpen={isMapModalOpen}
+              onClose={() => setIsMapModalOpen(false)}
+              onMapSelect={(map) => setSelectedMap(map)} // ← 追加
+            />
 
             {/* プルダウンメニュー */}
             <select id="map-select" style={{ display: "none" }}>
@@ -36,7 +45,11 @@ const Header: React.FC = () => {
             </select>
 
             {/* 選択中のマップ名を表示するエリア */}
-            <div id="selected-map-display"></div>
+            {selectedMap && (
+              <div id="selected-map-display">
+                選択中のマップ：{selectedMap.name}
+              </div>
+            )}
         </div>
     </header>
   );

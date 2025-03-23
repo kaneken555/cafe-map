@@ -1,10 +1,13 @@
 import axios from "axios";
 
+// TODO:URLを変更する(環境変数を使う)
+
 export const getGoogleMapsApiKey = async (): Promise<string> => {
   const response = await axios.get("http://localhost:8000/api/google-maps-key/");
   return response.data.apiKey;
 };
 
+// TODO: axios を使ってバックエンドからカフェの情報を取得する
 export const fetchCafeLocations = async (lat: number, lng: number) => {
   const response = await fetch(`http://localhost:8000/api/cafes?lat=${lat}&lng=${lng}`);
   const data = await response.json();

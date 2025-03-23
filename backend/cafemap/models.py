@@ -41,6 +41,7 @@ class MapUserRelation(models.Model):
     map = models.ForeignKey(Map, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
+# TODO: フィールドを修正
 class Cafe(models.Model):
     place_id = models.CharField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
@@ -49,6 +50,7 @@ class Cafe(models.Model):
     longitude = models.DecimalField(max_digits=10, decimal_places=7)
     rating = models.FloatField(null=True, blank=True)
     user_ratings_total = models.IntegerField(null=True, blank=True)
+    photo_reference = models.CharField(max_length=255, null=True, blank=True)
     photo_url = models.CharField(max_length=255, null=True, blank=True)
     photo_urls = models.JSONField(null=True, blank=True)
     phone_number = models.CharField(max_length=20, null=True, blank=True)
