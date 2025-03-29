@@ -1,13 +1,13 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
 
 class CustomUserManager(BaseUserManager):
-    def create_user(self, name, password=None):
+    def create_user(self, name, password=None, **extra_fields):
         if not name:
             raise ValueError("ユーザー名は必須です")
 
-        user = self.model(name=name)
+        user = self.model(name=name, **extra_fields)  # ← 修正ここ！
         
         # パスワードを設定
         if password:
@@ -17,9 +17,24 @@ class CustomUserManager(BaseUserManager):
         
         user.save(using=self._db)
         return user
+
+    def create_superuser(self, name, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('is_active', True)
+
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('Superuser must have is_staff=True.')
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Superuser must have is_superuser=True.')
+
+        return self.create_user(name, password, **extra_fields)
     
-class User(AbstractBaseUser):  # AbstractBaseUserを継承
+class User(AbstractBaseUser, PermissionsMixin):  # AbstractBaseUserを継承
     name = models.CharField(max_length=255, unique=True)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
