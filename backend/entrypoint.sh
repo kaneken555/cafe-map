@@ -12,5 +12,9 @@ echo "Database started"
 python manage.py makemigrations
 python manage.py migrate
 
+# staticファイルを収集
+echo "Collecting static files..."
+python manage.py collectstatic --noinput
+
 # Gunicorn を起動
 exec gunicorn config.wsgi:application --bind 0.0.0.0:8000 --timeout 120 --workers 3

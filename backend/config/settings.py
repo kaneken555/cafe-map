@@ -32,7 +32,7 @@ ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 # ------------------------------
 # CORS 設定
 # ------------------------------
-CORS_ALLOW_ALL_ORIGINS = False  # すべてのオリジンを許可しない
+CORS_ALLOW_ALL_ORIGINS = os.getenv("CORS_ALLOW_ALL_ORIGINS", "False") == "True"
 CORS_ALLOW_CREDENTIALS = True  # クッキーを含めたリクエストを許可
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # フロントエンドのURL
@@ -137,7 +137,6 @@ DATABASES = {
     }
 }
 
-CORS_ALLOW_ALL_ORIGINS = os.getenv("CORS_ALLOW_ALL_ORIGINS", "False") == "True"
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -174,6 +173,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # ← collectstatic でここに集まる
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
