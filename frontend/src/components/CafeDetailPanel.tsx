@@ -1,19 +1,37 @@
+// src/pages/CafeDetailPanel.tsx
 import React from "react";
+import { addCafe } from "../services/api";
+import { CafeDetailProps, CafeData } from "../types/cafe"; // ← ここを修正
 
-interface CafeDetails {
-  name: string;
-  address: string;
-  placeId: string; // Place ID を追加
-  rating?: number;
-  opening_hours?: string[];
-  photos?: string[];
-  onClose: () => void;
-}
 
-const CafeDetailPanel: React.FC<CafeDetails> = ({ name, address,placeId, rating, opening_hours, photos, onClose }) => {
+const CafeDetailPanel: React.FC<CafeDetailProps> = ({ name, address, placeId, rating, opening_hours, photos, latitude, longitude, onClose, selectedMap }) => {
   // Google Maps の Place ID を使ったリンク
   console.log("placeId", placeId);
   const googleMapsUrl = `https://www.google.com/maps/place/?q=place_id:${placeId}`;
+
+
+  const handleAddCafe = async () => {
+    if (!selectedMap) return;
+
+    const payload = {
+      name,
+      address,
+      place_id: placeId,               // ← ここでsnake_caseに変換
+      rating,
+      opening_hours,
+      photo_urls: photos,
+      latitude,
+      longitude,
+    } as any;
+
+    try {
+      await addCafe(selectedMap.id, payload);
+      alert("お気に入りに追加しました");
+    } catch (error) {
+      alert("カフェの追加に失敗しました");
+      console.error("addCafe エラー:", error);
+    }
+  };
 
   return (
     <div className="absolute top-0 left-0 h-full w-1/3 bg-white shadow-lg transition-transform duration-300 ease-in-out">
@@ -31,6 +49,15 @@ const CafeDetailPanel: React.FC<CafeDetails> = ({ name, address,placeId, rating,
             <span className="text ml-2">Google Map</span>
             <span className="link-icon ml-1">↗️</span>
             </a>
+            {selectedMap && (
+              <button
+                // onClick={() => alert("お気に入りに追加しました")}
+                onClick={handleAddCafe}
+                className="cafe-action-button flex items-center bg-yellow-500 text-white px-4 py-2 rounded-lg shadow hover:bg-yellow-600 transition"
+              >
+                add Cafe
+              </button>
+            )}
         </div>
 
         <h2 className="text-xl font-bold">{name}</h2>

@@ -1,4 +1,6 @@
 import axios from "axios";
+import { CafeData } from "../types/cafe";
+import { getCsrfToken } from "../api/auth";
 
 // TODO:URLを変更する(環境変数を使う)
 
@@ -31,3 +33,23 @@ export const fetchCafeDetailsFromBackend = async (placeId: string) => {
     throw error;
   }
 };
+
+export const addCafe = async (mapId: number, cafe: CafeData) => {
+  const csrfToken = await getCsrfToken(); // CSRF トークンを取得
+
+  try {
+    const response = await axios.post(`http://localhost:8000/api/maps/${mapId}/cafes/`, cafe,
+    { 
+        headers: {
+          "X-CSRFToken": csrfToken,
+        },
+        withCredentials: true 
+      } // クッキーを送信する
+
+    );
+    return response.data;
+  } catch (error) {
+    console.error("addCafe エラー:", error);
+    throw error;
+  }
+}
