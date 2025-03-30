@@ -7,7 +7,7 @@ __pycache__/
 env/
 
 # 🌟 Django 関連
-backend/static/
+backend/staticfiles/
 backend/media/
 backend/db.sqlite3
 
