@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
-from .models import User, Map, Cafe, Tag, MapUserRelation
+from .models import User, Map, Cafe, Tag, MapUserRelation, CafeMapRelation
 from django.utils.decorators import method_decorator
 from django.middleware.csrf import get_token
 
@@ -77,7 +77,7 @@ def get_cafe_detail(request):
     url = "https://maps.googleapis.com/maps/api/place/details/json"
     params = {
         "place_id": place_id,
-        "fields": "name,formatted_address,formatted_phone_number,opening_hours,photos",
+        "fields": "name,formatted_address,formatted_phone_number,opening_hours,photos,geometry,rating,user_ratings_total",
         "language": "ja",
         "key": GOOGLE_MAPS_API_KEY,
     }
@@ -88,6 +88,8 @@ def get_cafe_detail(request):
         data = response.json()
         if data.get("status") == "OK":
             result = data.get("result", {})
+            location = result.get("geometry", {}).get("location", {})  # 👈 追加
+
             return JsonResponse({
                 "name": result.get("name", ""),
                 "address": result.get("formatted_address", ""),
@@ -97,7 +99,9 @@ def get_cafe_detail(request):
                 "photos": [
                     f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference={photo['photo_reference']}&key={GOOGLE_MAPS_API_KEY}"
                     for photo in result.get("photos", [])[:5]
-                ]
+                ],
+                "latitude": location.get("lat"),   # ✅ 緯度追加
+                "longitude": location.get("lng"),  # ✅ 経度追加
             })
     return JsonResponse({"error": "Failed to fetch cafe details"}, status=500)
 
@@ -232,7 +236,9 @@ class CafeAPIView(APIView):
             target_map = Map.objects.get(id=map_id)
             
             # カフェ一覧を取得
-            cafes = target_map.cafes.all()
+            # cafes = target_map.cafes.all()
+            # ✅ CafeMapRelation を経由してカフェを取得
+            cafes = Cafe.objects.filter(cafemaprelation__map=target_map)
             data = [{"id": cafe.id, "place_id": cafe.place_id, "name": cafe.name} for cafe in cafes]
             return Response(data, status=status.HTTP_200_OK)
         
@@ -256,15 +262,15 @@ class CafeAPIView(APIView):
             user_ratings_total = request.data.get("user_ratings_total")
             photo_reference = request.data.get("photo_reference")
             photo_url = request.data.get("photo_url")
-            photos = request.data.get("photos")
+            photo_urls = request.data.get("photos")
             phone_number = request.data.get("phone_number")
             opening_hours = request.data.get("opening_hours")
             
             # マップが存在するか確認
             target_map = Map.objects.get(id=map_id)
             
-            # カフェを作成
-            new_cafe = target_map.cafes.create(
+            # 1. カフェ本体を作成
+            new_cafe = Cafe.objects.create(
                 place_id=place_id,
                 name=name,
                 address=address,
@@ -274,9 +280,14 @@ class CafeAPIView(APIView):
                 user_ratings_total=user_ratings_total,
                 photo_reference=photo_reference,
                 photo_url=photo_url,
-                photos=photos,
+                photo_urls=photo_urls,
                 phone_number=phone_number,
                 opening_hours=opening_hours
+            )
+            # 2. Map と Cafe の関連を作成（中間テーブルへの登録）
+            CafeMapRelation.objects.create(
+                map=target_map,
+                cafe=new_cafe
             )
             
             return Response({"id": new_cafe.id, "name": new_cafe.name}, status=status.HTTP_201_CREATED)

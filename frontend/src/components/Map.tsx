@@ -1,3 +1,4 @@
+// src/pages/Map.tsx
 import React, { useEffect, useState } from "react";
 import { APIProvider, Map, Marker } from "@vis.gl/react-google-maps";
 import { getGoogleMapsApiKey, fetchCafeLocations, getCafePhotoUrl, fetchCafeDetailsFromBackend } from "../services/api";
@@ -29,9 +30,15 @@ interface CafeDetails {
   rating?: number;
   opening_hours?: string[];
   photos?: string[];
+  latitude: number;   // ✅ 追加
+  longitude: number;  // ✅ 追加
 }
 
-const MapComponent: React.FC = () => {
+interface MapComponentProps {
+  selectedMap: { id: number; name: string } | null;
+}
+
+const MapComponent: React.FC<MapComponentProps> = ({ selectedMap }) => {
   const [apiKey, setApiKey] = useState<string | null>(null);
   const [cafes, setCafes] = useState<Cafe[]>([]);
   const [selectedCafe, setSelectedCafe] = useState<CafeDetails | null>(null);
@@ -140,7 +147,11 @@ const MapComponent: React.FC = () => {
               rating={selectedCafe.rating}
               opening_hours={selectedCafe.opening_hours}
               photos={selectedCafe.photos}
+              latitude={selectedCafe.latitude}        // ✅ 追加
+              longitude={selectedCafe.longitude}      // ✅ 追加
               onClose={() => setSelectedCafe(null)} // 閉じる処理
+              selectedMap={selectedMap} // 👈 ここで渡す
+
             />
           )}
         <div className="flex-1">

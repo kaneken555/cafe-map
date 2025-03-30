@@ -6,10 +6,15 @@ import GuestLoginButton from "../components/GuestLoginButton";
 import MapListModal from "../components/MapListModal"; // 追加
 
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  selectedMap: { id: number; name: string } | null;
+  setSelectedMap: (map: { id: number; name: string } | null) => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ selectedMap, setSelectedMap }) => {
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
   const [isMapModalOpen, setIsMapModalOpen] = useState<boolean>(false);
-  const [selectedMap, setSelectedMap] = useState<{ id: number; name: string } | null>(null);
+  // const [selectedMap, setSelectedMap] = useState<{ id: number; name: string } | null>(null);
 
   
   return (
