@@ -1,0 +1,33 @@
+// components/SideMenu.tsx
+import React from "react";
+
+interface SideMenuProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
+  return (
+    <div
+      className={`fixed top-0 left-0 h-full w-64 bg-white shadow-lg z-50 transform transition-transform duration-300 ${
+        isOpen ? "translate-x-0" : "-translate-x-full"
+      }`}
+    >
+      <div className="p-4 text-right">
+        <button onClick={onClose} className="text-xl font-bold">
+          &laquo;
+        </button>
+      </div>
+      <nav className="flex flex-col items-center space-y-6 mt-10 text-lg font-medium">
+        <a href="#">アプリの使い方・よくある質問</a>
+        <a href="#">運営会社について</a>
+        <a href="#">個人情報の取り扱いについて</a>
+        <a href="#">利用規約</a>
+        <a href="#">フィードバック・ご要望</a>
+        <a href="#">お問い合わせ</a>
+      </nav>
+    </div>
+  );
+};
+
+export default SideMenu;
