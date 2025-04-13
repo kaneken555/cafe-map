@@ -22,14 +22,14 @@ const mockCafes = [
     name: "スタバ東京",
     lat: 35.681,
     lng: 139.765,
-    photoUrl: "https://source.unsplash.com/80x80/?coffee",
+    photoUrl: "https://upload.wikimedia.org/wikipedia/commons/3/3f/Starbucks_Coffee_restaurant.png",
   },
   {
     id: 2,
     name: "ドトール有楽町",
     lat: 35.675,
     lng: 139.760,
-    photoUrl: "https://source.unsplash.com/81x81/?cafe",
+    photoUrl: "https://upload.wikimedia.org/wikipedia/commons/e/e2/Doutor_Coffee_Senbayashi.jpg",
   },
 ];
 
