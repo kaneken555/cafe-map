@@ -29,7 +29,7 @@ const Header: React.FC = () => {
 
       {/* 中央：タイトル */}
       <div className="flex-grow flex justify-center">
-        <h1 className="text-2xl font-bold text-black">Cafe Map</h1>
+        <h1 className="text-2xl font-bold text-black">Café Map</h1>
       </div>
 
       {/* 右：操作ボタン群 */}
