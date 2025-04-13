@@ -4,6 +4,7 @@ import MapListModal from "./MapListModal"; // ← 追加
 import MyCafeListPanel from "./MyCafeListPanel"; // ← 追加
 import { ArrowRightToLine, User, LogIn } from "lucide-react"; // 任意アイコン（lucide-react を使う場合）
 import { Coffee } from "lucide-react";
+import { Map as MapIcon } from "lucide-react"; // ← アイコンの読み込み（必要に応じて）
 
 
 const Header: React.FC = () => {
@@ -38,18 +39,23 @@ const Header: React.FC = () => {
       <div className="flex items-center space-x-2">
         <button
             onClick={() => setIsMyCafeListOpen(true)}
-            className="px-3 py-1 border border-black rounded bg-white text-black hover:bg-gray-100"
+            className="flex flex-col items-center justify-center px-2 py-1 border border-black rounded bg-white text-black hover:bg-gray-100 w-21 h-14"
           >
-            MycafeList
+            <MapIcon size={24} />
+            <span className="text-[10px] mt-1">My Café List</span>
         </button>
-        <button className="px-3 py-1 border border-black rounded bg-white text-black hover:bg-gray-100">
-          MycafeMap
+        <button
+          className="flex flex-col items-center justify-center px-2 py-1 border border-black rounded bg-white text-black hover:bg-gray-100 w-21 h-14"
+        >
+          <MapIcon size={24} />
+          <span className="text-[10px] mt-1">My Café Map</span>
         </button>
         <button
             onClick={() => setIsMapListOpen(true)}
-            className="px-3 py-1 border border-black rounded bg-white text-black hover:bg-gray-100"
-          >
-            MapList
+            className="flex flex-col items-center justify-center px-2 py-1 border border-black rounded bg-white text-black hover:bg-gray-100 w-21 h-14"
+            >
+            <MapIcon size={24} />
+            <span className="text-[10px] mt-1">My Map List</span>
         </button>
               {/* ▼ ログインボタン */}
               <div className="relative">
