@@ -20,7 +20,7 @@ const Header: React.FC = () => {
     <MyCafeListPanel isOpen={isMyCafeListOpen} onClose={() => setIsMyCafeListOpen(false)} />
 
         
-    <header className="w-full px-4 py-4 flex justify-between items-center bg-gradient-to-r from-yellow-300 to-yellow-500 shadow-md">
+    <header className="w-full h-16 px-4 flex justify-between items-center bg-gradient-to-r from-yellow-300 to-yellow-500 shadow-md">
       {/* 左：メニュー */}
       <div className="flex items-center">
         <button onClick={() => setIsSideMenuOpen(true)} className="text-2xl">

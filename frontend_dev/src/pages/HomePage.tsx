@@ -22,12 +22,12 @@ const HomePage: React.FC = () => {
   };
 
   return (
-    <div className="flex">
+    <div className="flex h-screen w-full">
       {/* カフェ詳細パネル */}
       <CafeDetailPanel cafe={selectedCafe} onClose={() => setSelectedCafe(null)} />
 
       {/* Map（ここにアイコンボタンを配置） */}
-      <div className="flex-grow">
+      <div className="flex-grow h-full">
         <Map
           onCafeIconClick={() =>
             setSelectedCafe({
