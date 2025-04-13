@@ -1,24 +1,47 @@
 import React from "react";
+import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 
 interface MapProps {
   onCafeIconClick: () => void;
 }
 
-const Map: React.FC<MapProps> = ({ onCafeIconClick }) => {
-  return (
-    <div className="relative h-full w-full bg-gray-100">
-      {/* 仮のマップアイコンボタン */}
-      <button
-        onClick={onCafeIconClick}
-        className="absolute top-4 left-4 z-10 px-3 py-2 bg-blue-600 text-white rounded shadow hover:bg-blue-700"
-      >
-        アイコン（仮）
-      </button>
+const containerStyle = {
+  width: "100%",
+  height: "600px",
+};
 
-      {/* 仮のマップ背景 */}
-      <div className="w-full h-[600px] bg-green-200 flex items-center justify-center">
-        <span className="text-gray-700">ここに Google Map を表示予定</span>
-      </div>
+const center = {
+  lat: 35.681236, // 東京駅の緯度
+  lng: 139.767125, // 東京駅の経度
+};
+
+// 仮のカフェ位置データ（バックエンドの代用）
+const mockCafes = [
+  { id: 1, name: "スタバ東京", lat: 35.681, lng: 139.765 },
+  { id: 2, name: "ドトール有楽町", lat: 35.675, lng: 139.760 },
+];
+
+const Map: React.FC<MapProps> = ({ onCafeIconClick }) => {
+  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+
+  return (
+    <div className="relative h-full w-full">
+      <LoadScript googleMapsApiKey={apiKey}>
+        <GoogleMap
+          mapContainerStyle={containerStyle}
+          center={center}
+          zoom={15}
+        >
+          {mockCafes.map((cafe) => (
+            <Marker
+              key={cafe.id}
+              position={{ lat: cafe.lat, lng: cafe.lng }}
+              title={cafe.name}
+              onClick={onCafeIconClick}
+            />
+          ))}
+        </GoogleMap>
+      </LoadScript>
     </div>
   );
 };
