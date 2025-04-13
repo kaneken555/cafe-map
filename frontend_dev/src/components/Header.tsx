@@ -3,6 +3,7 @@ import SideMenu from "./SideMenu";
 import MapListModal from "./MapListModal"; // ← 追加
 import MyCafeListPanel from "./MyCafeListPanel"; // ← 追加
 import { ArrowRightToLine, User, LogIn } from "lucide-react"; // 任意アイコン（lucide-react を使う場合）
+import { Coffee } from "lucide-react";
 
 
 const Header: React.FC = () => {
@@ -28,7 +29,8 @@ const Header: React.FC = () => {
       </div>
 
       {/* 中央：タイトル */}
-      <div className="flex-grow flex justify-center">
+      <div className="flex-grow flex justify-center items-center space-x-2">
+        <Coffee size={24} />
         <h1 className="text-2xl font-bold text-black">Café Map</h1>
       </div>
 
