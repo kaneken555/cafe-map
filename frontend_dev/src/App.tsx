@@ -13,13 +13,12 @@ const App: React.FC = () => {
         <Header />
         
         {/* メインコンテンツ */}
-        <main className="flex-grow bg-white">
+        <main className="flex-grow">
           <Routes>
             {/* <Route path="/" element={<HomePage selectedMap={selectedMap} />} /> */}
             <Route path="/" element={<HomePage />} />
           </Routes>
         </main>
-        {/* <Map /> */}
       </div>
     </Router>
   )

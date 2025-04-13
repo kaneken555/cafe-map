@@ -18,7 +18,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
           &laquo;
         </button>
       </div>
-      <nav className="flex flex-col items-center space-y-6 mt-10 text-lg font-medium">
+      <nav className="flex flex-col items-center space-y-6 mt-10 text-md font-medium">
         <a href="#">アプリの使い方・よくある質問</a>
         <a href="#">運営会社について</a>
         <a href="#">個人情報の取り扱いについて</a>

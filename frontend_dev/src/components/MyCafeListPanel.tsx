@@ -12,14 +12,14 @@ const cafes = [
     openTime: "07:00 - 22:30",
     status: "現在営業中",
     distance: "1.3km",
-    photoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Starbucks_Logo.svg/800px-Starbucks_Logo.svg.png",
+    photoUrl: "https://upload.wikimedia.org/wikipedia/commons/3/3f/Starbucks_Coffee_restaurant.png",
   },
   {
     name: "コトカフェ",
     openTime: "11:00 - 21:00",
     status: "現在営業中",
     distance: "1.6km",
-    photoUrl: "https://placehold.jp/150x150.png",
+    photoUrl: "https://upload.wikimedia.org/wikipedia/commons/e/e2/Doutor_Coffee_Senbayashi.jpg",
   },
 ];
 
