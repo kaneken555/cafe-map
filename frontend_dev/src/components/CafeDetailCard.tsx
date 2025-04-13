@@ -10,6 +10,8 @@ interface CafeData {
   hours: string;
   photoUrl: string;
   mapUrl: string;
+  address: string;     // 追加
+  rating: number;      // 追加
 }
 
 const CafeDetailCard = ({ cafe }: { cafe: CafeData }) => {
@@ -57,6 +59,16 @@ const CafeDetailCard = ({ cafe }: { cafe: CafeData }) => {
           alt={cafe.name}
           className="rounded-xl w-full"
         />
+      </div>
+
+        {/* 📍住所・評価 */}
+      <div className="mt-2 text-sm text-gray-700">
+        <p className="mb-1">
+          <span className="font-semibold">住所:</span> {cafe.address}
+        </p>
+        <p>
+          <span className="font-semibold">評価:</span> ⭐️ {cafe.rating.toFixed(1)} / 5
+        </p>
       </div>
     </div>
   );

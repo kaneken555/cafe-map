@@ -1,5 +1,6 @@
 import React from "react";
 import { GoogleMap, LoadScript, OverlayView } from "@react-google-maps/api";
+import MapButton from "./MapButton"; // 新規追加
 
 interface MapProps {
   onCafeIconClick: () => void;
@@ -38,6 +39,11 @@ const Map: React.FC<MapProps> = ({ onCafeIconClick }) => {
 
   return (
     <div className="relative h-full w-full">
+      {/* ボタン表示 */}
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 flex space-x-4">
+        <MapButton label="更新" onClick={() => console.log("更新")} />
+      </div>
+
       <LoadScript googleMapsApiKey={apiKey}>
         <GoogleMap
           mapContainerStyle={containerStyle}
@@ -52,7 +58,7 @@ const Map: React.FC<MapProps> = ({ onCafeIconClick }) => {
             >
               <div
                 onClick={onCafeIconClick}
-                className="w-12 h-12 rounded-full border-4 border-white shadow-md ring-2 ring-sky-300 overflow-hidden cursor-pointer"
+                className="w-12 h-12 rounded-full border-2 border-white shadow-md ring-2 ring-sky-300 overflow-hidden cursor-pointer"
               >
                 <img
                   src={cafe.photoUrl}

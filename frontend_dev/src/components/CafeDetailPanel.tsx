@@ -18,7 +18,7 @@ interface Props {
 const CafeDetailPanel: React.FC<Props> = ({ cafe, onClose }) => {
     return (
       <div
-        className={`fixed left-0 top-16 h-[calc(100vh-4rem)] w-80 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-40
+        className={`fixed left-0 top-16 h-[calc(100vh-4rem)] w-[400px] bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-40
           ${cafe ? "translate-x-0" : "-translate-x-full"}`}
       >
 
@@ -41,7 +41,9 @@ const CafeDetailPanel: React.FC<Props> = ({ cafe, onClose }) => {
                 status: "現在営業中",
                 hours: "07:00 - 22:30",
                 mapUrl: "https://maps.google.com/...",
-                photoUrl: "https://your-image-url",
+                photoUrl: "https://upload.wikimedia.org/wikipedia/commons/3/3f/Starbucks_Coffee_restaurant.png",
+                address: "東京都渋谷区宇田川町21-6",
+                rating: 4.5,
             }}
             />
 

@@ -26,7 +26,7 @@ const cafes = [
 const MyCafeListPanel: React.FC<Props> = ({ isOpen, onClose }) => {
   return (
     <div
-      className={`fixed top-16 left-0 h-[calc(100vh-4rem)] w-[320px] bg-white shadow-lg z-40 transform transition-transform duration-300 ease-in-out ${
+      className={`fixed top-16 left-0 h-[calc(100vh-4rem)] w-[400px] bg-white shadow-lg z-40 transform transition-transform duration-300 ease-in-out ${
         isOpen ? "translate-x-0" : "-translate-x-full"
       }`}
     >

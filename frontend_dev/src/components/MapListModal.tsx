@@ -32,7 +32,7 @@ const MapListModal: React.FC<Props> = ({ isOpen, onClose }) => {
         onClick={onClose}
       >
         <div
-          className="bg-white w-96 max-w-full rounded-lg p-6 shadow-xl relative"
+          className="bg-white w-[700px] max-w-full rounded-lg p-6 shadow-xl relative"
           onClick={(e) => e.stopPropagation()}
         >
           <button

@@ -61,10 +61,11 @@ const Header: React.FC = () => {
               <div className="relative">
                 <button
                   onClick={() => setIsLoginMenuOpen((prev) => !prev)}
-                  className="px-3 py-1 text-black rounded hover:bg-gray-100 border border-black bg-white"
+                  className="flex flex-col items-center justify-center px-2 py-1 border border-black rounded bg-white text-black hover:bg-gray-100 w-18 h-14"
                   title="ログイン"
                 >
                   <ArrowRightToLine size={22} />
+                  <span className="text-[10px] mt-1">ログイン</span>
                 </button>
 
             {/* ▼ ドロップダウンメニュー */}
