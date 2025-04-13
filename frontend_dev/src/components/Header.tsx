@@ -51,15 +51,15 @@ const Header: React.FC = () => {
           >
             MapList
         </button>
-                  {/* ▼ ログインボタン */}
-                  <div className="relative">
-            <button
-              onClick={() => setIsLoginMenuOpen((prev) => !prev)}
-              className="px-3 py-1 text-black rounded hover:bg-gray-100 border border-black bg-white"
-              title="ログイン"
-            >
-              <ArrowRightToLine size={22} />
-            </button>
+              {/* ▼ ログインボタン */}
+              <div className="relative">
+                <button
+                  onClick={() => setIsLoginMenuOpen((prev) => !prev)}
+                  className="px-3 py-1 text-black rounded hover:bg-gray-100 border border-black bg-white"
+                  title="ログイン"
+                >
+                  <ArrowRightToLine size={22} />
+                </button>
 
             {/* ▼ ドロップダウンメニュー */}
             {isLoginMenuOpen && (
@@ -85,7 +85,7 @@ const Header: React.FC = () => {
                   <span>Googleアカウントでログイン</span>
                 </button>
               </div>
-                          )}
+            )}
           </div>
       </div>
 
