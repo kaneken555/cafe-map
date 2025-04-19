@@ -5,9 +5,11 @@ import MapCreateModal from "./MapCreateModal"; // ← 追加
 interface Props {
   isOpen: boolean;
   onClose: () => void;
+  onSelectMap: (map: { id: number; name: string }) => void;
+  selectedMapId: number | null; // 👈 追加
 }
 
-const MapListModal: React.FC<Props> = ({ isOpen, onClose }) => {
+const MapListModal: React.FC<Props> = ({ isOpen, onClose, onSelectMap, selectedMapId }) => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false); // ← 追加
 
   if (!isOpen) return null;
@@ -52,9 +54,21 @@ const MapListModal: React.FC<Props> = ({ isOpen, onClose }) => {
               >
                 <span className="truncate">{map.name}</span>
                 <div className="flex space-x-2">
-                  <button className="text-sm text-white bg-blue-500 hover:bg-blue-600 px-2 py-1 rounded">
+                {map.id === selectedMapId ? (
+                  <span className="text-sm text-white bg-green-500 px-2 py-1 rounded">
+                    選択中
+                  </span>
+                ) : (
+                  <button
+                    className="text-sm text-white bg-blue-500 hover:bg-blue-600 px-2 py-1 rounded"
+                    onClick={() => {
+                      onSelectMap(map);
+                      onClose();
+                    }}
+                  >
                     選択
                   </button>
+                )}
                   <button className="text-sm text-white bg-red-500 hover:bg-red-600 px-2 py-1 rounded">
                     削除
                   </button>

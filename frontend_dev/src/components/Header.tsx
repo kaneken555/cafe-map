@@ -2,9 +2,8 @@ import React, { useState } from "react";
 import SideMenu from "./SideMenu";
 import MapListModal from "./MapListModal"; // ← 追加
 import MyCafeListPanel from "./MyCafeListPanel"; // ← 追加
-import { ArrowRightToLine, User, LogIn } from "lucide-react"; // 任意アイコン（lucide-react を使う場合）
-import { Coffee } from "lucide-react";
-import { Map as MapIcon } from "lucide-react"; // ← アイコンの読み込み（必要に応じて）
+import { ArrowRightToLine, User, LogIn, Coffee, Map as MapIcon } from "lucide-react";
+import { Cafe, getCafeList } from "../api/cafe"; // Cafe 型も import
 
 
 const Header: React.FC = () => {
@@ -13,13 +12,39 @@ const Header: React.FC = () => {
     const [isMyCafeListOpen, setIsMyCafeListOpen] = useState(false); // ← 追加
     const [isLoginMenuOpen, setIsLoginMenuOpen] = useState(false); // 👈 ログインメニューの開閉
 
+    // 👇 追加：選択されたマップ情報を保持
+    const [selectedMap, setSelectedMap] = useState<{ id: number; name: string } | null>(null);
+    const [cafeList, setCafeList] = useState<Cafe[]>([]);
+  
+    const handleOpenCafeList = async () => {
+      if (!selectedMap) {
+        alert("マップを選択してください");
+        return;
+      }
+  
+      const cafes = await getCafeList(selectedMap.id);
+      setCafeList(cafes);
+      setIsMyCafeListOpen(true);
+    };
 
     return (
     <>
-    <SideMenu isOpen={isSideMenuOpen} onClose={() => setIsSideMenuOpen(false)} />
-    <MapListModal isOpen={isMapListOpen} onClose={() => setIsMapListOpen(false)} />
-    <MyCafeListPanel isOpen={isMyCafeListOpen} onClose={() => setIsMyCafeListOpen(false)} />
-
+      <SideMenu isOpen={isSideMenuOpen} onClose={() => setIsSideMenuOpen(false)} />
+      <MapListModal
+          isOpen={isMapListOpen}
+          onClose={() => setIsMapListOpen(false)}
+          onSelectMap={(map) => {
+            setSelectedMap(map);
+            setIsMapListOpen(false);
+          }}
+          selectedMapId={selectedMap?.id ?? null} // 👈 ここ！
+        />
+      {/* MyCafeListPanel に取得済み cafeList を渡す */}
+      <MyCafeListPanel
+        isOpen={isMyCafeListOpen}
+        onClose={() => setIsMyCafeListOpen(false)}
+        cafes={cafeList}
+      />
         
     <header className="w-full h-16 px-4 flex justify-between items-center bg-gradient-to-r from-yellow-300 to-yellow-500 shadow-md">
       {/* 左：メニュー */}
@@ -38,7 +63,8 @@ const Header: React.FC = () => {
       {/* 右：操作ボタン群 */}
       <div className="flex items-center space-x-2">
         <button
-            onClick={() => setIsMyCafeListOpen(true)}
+            // onClick={() => setIsMyCafeListOpen(true)}
+            onClick={handleOpenCafeList}
             className="flex flex-col items-center justify-center px-2 py-1 border border-black rounded bg-white text-black hover:bg-gray-100 w-21 h-14"
           >
             <MapIcon size={24} />
@@ -55,7 +81,9 @@ const Header: React.FC = () => {
             className="flex flex-col items-center justify-center px-2 py-1 border border-black rounded bg-white text-black hover:bg-gray-100 w-21 h-14"
             >
             <MapIcon size={24} />
-            <span className="text-[10px] mt-1">My Map List</span>
+            <span className="text-[10px] mt-1">
+              {selectedMap?.name || "My Map List"}
+            </span>
         </button>
               {/* ▼ ログインボタン */}
               <div className="relative">
