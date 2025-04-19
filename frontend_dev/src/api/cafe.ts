@@ -54,7 +54,7 @@ export const mockCafeData: { [key: number]: Cafe[] } = {
 
 // ✅ mockData を参照するだけのメソッド
 export const getCafeList = async (mapId: number): Promise<Cafe[]> => {
-return new Promise((resolve) => {
-    setTimeout(() => resolve(mockCafeData[mapId] || []), 200);
-});
+    return new Promise((resolve) => {
+        setTimeout(() => resolve(mockCafeData[mapId] || []), 200);
+    });
 };

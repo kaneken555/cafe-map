@@ -61,7 +61,7 @@ const CafeDetailCard = ({ cafe }: { cafe: CafeData }) => {
         />
       </div>
 
-        {/* 📍住所・評価 */}
+      {/* 📍住所・評価 */}
       <div className="mt-2 text-sm text-gray-700">
         <p className="mb-1">
           <span className="font-semibold">住所:</span> {cafe.address}

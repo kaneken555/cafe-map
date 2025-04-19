@@ -79,22 +79,22 @@ const Header: React.FC = () => {
         <button
             onClick={() => setIsMapListOpen(true)}
             className="flex flex-col items-center justify-center px-2 py-1 border border-black rounded bg-white text-black hover:bg-gray-100 w-21 h-14"
-            >
+          >
             <MapIcon size={24} />
             <span className="text-[10px] mt-1">
               {selectedMap?.name || "My Map List"}
             </span>
         </button>
-              {/* ▼ ログインボタン */}
-              <div className="relative">
-                <button
-                  onClick={() => setIsLoginMenuOpen((prev) => !prev)}
-                  className="flex flex-col items-center justify-center px-2 py-1 border border-black rounded bg-white text-black hover:bg-gray-100 w-18 h-14"
-                  title="ログイン"
-                >
-                  <ArrowRightToLine size={22} />
-                  <span className="text-[10px] mt-1">ログイン</span>
-                </button>
+        {/* ▼ ログインボタン */}
+        <div className="relative">
+          <button
+            onClick={() => setIsLoginMenuOpen((prev) => !prev)}
+            className="flex flex-col items-center justify-center px-2 py-1 border border-black rounded bg-white text-black hover:bg-gray-100 w-18 h-14"
+            title="ログイン"
+          >
+            <ArrowRightToLine size={22} />
+            <span className="text-[10px] mt-1">ログイン</span>
+          </button>
 
             {/* ▼ ドロップダウンメニュー */}
             {isLoginMenuOpen && (
