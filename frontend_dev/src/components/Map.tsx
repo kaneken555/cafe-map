@@ -1,6 +1,7 @@
 import React from "react";
 import { GoogleMap, LoadScript, OverlayView } from "@react-google-maps/api";
 import MapButton from "./MapButton"; // 新規追加
+import { mockCafeData } from "../api/cafe.ts";
 
 interface MapProps {
   onCafeIconClick: () => void;
@@ -16,23 +17,9 @@ const center = {
   lng: 139.767125, // 東京駅の経度
 };
 
-// 仮のカフェ位置データ（バックエンドの代用）
-const mockCafes = [
-  {
-    id: 1,
-    name: "スタバ東京",
-    lat: 35.681,
-    lng: 139.765,
-    photoUrl: "https://upload.wikimedia.org/wikipedia/commons/3/3f/Starbucks_Coffee_restaurant.png",
-  },
-  {
-    id: 2,
-    name: "ドトール有楽町",
-    lat: 35.675,
-    lng: 139.760,
-    photoUrl: "https://upload.wikimedia.org/wikipedia/commons/e/e2/Doutor_Coffee_Senbayashi.jpg",
-  },
-];
+// 一旦 mapId=1 固定でもOK。選択中マップに応じて動的に切り替えも可能
+const mapId = 1;
+const cafes = mockCafeData[mapId] || [];
 
 const Map: React.FC<MapProps> = ({ onCafeIconClick }) => {
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
@@ -50,7 +37,7 @@ const Map: React.FC<MapProps> = ({ onCafeIconClick }) => {
           center={center}
           zoom={15}
         >
-          {mockCafes.map((cafe) => (
+          {cafes.map((cafe) => (
             <OverlayView
               key={cafe.id}
               position={{ lat: cafe.lat, lng: cafe.lng }}
