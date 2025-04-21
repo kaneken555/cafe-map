@@ -1,3 +1,4 @@
+// components/GoogleMapButton.tsx
 import { ExternalLink } from 'lucide-react'; // アイコンライブラリ
 
 const GoogleMapButton = ({ url }: { url: string }) => {

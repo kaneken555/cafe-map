@@ -1,3 +1,4 @@
+// pages/HomePage.tsx
 import React, { useState } from "react";
 import CafeDetailPanel from "../components/CafeDetailPanel";
 import Map from "../components/Map";

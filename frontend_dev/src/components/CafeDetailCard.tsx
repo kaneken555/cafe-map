@@ -1,3 +1,4 @@
+// components/CafeDetailCard.tsx
 import { Heart, Share2, ExternalLink } from "lucide-react";
 import GoogleMapButton from "./GoogleMapButton"; // 先ほど作ったボタンコンポーネント
 import { Cafe } from "../api/mockCafeData";
