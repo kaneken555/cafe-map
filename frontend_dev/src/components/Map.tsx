@@ -1,10 +1,11 @@
+// components/Map.tsx
 import React from "react";
 import { GoogleMap, LoadScript, OverlayView } from "@react-google-maps/api";
 import MapButton from "./MapButton"; // 新規追加
-import { mockCafeData } from "../api/cafe.ts";
+import { mockCafeData, Cafe } from "../api/mockCafeData"; // 👈 Cafe 型を import
 
 interface MapProps {
-  onCafeIconClick: () => void;
+  onCafeIconClick: (cafe: Cafe) => void; // 👈 カフェ情報を渡すように変更
 }
 
 const containerStyle = {
@@ -44,7 +45,7 @@ const Map: React.FC<MapProps> = ({ onCafeIconClick }) => {
               mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
             >
               <div
-                onClick={onCafeIconClick}
+                onClick={() => onCafeIconClick(cafe)} // ✅ カフェを渡す
                 className="w-12 h-12 rounded-full border-2 border-white shadow-md ring-2 ring-sky-300 overflow-hidden cursor-pointer"
               >
                 <img

@@ -1,17 +1,11 @@
 // components/CafeDetailPanel.tsx
 import React from "react";
 import CafeDetailCard from "./CafeDetailCard";
+import { Cafe } from "../api/mockCafeData"; // 👈 Cafe 型を import
 
-interface CafeData {
-  name: string;
-  address: string;
-  photoUrl: string;
-  openingHours: string;
-  priceLevel: string;
-}
 
 interface Props {
-  cafe: CafeData | null;
+  cafe: Cafe | null;
   onClose: () => void;
 }
 
@@ -32,20 +26,23 @@ const CafeDetailPanel: React.FC<Props> = ({ cafe, onClose }) => {
           </button>
         </div>
 
-        <CafeDetailCard
-            cafe={{
-                name: "スターバックス コーヒー",
-                name_en: "SHIBUYA TSUTAYA 1F店",
-                price_day: "￥999",
-                price_night: "￥999",
-                status: "現在営業中",
-                hours: "07:00 - 22:30",
-                mapUrl: "https://maps.google.com/...",
-                photoUrl: "https://upload.wikimedia.org/wikipedia/commons/3/3f/Starbucks_Coffee_restaurant.png",
-                address: "東京都渋谷区宇田川町21-6",
-                rating: 4.5,
-            }}
-            />
+        {cafe && <CafeDetailCard cafe={cafe} />}
+
+        {/* <CafeDetailCard */}
+          {/* // cafe={cafe} */}
+            {/* // cafe={{ */}
+            {/* //     name: "スターバックス コーヒー",
+            //     name_en: "SHIBUYA TSUTAYA 1F店",
+            //     price_day: "￥999",
+            //     price_night: "￥999",
+            //     status: "現在営業中",
+            //     hours: "07:00 - 22:30",
+            //     mapUrl: "https://maps.google.com/...",
+            //     photoUrl: "https://upload.wikimedia.org/wikipedia/commons/3/3f/Starbucks_Coffee_restaurant.png",
+            //     address: "東京都渋谷区宇田川町21-6",
+            //     rating: 4.5, */}
+            {/* // }} */}
+            {/* // /> */}
 
       </div>
     );

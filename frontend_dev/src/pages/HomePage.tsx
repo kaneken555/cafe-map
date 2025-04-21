@@ -1,16 +1,10 @@
 import React, { useState } from "react";
 import CafeDetailPanel from "../components/CafeDetailPanel";
 import Map from "../components/Map";
+import { Cafe } from "../api/mockCafeData"; // ✅ Cafe型をインポート
 
 const HomePage: React.FC = () => {
-  const [selectedCafe, setSelectedCafe] = useState<{
-    name: string;
-    address: string;
-    photoUrl: string;
-    openingHours: string;
-    priceLevel: string;
-  } | null>(null);
-
+  const [selectedCafe, setSelectedCafe] = useState<Cafe | null>(null); // ✅ 型を統一
 
 
   return (
@@ -20,17 +14,7 @@ const HomePage: React.FC = () => {
 
       {/* Map（ここにアイコンボタンを配置） */}
       <div className="flex-grow h-full">
-        <Map
-          onCafeIconClick={() =>
-            setSelectedCafe({
-              name: "スターバックス コーヒー SHIBUYA TSUTAYA 1F店",
-              address: "東京都渋谷区道玄坂2丁目24-1",
-              photoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Starbucks_Logo.svg/800px-Starbucks_Logo.svg.png",
-              openingHours: "07:00 - 22:30",
-              priceLevel: "昼：￥999 / 夜：￥999",
-            })
-          }
-        />
+        <Map onCafeIconClick={(cafe) => setSelectedCafe(cafe)} />
       </div>
 
     </div>

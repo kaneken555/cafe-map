@@ -1,27 +1,16 @@
 import { Heart, Share2, ExternalLink } from "lucide-react";
 import GoogleMapButton from "./GoogleMapButton"; // 先ほど作ったボタンコンポーネント
+import { Cafe } from "../api/mockCafeData";
 
-interface CafeData {
-  name: string;
-  name_en: string;
-  price_day: string;
-  price_night: string;
-  status: string;
-  hours: string;
-  photoUrl: string;
-  mapUrl: string;
-  address: string;     // 追加
-  rating: number;      // 追加
-}
 
-const CafeDetailCard = ({ cafe }: { cafe: CafeData }) => {
+const CafeDetailCard = ({ cafe }: { cafe: Cafe }) => {
   return (
     <div className="p-4">
       {/* タイトル・アイコン */}
       <div className="flex justify-between items-start">
         <div>
           <h2 className="text-lg font-bold">{cafe.name}</h2>
-          <h3 className="text-xl font-black">{cafe.name_en}</h3>
+          {/* <h3 className="text-xl font-black">{cafe.name_en}</h3> */}
         </div>
         <div className="flex space-x-2 mt-1">
           <button className="text-gray-600 hover:text-black">
@@ -42,7 +31,7 @@ const CafeDetailCard = ({ cafe }: { cafe: CafeData }) => {
             </div>
             <div className="flex items-center space-x-2 mt-1">
             <span className="text-blue-600 font-semibold">{cafe.status}</span>
-            <span className="text-gray-600">({cafe.hours})</span>
+            <span className="text-gray-600">({cafe.openTime})</span>
             </div>
         </div>
 
