@@ -1,11 +1,12 @@
 // components/MapListModal.tsx
 import React, { useState } from "react";
 import MapCreateModal from "./MapCreateModal"; // ← 追加
+import { mockMapData, MapItem } from "../api/mockMapData"; // ✅ 追加
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  onSelectMap: (map: { id: number; name: string }) => void;
+  onSelectMap: (map: MapItem) => void;
   selectedMapId: number | null; // 👈 追加
 }
 
@@ -14,11 +15,6 @@ const MapListModal: React.FC<Props> = ({ isOpen, onClose, onSelectMap, selectedM
 
   if (!isOpen) return null;
 
-  const mockMaps = [
-    { id: 1, name: "渋谷カフェマップ" },
-    { id: 2, name: "東京駅カフェマップ" },
-    { id: 3, name: "京都カフェ巡り" },
-  ];
 
   return (
     <>
@@ -47,7 +43,7 @@ const MapListModal: React.FC<Props> = ({ isOpen, onClose, onSelectMap, selectedM
           <h2 className="text-xl font-bold mb-4 text-center">マップ一覧</h2>
 
           <ul className="space-y-2 mb-4">
-            {mockMaps.map((map) => (
+            {mockMapData.map((map) => (
               <li
                 key={map.id}
                 className="flex justify-between items-center border px-4 py-2 rounded"
