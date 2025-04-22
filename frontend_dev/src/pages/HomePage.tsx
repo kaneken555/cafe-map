@@ -17,7 +17,7 @@ const HomePage: React.FC = () => {
       <CafeDetailPanel cafe={selectedCafe} onClose={() => setSelectedCafe(null)} />
 
       {/* Map（ここにアイコンボタンを配置） */}
-      <div className="flex-grow h-full">
+      <div className="flex-grow">
         <Map onCafeIconClick={(cafe) => setSelectedCafe(cafe)} />
       </div>
 
