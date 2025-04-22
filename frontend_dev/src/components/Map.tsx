@@ -49,7 +49,7 @@ const Map: React.FC<MapProps> = ({ onCafeIconClick }) => {
                 className="w-12 h-12 rounded-full border-2 border-white shadow-md ring-2 ring-sky-300 overflow-hidden cursor-pointer"
               >
                 <img
-                  src={cafe.photoUrl}
+                  src={cafe.photoUrls?.[0] || "/no-image.png"} // ✅ 1枚目の画像を表示、なければ代替
                   alt={cafe.name}
                   className="w-full h-full object-cover"
                 />

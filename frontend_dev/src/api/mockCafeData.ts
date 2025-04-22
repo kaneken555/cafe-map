@@ -9,7 +9,7 @@ export interface Cafe {
     distance: string;
     price_day?: string;
     price_night?: string;
-    photoUrl: string;
+    photoUrls: string[]; // ← photoUrl から変更
     rating: number;
     lat: number;
     lng: number;
@@ -27,7 +27,12 @@ export const mockCafeData: { [key: number]: Cafe[] } = {
         price_day: "￥999",
         price_night: "￥999",
         rating: 4.5,
-        photoUrl: "https://upload.wikimedia.org/wikipedia/commons/3/3f/Starbucks_Coffee_restaurant.png",
+        photoUrls: [
+            "https://upload.wikimedia.org/wikipedia/commons/3/3f/Starbucks_Coffee_restaurant.png",
+            "https://upload.wikimedia.org/wikipedia/commons/3/3f/Starbucks_Coffee_restaurant.png",
+            "https://upload.wikimedia.org/wikipedia/commons/3/3f/Starbucks_Coffee_restaurant.png",
+            "https://upload.wikimedia.org/wikipedia/commons/e/e2/Doutor_Coffee_Senbayashi.jpg"
+          ],
         lat: 35.681,
         lng: 139.765,
         },
@@ -41,7 +46,11 @@ export const mockCafeData: { [key: number]: Cafe[] } = {
         price_night: "￥999",
         distance: "1.6km",
         rating: 4.5,
-        photoUrl: "https://upload.wikimedia.org/wikipedia/commons/e/e2/Doutor_Coffee_Senbayashi.jpg",
+        photoUrls: [
+            "https://upload.wikimedia.org/wikipedia/commons/e/e2/Doutor_Coffee_Senbayashi.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/e/e2/Doutor_Coffee_Senbayashi.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/e/e2/Doutor_Coffee_Senbayashi.jpg"
+          ],
         lat: 35.675,
         lng: 139.760,
         },
@@ -57,7 +66,11 @@ export const mockCafeData: { [key: number]: Cafe[] } = {
         price_day: "￥999",
         price_night: "￥999",
         rating: 4.5,
-        photoUrl: "https://upload.wikimedia.org/wikipedia/commons/b/b7/%E3%82%A4%E3%83%8E%E3%83%80%E6%9C%AC%E5%BA%97%E5%A4%96%E8%A6%B3.JPG",
+        photoUrls: [
+            "https://upload.wikimedia.org/wikipedia/commons/b/b7/%E3%82%A4%E3%83%8E%E3%83%80%E6%9C%AC%E5%BA%97%E5%A4%96%E8%A6%B3.JPG",
+            "https://upload.wikimedia.org/wikipedia/commons/b/b7/%E3%82%A4%E3%83%8E%E3%83%80%E6%9C%AC%E5%BA%97%E5%A4%96%E8%A6%B3.JPG",
+            "https://upload.wikimedia.org/wikipedia/commons/b/b7/%E3%82%A4%E3%83%8E%E3%83%80%E6%9C%AC%E5%BA%97%E5%A4%96%E8%A6%B3.JPG"
+          ],
         lat: 35.681,
         lng: 139.765,
         },
@@ -73,7 +86,11 @@ export const mockCafeData: { [key: number]: Cafe[] } = {
         price_day: "￥999",
         price_night: "￥999",
         rating: 4.5,
-        photoUrl: "https://upload.wikimedia.org/wikipedia/commons/5/55/TULLYS-COFFEE-Toyohashi-station.jpg",
+        photoUrls: [
+            "https://upload.wikimedia.org/wikipedia/commons/5/55/TULLYS-COFFEE-Toyohashi-station.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/5/55/TULLYS-COFFEE-Toyohashi-station.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/5/55/TULLYS-COFFEE-Toyohashi-station.jpg"
+          ],
         lat: 35.681,
         lng: 139.765,
         },
@@ -87,7 +104,11 @@ export const mockCafeData: { [key: number]: Cafe[] } = {
         price_day: "￥999",
         price_night: "￥999",
         rating: 4.5,
-        photoUrl: "https://upload.wikimedia.org/wikipedia/commons/9/9f/Komeda_Coffee_Higashi-Shinsaibashi.jpg",
+        photoUrls: [
+            "https://upload.wikimedia.org/wikipedia/commons/9/9f/Komeda_Coffee_Higashi-Shinsaibashi.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/9/9f/Komeda_Coffee_Higashi-Shinsaibashi.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/9/9f/Komeda_Coffee_Higashi-Shinsaibashi.jpg"
+          ],
         lat: 35.675,
         lng: 139.760,
         },
