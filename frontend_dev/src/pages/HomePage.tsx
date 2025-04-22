@@ -1,6 +1,7 @@
 // pages/HomePage.tsx
 import React, { useState } from "react";
 import CafeDetailPanel from "../components/CafeDetailPanel";
+import Header from "../components/Header";
 import Map from "../components/Map";
 import { Cafe } from "../api/mockCafeData"; // ✅ Cafe型をインポート
 
@@ -9,7 +10,9 @@ const HomePage: React.FC = () => {
 
 
   return (
-    <div className="flex h-screen w-full">
+    <div className="flex flex-col h-screen w-full">
+      <Header />
+
       {/* カフェ詳細パネル */}
       <CafeDetailPanel cafe={selectedCafe} onClose={() => setSelectedCafe(null)} />
 
