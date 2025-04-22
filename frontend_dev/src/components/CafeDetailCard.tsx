@@ -56,8 +56,11 @@ const CafeDetailCard = ({ cafe }: { cafe: Cafe }) => {
         <p className="mb-1">
           <span className="font-semibold">住所:</span> {cafe.address}
         </p>
-        <p>
+        <p className="mb-1">
           <span className="font-semibold">評価:</span> ⭐️ {cafe.rating.toFixed(1)} / 5
+        </p>
+        <p className="mb-1">
+          <span className="font-semibold">営業時間:</span> {cafe.openTime}
         </p>
       </div>
     </div>
