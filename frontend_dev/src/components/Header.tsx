@@ -6,15 +6,27 @@ import { ArrowRightToLine, User, LogIn, Coffee, Map as MapIcon } from "lucide-re
 import { getCafeList } from "../api/cafe"; // Cafe 型も import
 import { Cafe } from "../api/mockCafeData"; // ← 追加
 
-const Header: React.FC = () => {
-    const [isSideMenuOpen, setIsSideMenuOpen] = useState(false); // ← メニュー開閉状態
-    const [isMapListOpen, setIsMapListOpen] = useState(false); // ← 追加
-    const [isMyCafeListOpen, setIsMyCafeListOpen] = useState(false); // ← 追加
-    const [isLoginMenuOpen, setIsLoginMenuOpen] = useState(false); // 👈 ログインメニューの開閉
 
-    // 👇 追加：選択されたマップ情報を保持
-    const [selectedMap, setSelectedMap] = useState<{ id: number; name: string } | null>(null);
-    const [cafeList, setCafeList] = useState<Cafe[]>([]);
+interface HeaderProps {
+  selectedMap: { id: number; name: string } | null;
+  setSelectedMap: (map: { id: number; name: string }) => void;
+  cafeList: Cafe[];
+  setCafeList: (cafes: Cafe[]) => void;
+  openCafeListPanel: () => void;
+}
+
+
+const Header: React.FC<HeaderProps> = ({
+  selectedMap,
+  setSelectedMap,
+  cafeList,
+  setCafeList,
+  openCafeListPanel,
+}) => {    
+  const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
+  const [isMapListOpen, setIsMapListOpen] = useState(false);
+  const [isLoginMenuOpen, setIsLoginMenuOpen] = useState(false);
+
   
     const handleOpenCafeList = async () => {
       if (!selectedMap) {
@@ -24,7 +36,17 @@ const Header: React.FC = () => {
   
       const cafes = await getCafeList(selectedMap.id);
       setCafeList(cafes);
-      setIsMyCafeListOpen(true);
+      openCafeListPanel();
+    };
+
+    const handleShowCafeMap = async () => {
+      if (!selectedMap) {
+        alert("マップを選択してください");
+        return;
+      }
+    
+      const cafes = await getCafeList(selectedMap.id);
+      setCafeList(cafes); // ✅ 地図に反映するリストにセット
     };
 
     return (
@@ -40,11 +62,11 @@ const Header: React.FC = () => {
           selectedMapId={selectedMap?.id ?? null} // 👈 ここ！
         />
       {/* MyCafeListPanel に取得済み cafeList を渡す */}
-      <MyCafeListPanel
+      {/* <MyCafeListPanel
         isOpen={isMyCafeListOpen}
         onClose={() => setIsMyCafeListOpen(false)}
         cafes={cafeList}
-      />
+      /> */}
         
     <header className="w-full h-16 px-4 flex justify-between items-center bg-gradient-to-r from-yellow-300 to-yellow-500 shadow-md">
       {/* 左：メニュー */}
@@ -71,6 +93,7 @@ const Header: React.FC = () => {
             <span className="text-[10px] mt-1">My Café List</span>
         </button>
         <button
+          onClick={handleShowCafeMap} // ← ここに追加
           className="flex flex-col items-center justify-center px-2 py-1 border border-black rounded bg-white text-black hover:bg-gray-100 w-21 h-14"
         >
           <MapIcon size={24} />

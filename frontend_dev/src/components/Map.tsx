@@ -5,6 +5,7 @@ import MapButton from "./MapButton"; // 新規追加
 import { mockCafeData, Cafe } from "../api/mockCafeData"; // 👈 Cafe 型を import
 
 interface MapProps {
+  cafes: Cafe[]; // ← 追加
   onCafeIconClick: (cafe: Cafe) => void; // 👈 カフェ情報を渡すように変更
 }
 
@@ -19,10 +20,10 @@ const center = {
 };
 
 // 一旦 mapId=1 固定でもOK。選択中マップに応じて動的に切り替えも可能
-const mapId = 1;
-const cafes = mockCafeData[mapId] || [];
+// const mapId = 1;
+// const cafes = mockCafeData[mapId] || [];
 
-const Map: React.FC<MapProps> = ({ onCafeIconClick }) => {
+const Map: React.FC<MapProps> = ({ cafes, onCafeIconClick }) => {
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
   return (
