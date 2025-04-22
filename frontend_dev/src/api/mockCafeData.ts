@@ -72,7 +72,7 @@ export const mockCafeData: { [key: number]: Cafe[] } = {
             "https://upload.wikimedia.org/wikipedia/commons/b/b7/%E3%82%A4%E3%83%8E%E3%83%80%E6%9C%AC%E5%BA%97%E5%A4%96%E8%A6%B3.JPG"
           ],
         lat: 35.681,
-        lng: 139.765,
+        lng: 139.760,
         },
     ],
 3: [
@@ -92,7 +92,7 @@ export const mockCafeData: { [key: number]: Cafe[] } = {
             "https://upload.wikimedia.org/wikipedia/commons/5/55/TULLYS-COFFEE-Toyohashi-station.jpg"
           ],
         lat: 35.681,
-        lng: 139.765,
+        lng: 139.770,
         },
         {
         id: 2,
@@ -110,7 +110,7 @@ export const mockCafeData: { [key: number]: Cafe[] } = {
             "https://upload.wikimedia.org/wikipedia/commons/9/9f/Komeda_Coffee_Higashi-Shinsaibashi.jpg"
           ],
         lat: 35.675,
-        lng: 139.760,
+        lng: 139.765,
         },
     ],
 };
