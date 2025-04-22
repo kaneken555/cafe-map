@@ -13,6 +13,8 @@ interface HeaderProps {
   cafeList: Cafe[];
   setCafeList: (cafes: Cafe[]) => void;
   openCafeListPanel: () => void;
+  setMyCafeList: (cafes: Cafe[]) => void;     // ✅ 追加
+  setMapMode: (mode: "search" | "mycafe") => void; // ✅ 追加
 }
 
 
@@ -22,6 +24,9 @@ const Header: React.FC<HeaderProps> = ({
   cafeList,
   setCafeList,
   openCafeListPanel,
+  setMyCafeList,
+  setMapMode, // ← 追加
+
 }) => {    
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const [isMapListOpen, setIsMapListOpen] = useState(false);
@@ -46,7 +51,9 @@ const Header: React.FC<HeaderProps> = ({
       }
     
       const cafes = await getCafeList(selectedMap.id);
-      setCafeList(cafes); // ✅ 地図に反映するリストにセット
+      setMyCafeList(cafes);         // 地図用のデータとして保存
+      setMapMode("mycafe");         // 表示モード切り替え
+      setCafeList(cafes);           // 地図に反映（Mapに渡す用）
     };
 
     return (

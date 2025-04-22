@@ -4,14 +4,17 @@ import CafeDetailPanel from "../components/CafeDetailPanel";
 import Header from "../components/Header";
 import Map from "../components/Map";
 import MyCafeListPanel from "../components/MyCafeListPanel"; // ✅ カフェ一覧パネル
-import { Cafe } from "../api/mockCafeData"; // ✅ Cafe型をインポート
+import { Cafe, mockSearchResults } from "../api/mockCafeData"; // ✅ Cafe型をインポート
 
 const HomePage: React.FC = () => {
   const [selectedMap, setSelectedMap] = useState<{ id: number; name: string } | null>(null); // ✅ マップ選択
   const [cafeList, setCafeList] = useState<Cafe[]>([]); // ✅ 表示カフェリスト
   const [selectedCafe, setSelectedCafe] = useState<Cafe | null>(null); // ✅ カフェ詳細
   const [isMyCafeListOpen, setIsMyCafeListOpen] = useState(false); // ✅ カフェ一覧パネルの表示
-
+  const [searchResultCafes, setSearchResultCafes] = useState<Cafe[]>(mockSearchResults); // 検索結果
+  const [myCafeList, setMyCafeList] = useState<Cafe[]>([]); // マイマップのカフェ
+  const [mapMode, setMapMode] = useState<"search" | "mycafe">("search"); // 表示切替モード
+  
 
   return (
     <div className="flex flex-col h-screen w-full">
@@ -21,6 +24,8 @@ const HomePage: React.FC = () => {
         cafeList={cafeList}
         setCafeList={setCafeList}
         openCafeListPanel={() => setIsMyCafeListOpen(true)}
+        setMyCafeList={setMyCafeList}         // ✅ 追加
+        setMapMode={setMapMode}               // ✅ 追加
       />
       {/* カフェ詳細パネル */}
       <CafeDetailPanel cafe={selectedCafe} onClose={() => setSelectedCafe(null)} />
@@ -33,7 +38,9 @@ const HomePage: React.FC = () => {
 
       {/* Map（ここにアイコンボタンを配置） */}
       <div className="flex-grow">
-        <Map cafes={cafeList} onCafeIconClick={(cafe) => setSelectedCafe(cafe)} />
+        <Map 
+          cafes={mapMode === "mycafe" ? myCafeList : searchResultCafes}
+          onCafeIconClick={(cafe) => setSelectedCafe(cafe)} />
       </div>
 
     </div>
