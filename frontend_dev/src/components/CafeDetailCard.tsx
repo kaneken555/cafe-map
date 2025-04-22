@@ -58,7 +58,7 @@ const CafeDetailCard = ({ cafe }: { cafe: Cafe }) => {
         </div>
         </div>
 
-
+      {/* TODO: 画像サイズ合わせ */}
       {/* カルーセル式画像表示 */}
       <div className="mt-4 relative">
         <img

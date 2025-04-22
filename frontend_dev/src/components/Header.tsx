@@ -3,8 +3,8 @@ import SideMenu from "./SideMenu";
 import MapListModal from "./MapListModal"; // ← 追加
 import MyCafeListPanel from "./MyCafeListPanel"; // ← 追加
 import { ArrowRightToLine, User, LogIn, Coffee, Map as MapIcon } from "lucide-react";
-import { Cafe, getCafeList } from "../api/cafe"; // Cafe 型も import
-
+import { getCafeList } from "../api/cafe"; // Cafe 型も import
+import { Cafe } from "../api/mockCafeData"; // ← 追加
 
 const Header: React.FC = () => {
     const [isSideMenuOpen, setIsSideMenuOpen] = useState(false); // ← メニュー開閉状態

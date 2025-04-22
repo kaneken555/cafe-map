@@ -1,13 +1,7 @@
 // components/MyCafeListPanel.tsx
 import React from "react";
+import { Cafe } from "../api/mockCafeData"; // ✅ Cafe型をインポート
 
-interface Cafe {
-  name: string;
-  openTime: string;
-  status: string;
-  distance: string;
-  photoUrl: string;
-}
 
 interface Props {
   isOpen: boolean;
@@ -50,7 +44,7 @@ const MyCafeListPanel: React.FC<Props> = ({ isOpen, onClose, cafes }) => {
                 <div className="text-xs text-gray-500">{cafe.distance}</div>
               </div>
               <img
-                src={cafe.photoUrl}
+                src={cafe.photoUrls?.[0] || "/no-image.png"}
                 alt={cafe.name}
                 className="w-16 h-16 rounded object-cover ml-2"
               />
