@@ -189,4 +189,42 @@ export const mockSearchResults: Cafe[] = [
         lat: 35.681,
         lng: 139.770,
     },
+    {
+        id: 105,
+        name: "エクセスシオールカフェ",
+        address: "東京都渋谷区宇田川町21-6",
+        openTime: "08:00 - 20:00",
+        status: "現在営業中",
+        distance: "1.2km",
+        price_day: "￥999",
+        price_night: "￥999",
+        rating: 4.5,
+        photoUrls: [
+            "https://upload.wikimedia.org/wikipedia/commons/3/34/Excelsior-Caffe-Runroad.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/3/34/Excelsior-Caffe-Runroad.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/3/34/Excelsior-Caffe-Runroad.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/5/55/TULLYS-COFFEE-Toyohashi-station.jpg"
+          ],
+        lat: 35.681,
+        lng: 139.772,
+    },
+    {
+        id: 106,
+        name: "サンマルクカフェ",
+        address: "東京都渋谷区宇田川町21-6",
+        openTime: "07:00 - 21:00",
+        status: "現在営業中",
+        distance: "1.2km",
+        price_day: "￥999",
+        price_night: "￥999",
+        rating: 4.5,
+        photoUrls: [
+            "https://upload.wikimedia.org/wikipedia/commons/b/b4/Saint_Marc_Cafe_Hirakata.JPG",
+            "https://upload.wikimedia.org/wikipedia/commons/b/b4/Saint_Marc_Cafe_Hirakata.JPG",
+            "https://upload.wikimedia.org/wikipedia/commons/b/b4/Saint_Marc_Cafe_Hirakata.JPG",
+            "https://upload.wikimedia.org/wikipedia/commons/5/55/TULLYS-COFFEE-Toyohashi-station.jpg"
+          ],
+        lat: 35.680,
+        lng: 139.775,
+    },
 ];
