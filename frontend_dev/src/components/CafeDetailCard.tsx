@@ -1,13 +1,13 @@
 // components/CafeDetailCard.tsx
 import { useState } from "react";
-import { Heart, Share2, ExternalLink } from "lucide-react";
+import { Heart, Share2 } from "lucide-react";
 import GoogleMapButton from "./GoogleMapButton"; // 先ほど作ったボタンコンポーネント
 import { Cafe } from "../api/mockCafeData";
-import { addCafeToMyCafe } from "../api/cafe"; // ✅ 追加
+import { addCafeToMyCafe } from "../api/cafe"; 
 
 interface CafeDetailCardProps {
   cafe: Cafe;
-  selectedMap: { id: number; name: string } | null; // ✅ 追加
+  selectedMap: { id: number; name: string } | null; 
 }
 
 

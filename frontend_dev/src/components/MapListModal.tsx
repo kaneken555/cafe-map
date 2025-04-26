@@ -9,7 +9,6 @@ interface Props {
   onSelectMap: (map: MapItem) => void;
   selectedMapId: number | null; // 👈 追加
   user: { id: number; name: string } | null; // 👈 追加
-
 }
 
 const MapListModal: React.FC<Props> = ({ isOpen, onClose, onSelectMap, selectedMapId, user }) => {

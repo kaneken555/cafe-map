@@ -1,5 +1,5 @@
 // components/Map.tsx
-import React, { useState } from "react"; // ← useStateを追加
+import React from "react"; // ← useStateを追加
 import { GoogleMap, LoadScript, OverlayView } from "@react-google-maps/api";
 import MapButton from "./MapButton"; // 新規追加
 import { mockCafeData, Cafe } from "../api/mockCafeData"; // 👈 Cafe 型を import
