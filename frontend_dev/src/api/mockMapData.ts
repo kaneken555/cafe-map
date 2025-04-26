@@ -6,11 +6,6 @@ export interface MapItem {
     name: string;
   }
   
-// 仮のユーザーデータ
-export const mockUsers = [
-  { id: 1, name: "ゲストユーザー" },
-  { id: 2, name: "テストユーザー" },
-];
 
 export const mockMapData: MapItem[] = [
     { id: 1, userId: 1, name: "渋谷カフェマップ" },
