@@ -32,6 +32,8 @@ const Header: React.FC<HeaderProps> = ({
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const [isMapListOpen, setIsMapListOpen] = useState(false);
   const [isLoginMenuOpen, setIsLoginMenuOpen] = useState(false);
+  const [user, setUser] = useState<{ id: number; name: string } | null>(null); // ✅ ログインユーザー保持
+
 
   
     const handleOpenCafeList = async () => {
@@ -68,6 +70,7 @@ const Header: React.FC<HeaderProps> = ({
             setIsMapListOpen(false);
           }}
           selectedMapId={selectedMap?.id ?? null} // 👈 ここ！
+          user={user} // ✅ 追加
         />
       {/* MyCafeListPanel に取得済み cafeList を渡す */}
       {/* <MyCafeListPanel
@@ -121,10 +124,12 @@ const Header: React.FC<HeaderProps> = ({
           <button
             onClick={() => setIsLoginMenuOpen((prev) => !prev)}
             className="flex flex-col items-center justify-center px-2 py-1 border border-black rounded bg-white text-black hover:bg-gray-100 w-18 h-14"
-            title="ログイン"
-          >
+            title={user ? user.name : "ログイン"} // ✅ ツールチップも切り替えられる
+            >
             <ArrowRightToLine size={22} />
-            <span className="text-[10px] mt-1">ログイン</span>
+            <span className="text-[10px] mt-1">
+              {user ? user.name : "ログイン"} {/* ✅ ここも */}
+            </span>
           </button>
 
             {/* ▼ ドロップダウンメニュー */}
@@ -133,7 +138,8 @@ const Header: React.FC<HeaderProps> = ({
                 <button
                   className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center space-x-2"
                   onClick={() => {
-                    alert("ゲストログイン");
+                    // alert("ゲストログイン");
+                    setUser({ id: 1, name: "ゲストユーザー" }); // 👈 ここでゲストユーザー設定
                     setIsLoginMenuOpen(false);
                   }}
                 >
@@ -143,7 +149,8 @@ const Header: React.FC<HeaderProps> = ({
                 <button
                   className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center space-x-2"
                   onClick={() => {
-                    alert("Googleログイン");
+                    // alert("Googleログイン");
+                    setUser({ id: 2, name: "テストユーザー" }); // 👈 ここでテストユーザー設定
                     setIsLoginMenuOpen(false);
                   }}
                 >

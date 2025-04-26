@@ -113,6 +113,45 @@ export const mockCafeData: { [key: number]: Cafe[] } = {
         lng: 139.765,
         },
     ],
+4: [
+        {
+        id: 1,
+        name: "サンマルクカフェ",
+        address: "東京都渋谷区宇田川町21-6",
+        openTime: "07:00 - 21:00",
+        status: "現在営業中",
+        distance: "1.2km",
+        price_day: "￥999",
+        price_night: "￥999",
+        rating: 4.5,
+        photoUrls: [
+            "https://upload.wikimedia.org/wikipedia/commons/b/b4/Saint_Marc_Cafe_Hirakata.JPG",
+            "https://upload.wikimedia.org/wikipedia/commons/b/b4/Saint_Marc_Cafe_Hirakata.JPG",
+            "https://upload.wikimedia.org/wikipedia/commons/b/b4/Saint_Marc_Cafe_Hirakata.JPG",
+            "https://upload.wikimedia.org/wikipedia/commons/5/55/TULLYS-COFFEE-Toyohashi-station.jpg"
+          ],
+        lat: 35.680,
+        lng: 139.775,
+        },
+        {
+        id: 2,
+        name: "コメダ珈琲店 銀座店",
+        address: "東京都渋谷区宇田川町21-6",
+        openTime: "07:00 - 23:00",
+        status: "現在営業中",
+        distance: "1.5km",
+        price_day: "￥999",
+        price_night: "￥999",
+        rating: 4.5,
+        photoUrls: [
+            "https://upload.wikimedia.org/wikipedia/commons/9/9f/Komeda_Coffee_Higashi-Shinsaibashi.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/9/9f/Komeda_Coffee_Higashi-Shinsaibashi.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/9/9f/Komeda_Coffee_Higashi-Shinsaibashi.jpg"
+          ],
+        lat: 35.675,
+        lng: 139.765,
+        },
+  ],
 };
 
 export const mockSearchResults: Cafe[] = [

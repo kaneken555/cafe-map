@@ -8,10 +8,15 @@ interface Props {
   onClose: () => void;
   onSelectMap: (map: MapItem) => void;
   selectedMapId: number | null; // 👈 追加
+  user: { id: number; name: string } | null; // 👈 追加
+
 }
 
-const MapListModal: React.FC<Props> = ({ isOpen, onClose, onSelectMap, selectedMapId }) => {
+const MapListModal: React.FC<Props> = ({ isOpen, onClose, onSelectMap, selectedMapId, user }) => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false); // ← 追加
+  const filteredMaps = user
+  ? mockMapData.filter((map) => map.userId === user.id) // ✅ userId一致のみ
+  : []; // 未ログインなら空配列
 
   if (!isOpen) return null;
 
@@ -43,7 +48,7 @@ const MapListModal: React.FC<Props> = ({ isOpen, onClose, onSelectMap, selectedM
           <h2 className="text-xl font-bold mb-4 text-center">マップ一覧</h2>
 
           <ul className="space-y-2 mb-4">
-            {mockMapData.map((map) => (
+            {filteredMaps.map((map) => (
               <li
                 key={map.id}
                 className="flex justify-between items-center border px-4 py-2 rounded"
