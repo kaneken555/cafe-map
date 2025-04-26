@@ -28,7 +28,7 @@ const HomePage: React.FC = () => {
         setMapMode={setMapMode}               // ✅ 追加
       />
       {/* カフェ詳細パネル */}
-      <CafeDetailPanel cafe={selectedCafe} onClose={() => setSelectedCafe(null)} />
+      <CafeDetailPanel cafe={selectedCafe} onClose={() => setSelectedCafe(null)} selectedMap={selectedMap} />
 
       <MyCafeListPanel
         isOpen={isMyCafeListOpen}
@@ -40,7 +40,9 @@ const HomePage: React.FC = () => {
       <div className="flex-grow">
         <Map 
           cafes={mapMode === "mycafe" ? myCafeList : searchResultCafes}
-          onCafeIconClick={(cafe) => setSelectedCafe(cafe)} />
+          onCafeIconClick={(cafe) => setSelectedCafe(cafe)} 
+          setMapMode={setMapMode}
+          />
       </div>
 
     </div>

@@ -3,9 +3,15 @@ import { useState } from "react";
 import { Heart, Share2, ExternalLink } from "lucide-react";
 import GoogleMapButton from "./GoogleMapButton"; // 先ほど作ったボタンコンポーネント
 import { Cafe } from "../api/mockCafeData";
+import { addCafeToMyCafe } from "../api/cafe"; // ✅ 追加
+
+interface CafeDetailCardProps {
+  cafe: Cafe;
+  selectedMap: { id: number; name: string } | null; // ✅ 追加
+}
 
 
-const CafeDetailCard = ({ cafe }: { cafe: Cafe }) => {
+const CafeDetailCard = ({ cafe, selectedMap }: CafeDetailCardProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const handlePrev = () => {
@@ -29,7 +35,16 @@ const CafeDetailCard = ({ cafe }: { cafe: Cafe }) => {
           {/* <h3 className="text-xl font-black">{cafe.name_en}</h3> */}
         </div>
         <div className="flex space-x-2 mt-1">
-          <button className="text-gray-600 hover:text-black">
+          <button 
+            className="text-gray-600 hover:text-black"
+            onClick={() => {
+              if (!selectedMap) {
+                alert("マップを選択してください");
+                return;
+              }
+              addCafeToMyCafe(cafe);
+            }}
+          >
             <Heart size={20} />
           </button>
           <button className="text-gray-600 hover:text-black">

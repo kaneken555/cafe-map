@@ -1,3 +1,4 @@
+// components/MapButton.tsx
 import React from "react";
 
 interface MapButtonProps {

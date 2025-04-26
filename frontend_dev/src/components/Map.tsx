@@ -7,6 +7,7 @@ import { mockCafeData, Cafe } from "../api/mockCafeData"; // 👈 Cafe 型を im
 interface MapProps {
   cafes: Cafe[]; // ← 追加
   onCafeIconClick: (cafe: Cafe) => void; // 👈 カフェ情報を渡すように変更
+  setMapMode: (mode: "search" | "mycafe") => void; // ✅ 追加
 }
 
 const containerStyle = {
@@ -23,14 +24,14 @@ const center = {
 // const mapId = 1;
 // const cafes = mockCafeData[mapId] || [];
 
-const Map: React.FC<MapProps> = ({ cafes, onCafeIconClick }) => {
+const Map: React.FC<MapProps> = ({ cafes, onCafeIconClick, setMapMode }) => {
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
   return (
     <div className="relative h-full w-full">
       {/* ボタン表示 */}
       <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 flex space-x-4">
-        <MapButton label="更新" onClick={() => console.log("更新")} />
+        <MapButton label="更新" onClick={() => setMapMode("search")} />
       </div>
 
       <LoadScript googleMapsApiKey={apiKey}>

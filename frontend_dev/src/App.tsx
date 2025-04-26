@@ -10,7 +10,6 @@ const App: React.FC = () => {
         {/* メインコンテンツ */}
         <main className="flex-grow">
           <Routes>
-            {/* <Route path="/" element={<HomePage selectedMap={selectedMap} />} /> */}
             <Route path="/" element={<HomePage />} />
           </Routes>
         </main>
