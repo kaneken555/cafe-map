@@ -14,6 +14,8 @@ const HomePage: React.FC = () => {
   const [searchResultCafes, setSearchResultCafes] = useState<Cafe[]>(mockSearchResults); // 検索結果
   const [myCafeList, setMyCafeList] = useState<Cafe[]>([]); // マイマップのカフェ
   const [mapMode, setMapMode] = useState<"search" | "mycafe">("search"); // 表示切替モード
+  const [selectedCafeId, setSelectedCafeId] = useState<number | null>(null);
+
   
 
   return (
@@ -28,7 +30,14 @@ const HomePage: React.FC = () => {
         setMapMode={setMapMode}               // ✅ 追加
       />
       {/* カフェ詳細パネル */}
-      <CafeDetailPanel cafe={selectedCafe} onClose={() => setSelectedCafe(null)} selectedMap={selectedMap} />
+      <CafeDetailPanel
+        cafe={selectedCafe}
+        onClose={() => {
+          setSelectedCafe(null);
+          setSelectedCafeId(null); // ✅ ここで選択解除！
+        }}
+        selectedMap={selectedMap} // ✅ 追加
+      />
 
       <MyCafeListPanel
         isOpen={isMyCafeListOpen}
@@ -42,6 +51,8 @@ const HomePage: React.FC = () => {
           cafes={mapMode === "mycafe" ? myCafeList : searchResultCafes}
           onCafeIconClick={(cafe) => setSelectedCafe(cafe)} 
           setMapMode={setMapMode}
+          selectedCafeId={selectedCafeId} // ✅ 渡す
+          setSelectedCafeId={setSelectedCafeId} // ✅ 渡す
           />
       </div>
 

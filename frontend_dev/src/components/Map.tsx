@@ -1,5 +1,5 @@
 // components/Map.tsx
-import React from "react";
+import React, { useState } from "react"; // ← useStateを追加
 import { GoogleMap, LoadScript, OverlayView } from "@react-google-maps/api";
 import MapButton from "./MapButton"; // 新規追加
 import { mockCafeData, Cafe } from "../api/mockCafeData"; // 👈 Cafe 型を import
@@ -8,6 +8,8 @@ interface MapProps {
   cafes: Cafe[]; // ← 追加
   onCafeIconClick: (cafe: Cafe) => void; // 👈 カフェ情報を渡すように変更
   setMapMode: (mode: "search" | "mycafe") => void; // ✅ 追加
+  selectedCafeId: number | null; // ✅ 追加
+  setSelectedCafeId: (id: number | null) => void; // ✅ 追加
 }
 
 const containerStyle = {
@@ -24,7 +26,7 @@ const center = {
 // const mapId = 1;
 // const cafes = mockCafeData[mapId] || [];
 
-const Map: React.FC<MapProps> = ({ cafes, onCafeIconClick, setMapMode }) => {
+const Map: React.FC<MapProps> = ({ cafes, onCafeIconClick, setMapMode, selectedCafeId ,setSelectedCafeId }) => {
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
   return (
@@ -47,11 +49,19 @@ const Map: React.FC<MapProps> = ({ cafes, onCafeIconClick, setMapMode }) => {
               mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
             >
               <div
-                onClick={() => onCafeIconClick(cafe)} // ✅ カフェを渡す
-                className="w-12 h-12 rounded-full border-2 border-white shadow-md ring-2 ring-sky-300 overflow-hidden cursor-pointer"
+                onClick={() => {
+                  onCafeIconClick(cafe);
+                  setSelectedCafeId(cafe.id);
+                }}
+                className={`overflow-hidden cursor-pointer border-2 shadow-md
+                  ${selectedCafeId === cafe.id 
+                    ? "w-16 h-16 ring-4 ring-blue-500"
+                    : "w-12 h-12 ring-2 ring-sky-300"}
+                  rounded-full border-white
+                `}
               >
                 <img
-                  src={cafe.photoUrls?.[0] || "/no-image.png"} // ✅ 1枚目の画像を表示、なければ代替
+                  src={cafe.photoUrls?.[0] || "/no-image.png"}
                   alt={cafe.name}
                   className="w-full h-full object-cover"
                 />
