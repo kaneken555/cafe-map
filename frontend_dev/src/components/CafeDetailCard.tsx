@@ -123,6 +123,9 @@ const CafeDetailCard = ({ cafe, selectedMap }: CafeDetailCardProps) => {
         <p className="mb-1">
           <span className="font-semibold">営業時間:</span> {cafe.openTime}
         </p>
+        <p className="mb-1">
+          <span className="font-semibold">電話番号:</span> {cafe.phoneNumber}
+        </p>
       </div>
     </div>
   );
