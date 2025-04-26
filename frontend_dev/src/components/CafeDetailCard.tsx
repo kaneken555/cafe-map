@@ -112,31 +112,42 @@ const CafeDetailCard = ({ cafe, selectedMap }: CafeDetailCardProps) => {
       </div>
 
 
-      {/* 住所・評価 */}
-      <div className="mt-2 text-sm text-gray-700">
-        <p className="mb-1">
-          <span className="font-semibold">住所:</span> {cafe.address}
-        </p>
-        <p className="mb-1">
-          <span className="font-semibold">評価:</span> ⭐️ {cafe.rating.toFixed(1)} / 5
-        </p>
-        <p className="mb-1">
-          <span className="font-semibold">営業時間:</span> {cafe.openTime}
-        </p>
-        <p className="mb-1">
-          <span className="font-semibold">電話番号:</span> {cafe.phoneNumber}
-        </p>
-        <p className="mb-1">
-          <span className="font-semibold">HP:</span>{" "}
-          {cafe.website ? (
-            <a href={cafe.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-              {cafe.website}
-            </a>
-          ) : (
-            "なし"
-          )}
-        </p>
+      {/* 住所・評価 (テーブル形式) */}
+      <div className="mt-2 text-sm text-gray-700 overflow-x-auto">
+        <table className="w-full border-collapse">
+          <tbody>
+            <tr className="border-b">
+              <th className="text-left font-semibold pr-2 py-1 align-top">住所:</th>
+              <td className="py-1">{cafe.address}</td>
+            </tr>
+            <tr className="border-b">
+              <th className="text-left font-semibold pr-2 py-1 align-top">評価:</th>
+              <td className="py-1">⭐️ {cafe.rating.toFixed(1)} / 5</td>
+            </tr>
+            <tr className="border-b">
+              <th className="text-left font-semibold pr-2 py-1 align-top">営業時間:</th>
+              <td className="py-1">{cafe.openTime}</td>
+            </tr>
+            <tr className="border-b">
+              <th className="text-left font-semibold pr-2 py-1 align-top">電話番号:</th>
+              <td className="py-1">{cafe.phoneNumber}</td>
+            </tr>
+            <tr>
+              <th className="text-left font-semibold pr-2 py-1 align-top">HP:</th>
+              <td className="py-1">
+                {cafe.website ? (
+                  <a href={cafe.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-words">
+                    {cafe.website}
+                  </a>
+                ) : (
+                  "なし"
+                )}
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
+
     </div>
   );
 };
