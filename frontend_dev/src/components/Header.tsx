@@ -96,29 +96,40 @@ const Header: React.FC<HeaderProps> = ({
       {/* 右：操作ボタン群 */}
       <div className="flex items-center space-x-2">
         <button
-            // onClick={() => setIsMyCafeListOpen(true)}
-            onClick={handleOpenCafeList}
-            className="flex flex-col items-center justify-center px-2 py-1 border border-black rounded bg-white text-black hover:bg-gray-100 w-21 h-14"
-          >
-            <MapIcon size={24} />
-            <span className="text-[10px] mt-1">My Café List</span>
+          onClick={handleOpenCafeList}
+          disabled={!user} // ✅ 追加
+          className={`flex flex-col items-center justify-center px-2 py-1 border rounded w-21 h-14
+            ${user ? "bg-white text-black hover:bg-gray-100 border-black" : "bg-gray-300 text-gray-500 border-gray-400 cursor-not-allowed"}
+          `}
+        >
+          <MapIcon size={24} />
+          <span className="text-[10px] mt-1">My Café List</span>
         </button>
+
         <button
-          onClick={handleShowCafeMap} // ← ここに追加
-          className="flex flex-col items-center justify-center px-2 py-1 border border-black rounded bg-white text-black hover:bg-gray-100 w-21 h-14"
+          onClick={handleShowCafeMap}
+          disabled={!user} // ✅ 追加
+          className={`flex flex-col items-center justify-center px-2 py-1 border rounded w-21 h-14
+            ${user ? "bg-white text-black hover:bg-gray-100 border-black" : "bg-gray-300 text-gray-500 border-gray-400 cursor-not-allowed"}
+          `}
         >
           <MapIcon size={24} />
           <span className="text-[10px] mt-1">My Café Map</span>
         </button>
+
         <button
-            onClick={() => setIsMapListOpen(true)}
-            className="flex flex-col items-center justify-center px-2 py-1 border border-black rounded bg-white text-black hover:bg-gray-100 w-21 h-14"
-          >
-            <MapIcon size={24} />
-            <span className="text-[10px] mt-1">
-              {selectedMap?.name || "My Map List"}
-            </span>
+          onClick={() => setIsMapListOpen(true)}
+          disabled={!user} // ✅ 追加
+          className={`flex flex-col items-center justify-center px-2 py-1 border rounded w-21 h-14
+            ${user ? "bg-white text-black hover:bg-gray-100 border-black" : "bg-gray-300 text-gray-500 border-gray-400 cursor-not-allowed"}
+          `}
+        >
+          <MapIcon size={24} />
+          <span className="text-[10px] mt-1">
+            {selectedMap?.name || "My Map List"}
+          </span>
         </button>
+
         {/* ▼ ログインボタン */}
         <div className="relative">
           <button
@@ -135,28 +146,45 @@ const Header: React.FC<HeaderProps> = ({
             {/* ▼ ドロップダウンメニュー */}
             {isLoginMenuOpen && (
               <div className="absolute right-0 mt-2 w-64 bg-white border rounded shadow-lg z-50">
-                <button
-                  className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center space-x-2"
-                  onClick={() => {
-                    // alert("ゲストログイン");
-                    setUser({ id: 1, name: "ゲストユーザー" }); // 👈 ここでゲストユーザー設定
-                    setIsLoginMenuOpen(false);
-                  }}
-                >
-                  <User size={16} />
-                  <span>ゲストユーザーとしてログイン</span>
-                </button>
-                <button
-                  className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center space-x-2"
-                  onClick={() => {
-                    // alert("Googleログイン");
-                    setUser({ id: 2, name: "テストユーザー" }); // 👈 ここでテストユーザー設定
-                    setIsLoginMenuOpen(false);
-                  }}
-                >
-                  <LogIn size={16} />
-                  <span>Googleアカウントでログイン</span>
-                </button>
+                {/* ▼ ログインしていない場合のメニュー */}
+                {!user && (
+                  <>
+                    <button
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center space-x-2"
+                      onClick={() => {
+                        setUser({ id: 1, name: "ゲストユーザー" });
+                        setIsLoginMenuOpen(false);
+                      }}
+                    >
+                      <User size={16} />
+                      <span>ゲストユーザーとしてログイン</span>
+                    </button>
+                    <button
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center space-x-2"
+                      onClick={() => {
+                        setUser({ id: 2, name: "テストユーザー" });
+                        setIsLoginMenuOpen(false);
+                      }}
+                    >
+                      <LogIn size={16} />
+                      <span>Googleアカウントでログイン</span>
+                    </button>
+                  </>
+                )}
+
+                {/* ▼ ログイン中の場合のメニュー */}
+                {user && (
+                  <button
+                    className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center space-x-2"
+                    onClick={() => {
+                      setUser(null); // ✅ ログアウト
+                      setIsLoginMenuOpen(false);
+                    }}
+                  >
+                    <ArrowRightToLine size={16} />
+                    <span>ログアウト</span>
+                  </button>
+                )}
               </div>
             )}
           </div>
