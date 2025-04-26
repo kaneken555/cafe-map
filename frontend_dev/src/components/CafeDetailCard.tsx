@@ -27,11 +27,11 @@ const CafeDetailCard = ({ cafe, selectedMap }: CafeDetailCardProps) => {
   };
 
   return (
-    <div className="p-4">
+    <div className="p-3">
       {/* タイトル・アイコン */}
       <div className="flex justify-between items-start">
         <div>
-          <h2 className="text-lg font-bold">{cafe.name}</h2>
+          <h2 className="text-xl font-bold">{cafe.name}</h2>
           {/* <h3 className="text-xl font-black">{cafe.name_en}</h3> */}
         </div>
         <div className="flex space-x-2 mt-1">

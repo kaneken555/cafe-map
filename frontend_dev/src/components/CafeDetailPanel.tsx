@@ -17,11 +17,11 @@ const CafeDetailPanel: React.FC<Props> = ({ cafe, onClose, selectedMap }) => {
           ${cafe ? "translate-x-0" : "-translate-x-full"}`}
       >
 
-        <div className="p-2">
+        <div className="p-1">
           {/* 閉じるボタン */}
           <button
             onClick={onClose}
-            className="absolute top-2 right-3 text-lg font-bold text-gray-600 hover:text-black"
+            className="absolute top-0 right-3 text-lg font-bold text-gray-600 hover:text-black"
           >
             ×
           </button>

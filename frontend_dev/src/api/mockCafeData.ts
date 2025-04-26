@@ -242,7 +242,7 @@ export const mockSearchResults: Cafe[] = [
     },
     {
         id: 105,
-        name: "エクセスシオールカフェ",
+        name: "エクセルシオールカフェ",
         address: "東京都渋谷区宇田川町21-6",
         openTime: "08:00 - 20:00",
         status: "現在営業中",
