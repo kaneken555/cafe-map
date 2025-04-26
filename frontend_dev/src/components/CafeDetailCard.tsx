@@ -126,6 +126,16 @@ const CafeDetailCard = ({ cafe, selectedMap }: CafeDetailCardProps) => {
         <p className="mb-1">
           <span className="font-semibold">電話番号:</span> {cafe.phoneNumber}
         </p>
+        <p className="mb-1">
+          <span className="font-semibold">HP:</span>{" "}
+          {cafe.website ? (
+            <a href={cafe.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+              {cafe.website}
+            </a>
+          ) : (
+            "なし"
+          )}
+        </p>
       </div>
     </div>
   );
