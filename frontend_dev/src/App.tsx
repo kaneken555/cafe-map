@@ -1,5 +1,5 @@
+// App.tsx
 import './App.css'
-import Header from "./components/Header";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from './pages/HomePage';
 
@@ -7,15 +7,10 @@ const App: React.FC = () => {
 
   return (
     <Router>
-      <div className="min-h-screen flex flex-col">
-        {/* ヘッダー */}
-        {/* <Header selectedMap={selectedMap} setSelectedMap={setSelectedMap} /> */}
-        <Header />
-        
+      <div className="min-h-screen flex flex-col">        
         {/* メインコンテンツ */}
         <main className="flex-grow">
           <Routes>
-            {/* <Route path="/" element={<HomePage selectedMap={selectedMap} />} /> */}
             <Route path="/" element={<HomePage />} />
           </Routes>
         </main>

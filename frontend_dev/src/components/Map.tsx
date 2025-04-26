@@ -1,8 +1,15 @@
-import React from "react";
+// components/Map.tsx
+import React from "react"; // ← useStateを追加
 import { GoogleMap, LoadScript, OverlayView } from "@react-google-maps/api";
+import MapButton from "./MapButton"; // 新規追加
+import { mockCafeData, Cafe } from "../api/mockCafeData"; // 👈 Cafe 型を import
 
 interface MapProps {
-  onCafeIconClick: () => void;
+  cafes: Cafe[]; // ← 追加
+  onCafeIconClick: (cafe: Cafe) => void; // 👈 カフェ情報を渡すように変更
+  setMapMode: (mode: "search" | "mycafe") => void; // ✅ 追加
+  selectedCafeId: number | null; // ✅ 追加
+  setSelectedCafeId: (id: number | null) => void; // ✅ 追加
 }
 
 const containerStyle = {
@@ -15,47 +22,46 @@ const center = {
   lng: 139.767125, // 東京駅の経度
 };
 
-// 仮のカフェ位置データ（バックエンドの代用）
-const mockCafes = [
-  {
-    id: 1,
-    name: "スタバ東京",
-    lat: 35.681,
-    lng: 139.765,
-    photoUrl: "https://upload.wikimedia.org/wikipedia/commons/3/3f/Starbucks_Coffee_restaurant.png",
-  },
-  {
-    id: 2,
-    name: "ドトール有楽町",
-    lat: 35.675,
-    lng: 139.760,
-    photoUrl: "https://upload.wikimedia.org/wikipedia/commons/e/e2/Doutor_Coffee_Senbayashi.jpg",
-  },
-];
+// 一旦 mapId=1 固定でもOK。選択中マップに応じて動的に切り替えも可能
+// const mapId = 1;
+// const cafes = mockCafeData[mapId] || [];
 
-const Map: React.FC<MapProps> = ({ onCafeIconClick }) => {
+const Map: React.FC<MapProps> = ({ cafes, onCafeIconClick, setMapMode, selectedCafeId ,setSelectedCafeId }) => {
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
   return (
     <div className="relative h-full w-full">
+      {/* ボタン表示 */}
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 flex space-x-4">
+        <MapButton label="更新" onClick={() => setMapMode("search")} />
+      </div>
+
       <LoadScript googleMapsApiKey={apiKey}>
         <GoogleMap
           mapContainerStyle={containerStyle}
           center={center}
           zoom={15}
         >
-          {mockCafes.map((cafe) => (
+          {cafes.map((cafe) => (
             <OverlayView
               key={cafe.id}
               position={{ lat: cafe.lat, lng: cafe.lng }}
               mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
             >
               <div
-                onClick={onCafeIconClick}
-                className="w-12 h-12 rounded-full border-4 border-white shadow-md ring-2 ring-sky-300 overflow-hidden cursor-pointer"
+                onClick={() => {
+                  onCafeIconClick(cafe);
+                  setSelectedCafeId(cafe.id);
+                }}
+                className={`overflow-hidden cursor-pointer border-2 shadow-md
+                  ${selectedCafeId === cafe.id 
+                    ? "w-16 h-16 ring-4 ring-blue-500"
+                    : "w-12 h-12 ring-2 ring-sky-300"}
+                  rounded-full border-white
+                `}
               >
                 <img
-                  src={cafe.photoUrl}
+                  src={cafe.photoUrls?.[0] || "/no-image.png"}
                   alt={cafe.name}
                   className="w-full h-full object-cover"
                 />

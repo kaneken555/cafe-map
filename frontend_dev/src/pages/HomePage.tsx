@@ -1,36 +1,60 @@
+// pages/HomePage.tsx
 import React, { useState } from "react";
 import CafeDetailPanel from "../components/CafeDetailPanel";
+import Header from "../components/Header";
 import Map from "../components/Map";
+import MyCafeListPanel from "../components/MyCafeListPanel"; // ✅ カフェ一覧パネル
+import { Cafe, mockSearchResults } from "../api/mockCafeData"; // ✅ Cafe型をインポート
+
 
 const HomePage: React.FC = () => {
-  const [selectedCafe, setSelectedCafe] = useState<{
-    name: string;
-    address: string;
-    photoUrl: string;
-    openingHours: string;
-    priceLevel: string;
-  } | null>(null);
+  const [selectedMap, setSelectedMap] = useState<{ id: number; name: string } | null>(null); // ✅ マップ選択
+  const [cafeList, setCafeList] = useState<Cafe[]>([]); // ✅ 表示カフェリスト
+  const [selectedCafe, setSelectedCafe] = useState<Cafe | null>(null); // ✅ カフェ詳細
+  const [isMyCafeListOpen, setIsMyCafeListOpen] = useState(false); // ✅ カフェ一覧パネルの表示
+  const [searchResultCafes, setSearchResultCafes] = useState<Cafe[]>(mockSearchResults); // 検索結果
+  const [myCafeList, setMyCafeList] = useState<Cafe[]>([]); // マイマップのカフェ
+  const [mapMode, setMapMode] = useState<"search" | "mycafe">("search"); // 表示切替モード
+  const [selectedCafeId, setSelectedCafeId] = useState<number | null>(null);
 
-
+  
 
   return (
-    <div className="flex h-screen w-full">
+    <div className="flex flex-col h-screen w-full">
+      <Header
+        selectedMap={selectedMap}
+        setSelectedMap={setSelectedMap}
+        cafeList={cafeList}
+        setCafeList={setCafeList}
+        openCafeListPanel={() => setIsMyCafeListOpen(true)}
+        setMyCafeList={setMyCafeList}     
+        setMapMode={setMapMode}        
+      />
       {/* カフェ詳細パネル */}
-      <CafeDetailPanel cafe={selectedCafe} onClose={() => setSelectedCafe(null)} />
+      <CafeDetailPanel
+        cafe={selectedCafe}
+        onClose={() => {
+          setSelectedCafe(null);
+          setSelectedCafeId(null); // ✅ ここで選択解除！
+        }}
+        selectedMap={selectedMap} // ✅ 追加
+      />
+
+      <MyCafeListPanel
+        isOpen={isMyCafeListOpen}
+        onClose={() => setIsMyCafeListOpen(false)}
+        cafes={cafeList}
+      />
 
       {/* Map（ここにアイコンボタンを配置） */}
-      <div className="flex-grow h-full">
-        <Map
-          onCafeIconClick={() =>
-            setSelectedCafe({
-              name: "スターバックス コーヒー SHIBUYA TSUTAYA 1F店",
-              address: "東京都渋谷区道玄坂2丁目24-1",
-              photoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Starbucks_Logo.svg/800px-Starbucks_Logo.svg.png",
-              openingHours: "07:00 - 22:30",
-              priceLevel: "昼：￥999 / 夜：￥999",
-            })
-          }
-        />
+      <div className="flex-grow">
+        <Map 
+          cafes={mapMode === "mycafe" ? myCafeList : searchResultCafes}
+          onCafeIconClick={(cafe) => setSelectedCafe(cafe)} 
+          setMapMode={setMapMode}
+          selectedCafeId={selectedCafeId}
+          setSelectedCafeId={setSelectedCafeId}
+          />
       </div>
 
     </div>
