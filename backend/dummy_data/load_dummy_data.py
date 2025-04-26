@@ -5,7 +5,7 @@ import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')  # あなたのプロジェクト名に合わせて
 django.setup()
 
-from your_app.models import User, Map, MapUserRelation, Cafe, CafeMapRelation  # モデルをインポート
+from cafemap.models import User, Map, MapUserRelation, Cafe, CafeMapRelation  # モデルをインポート
 from dummy_data import mock_users, mock_maps, mock_cafes  # 作ったダミーデータをインポート
 
 def load_users():
