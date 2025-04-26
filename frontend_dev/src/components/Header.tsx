@@ -10,7 +10,7 @@ import { Cafe } from "../api/mockCafeData"; // ← 追加
 
 interface HeaderProps {
   selectedMap: { id: number; name: string } | null;
-  setSelectedMap: (map: { id: number; name: string }) => void;
+  setSelectedMap: (map: { id: number; name: string } | null) => void;
   cafeList: Cafe[];
   setCafeList: (cafes: Cafe[]) => void;
   openCafeListPanel: () => void;
@@ -177,8 +177,11 @@ const Header: React.FC<HeaderProps> = ({
                   <button
                     className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center space-x-2"
                     onClick={() => {
-                      setUser(null); // ✅ ログアウト
-                      setIsLoginMenuOpen(false);
+                      setUser(null);              // ✅ ログアウト（ユーザー消す）
+                      setSelectedMap(null);       // ✅ 選択中マップもリセット
+                      setCafeList([]);            // ✅ カフェリストもリセット（オプション）
+                      setMapMode("search");       // ✅ マップモードもリセット（オプション）
+                      setIsLoginMenuOpen(false);  // メニューを閉じる
                     }}
                   >
                     <ArrowRightToLine size={16} />
