@@ -97,8 +97,8 @@ mock_cafes = [
     },
     {
         "place_id": "ChIJL8g5x1lLGGAR2v4q3X9f7mF",
-        "name": "サンマルクカフェ",
-        "address": "東京都渋谷区宇田川町21-6",
+        "name": "サンマルクカフェ 銀座店",
+        "address": "東京都中央区銀座21-6",
         "latitude": 35.680,
         "longitude": 139.775,
         "rating": 4.5,

@@ -267,7 +267,7 @@ export const mockSearchResults: Cafe[] = [
     {
         id: 105,
         placeId: "ChIJL8g5x1lLGGAR2v4q3X9f7mG",
-        name: "エクセルシオールカフェ",
+        name: "エクセルシオールカフェ 銀座店",
         address: "東京都渋谷区宇田川町21-6",
         openTime: "08:00 - 20:00",
         status: "現在営業中",
@@ -289,7 +289,7 @@ export const mockSearchResults: Cafe[] = [
     {
         id: 106,
         placeId: "ChIJL8g5x1lLGGAR2v4q3X9f7mF",
-        name: "サンマルクカフェ",
+        name: "サンマルクカフェ 銀座店",
         address: "東京都渋谷区宇田川町21-6",
         openTime: "07:00 - 21:00",
         status: "現在営業中",
@@ -308,4 +308,49 @@ export const mockSearchResults: Cafe[] = [
         lat: 35.680,
         lng: 139.775,
     },
+    {
+      id: 107,
+      placeId: "ChIJL8g5x1lLGGAR2v4q3X9f7mH",
+      name: "サンマルクカフェ 日本橋店",
+      address: "東京都渋谷区宇田川町21-6",
+      openTime: "07:00 - 21:00",
+      status: "現在営業中",
+      distance: "1.2km",
+      price_day: "￥999",
+      price_night: "￥999",
+      rating: 4.5,
+      phoneNumber: "03-1234-5678",
+      website: "https://www.tullys.co.jp/",
+      photoUrls: [
+          "https://upload.wikimedia.org/wikipedia/commons/b/b4/Saint_Marc_Cafe_Hirakata.JPG",
+          "https://upload.wikimedia.org/wikipedia/commons/b/b4/Saint_Marc_Cafe_Hirakata.JPG",
+          "https://upload.wikimedia.org/wikipedia/commons/b/b4/Saint_Marc_Cafe_Hirakata.JPG",
+          "https://upload.wikimedia.org/wikipedia/commons/5/55/TULLYS-COFFEE-Toyohashi-station.jpg"
+        ],
+      lat: 35.681,
+      lng: 139.777,
+    },
+    {
+      id: 108,
+      placeId: "ChIJL8g5x1lLGGAR2v4q3X9f7mG",
+      name: "エクセルシオールカフェ 丸の内店",
+      address: "東京都渋谷区宇田川町21-6",
+      openTime: "08:00 - 20:00",
+      status: "現在営業中",
+      distance: "1.2km",
+      price_day: "￥999",
+      price_night: "￥999",
+      rating: 4.5,
+      phoneNumber: "03-1234-5678",
+      website: "https://www.tullys.co.jp/",
+      photoUrls: [
+          "https://upload.wikimedia.org/wikipedia/commons/3/34/Excelsior-Caffe-Runroad.jpg",
+          "https://upload.wikimedia.org/wikipedia/commons/3/34/Excelsior-Caffe-Runroad.jpg",
+          "https://upload.wikimedia.org/wikipedia/commons/3/34/Excelsior-Caffe-Runroad.jpg",
+          "https://upload.wikimedia.org/wikipedia/commons/5/55/TULLYS-COFFEE-Toyohashi-station.jpg"
+        ],
+      lat: 35.683,
+      lng: 139.774,
+    },
+
 ];
