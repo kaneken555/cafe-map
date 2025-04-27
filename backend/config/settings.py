@@ -36,6 +36,7 @@ CORS_ALLOW_ALL_ORIGINS = os.getenv("CORS_ALLOW_ALL_ORIGINS", "False") == "True"
 CORS_ALLOW_CREDENTIALS = True  # クッキーを含めたリクエストを許可
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # フロントエンドのURL
+    "http://localhost:5173",
 ]
 CORS_ALLOW_HEADERS = [
     "authorization",
@@ -46,7 +47,7 @@ CORS_ALLOW_HEADERS = [
 # ------------------------------
 # CSRF 設定
 # ------------------------------
-CSRF_TRUSTED_ORIGINS = ["http://localhost:3000"]  # フロントエンドのURL
+CSRF_TRUSTED_ORIGINS = ["http://localhost:3000", "http://localhost:5173"]  # フロントエンドのURL
 CSRF_COOKIE_SAMESITE = "None"  
 CSRF_COOKIE_SECURE = True  # クロスサイトリクエストには Secure 必須
 CSRF_COOKIE_HTTPONLY = True  # JavaScript からのアクセスを禁止
