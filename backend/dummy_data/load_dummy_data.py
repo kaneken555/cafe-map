@@ -1,6 +1,10 @@
 # load_dummy_data.py
 import os
+import sys
 import django
+
+
+sys.path.append('/app')
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')  # あなたのプロジェクト名に合わせて
 django.setup()
@@ -12,10 +16,22 @@ def load_users():
     for user_data in mock_users:
         user, created = User.objects.get_or_create(
             id=user_data["id"],
-            defaults={"name": user_data["name"], "password": None}
+            defaults={"name": user_data["name"]},
         )
         if created:
-            print(f"Created user: {user.name}")
+            if user.name == "admin":
+                # adminユーザーだけ、パスワードと権限を設定する
+                user.set_password("admin123")  # 👈 任意のパスワード
+                user.is_staff = True
+                user.is_superuser = True
+                user.is_active = True
+                print(f"Created admin user: {user.name}")
+            else:
+                # その他のユーザー（ゲスト・テストユーザーなど）はログインできないパスワードにする
+                user.set_unusable_password()
+                print(f"Created normal user: {user.name}")
+            user.save()
+
 
 def load_maps():
     for map_data in mock_maps:
@@ -29,6 +45,12 @@ def load_maps():
         MapUserRelation.objects.get_or_create(user=user, map=map_obj)
 
 def load_cafes():
+    try:
+        target_map = Map.objects.get(id=1)  # ✅ 渋谷カフェマップに紐づけ
+    except Map.DoesNotExist:
+        print("対象のマップ（id=1）が存在しません")
+        return
+
     for idx, cafe_data in enumerate(mock_cafes, start=1):
         cafe, created = Cafe.objects.get_or_create(
             place_id=cafe_data["place_id"],
@@ -45,6 +67,14 @@ def load_cafes():
         )
         if created:
             print(f"Created cafe: {cafe.name}")
+
+        # ✅ ここでCafeMapRelationも作成する
+        relation, relation_created = CafeMapRelation.objects.get_or_create(
+            map=target_map,
+            cafe=cafe
+        )
+        if relation_created:
+            print(f"Linked {cafe.name} to map: {target_map.name}")
 
 def main():
     load_users()
