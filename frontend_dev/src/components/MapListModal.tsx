@@ -72,6 +72,9 @@ const MapListModal: React.FC<Props> = ({ isOpen, onClose, onSelectMap, selectedM
                   <button className="text-sm text-white bg-red-500 hover:bg-red-600 px-2 py-1 rounded">
                     削除
                   </button>
+                  <button className="text-sm text-white bg-gray-500 hover:bg-gray-600 px-2 py-1 rounded">
+                    共有
+                  </button>
                 </div>
               </li>
             ))}
