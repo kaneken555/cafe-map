@@ -15,8 +15,7 @@ from dummy_data import mock_users, mock_maps, mock_cafes  # 作ったダミー�
 def load_users():
     for user_data in mock_users:
         user, created = User.objects.get_or_create(
-            id=user_data["id"],
-            defaults={"name": user_data["name"]},
+            name=user_data["name"]  # ← idを指定しない！
         )
         if created:
             if user.name == "admin":
@@ -37,8 +36,8 @@ def load_maps():
     for map_data in mock_maps:
         user = User.objects.get(id=map_data["user_id"])
         map_obj, created = Map.objects.get_or_create(
-            id=map_data["id"],
-            defaults={"name": map_data["name"]}
+            name=map_data["name"]  # ← idを指定しない！
+
         )
         if created:
             print(f"Created map: {map_obj.name}")
