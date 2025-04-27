@@ -22,7 +22,7 @@ export const mockCafeData: { [key: number]: Cafe[] } = {
 1: [
         {
         id: 1,
-        placeId: "ChIJL8g5x1lLGGAR2v4q3X9f7mE",
+        placeId: "ChIJL8g5x1lLGGAR2v4q3X9f7mA",
         name: "スターバックス SHIBUYA TSUTAYA",
         address: "東京都渋谷区宇田川町21-6",
         openTime: "07:00 - 22:30",
@@ -44,7 +44,7 @@ export const mockCafeData: { [key: number]: Cafe[] } = {
         },
         {
         id: 2,
-        placeId: "ChIJL8g5x1lLGGAR2v4q3X9f7mE",
+        placeId: "ChIJL8g5x1lLGGAR2v4q3X9f7mB",
         name: "コトカフェ",
         address: "東京都渋谷区宇田川町21-6",
         openTime: "11:00 - 21:00",
@@ -67,7 +67,7 @@ export const mockCafeData: { [key: number]: Cafe[] } = {
 2: [
         {
         id: 1,
-        placeId: "ChIJL8g5x1lLGGAR2v4q3X9f7mE",
+        placeId: "ChIJL8g5x1lLGGAR2v4q3X9f7mC",
         name: "イノダコーヒ 本店",
         address: "東京都渋谷区宇田川町21-6",
         openTime: "08:00 - 18:00",
@@ -90,7 +90,7 @@ export const mockCafeData: { [key: number]: Cafe[] } = {
 3: [
         {
         id: 1,
-        placeId: "ChIJL8g5x1lLGGAR2v4q3X9f7mE",
+        placeId: "ChIJL8g5x1lLGGAR2v4q3X9f7mD",
         name: "タリーズコーヒー 丸の内店",
         address: "東京都渋谷区宇田川町21-6",
         openTime: "08:00 - 20:00",
@@ -134,7 +134,7 @@ export const mockCafeData: { [key: number]: Cafe[] } = {
 4: [
         {
         id: 1,
-        placeId: "ChIJL8g5x1lLGGAR2v4q3X9f7mE",
+        placeId: "ChIJL8g5x1lLGGAR2v4q3X9f7mF",
         name: "サンマルクカフェ",
         address: "東京都渋谷区宇田川町21-6",
         openTime: "07:00 - 21:00",
@@ -181,7 +181,7 @@ export const mockCafeData: { [key: number]: Cafe[] } = {
 export const mockSearchResults: Cafe[] = [
     {
         id: 101,
-        placeId: "ChIJL8g5x1lLGGAR2v4q3X9f7mE",
+        placeId: "ChIJL8g5x1lLGGAR2v4q3X9f7mA",
         name: "スターバックス SHIBUYA TSUTAYA",
         address: "東京都渋谷区宇田川町21-6",
         openTime: "07:00 - 22:30",
@@ -224,7 +224,7 @@ export const mockSearchResults: Cafe[] = [
     },
     {
         id: 103,
-        placeId: "ChIJL8g5x1lLGGAR2v4q3X9f7mE",
+        placeId: "ChIJL8g5x1lLGGAR2v4q3X9f7mC",
         name: "イノダコーヒ 本店",
         address: "東京都渋谷区宇田川町21-6",
         openTime: "08:00 - 18:00",
@@ -245,7 +245,7 @@ export const mockSearchResults: Cafe[] = [
     },
     {
         id: 104,
-        placeId: "ChIJL8g5x1lLGGAR2v4q3X9f7mE",
+        placeId: "ChIJL8g5x1lLGGAR2v4q3X9f7mD",
         name: "タリーズコーヒー 丸の内店",
         address: "東京都渋谷区宇田川町21-6",
         openTime: "08:00 - 20:00",
@@ -266,7 +266,7 @@ export const mockSearchResults: Cafe[] = [
     },
     {
         id: 105,
-        placeId: "ChIJL8g5x1lLGGAR2v4q3X9f7mE",
+        placeId: "ChIJL8g5x1lLGGAR2v4q3X9f7mG",
         name: "エクセルシオールカフェ",
         address: "東京都渋谷区宇田川町21-6",
         openTime: "08:00 - 20:00",
@@ -288,7 +288,7 @@ export const mockSearchResults: Cafe[] = [
     },
     {
         id: 106,
-        placeId: "ChIJL8g5x1lLGGAR2v4q3X9f7mE",
+        placeId: "ChIJL8g5x1lLGGAR2v4q3X9f7mF",
         name: "サンマルクカフェ",
         address: "東京都渋谷区宇田川町21-6",
         openTime: "07:00 - 21:00",
