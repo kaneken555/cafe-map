@@ -418,5 +418,27 @@ export const mockSearchResults: Cafe[] = [
       lat: 35.673,
       lng: 139.770,
     },
+    {
+      id: 111,
+      placeId: "ChIJL8g5x1lLGGAR2v4q3X9f7d",
+      name: "BECK'S COFFEE 新橋店",
+      address: "東京都渋谷区宇田川町21-6",
+      openTime: "08:00 - 20:00",
+      status: "現在営業中",
+      distance: "1.2km",
+      price_day: "￥999",
+      price_night: "￥999",
+      rating: 4.5,
+      phoneNumber: "03-1234-5678",
+      website: "https://www.tullys.co.jp/",
+      photoUrls: [
+          "https://upload.wikimedia.org/wikipedia/commons/d/d6/BecksCoffeeIkeburo.png",
+          "https://upload.wikimedia.org/wikipedia/commons/3/34/Excelsior-Caffe-Runroad.jpg",
+          "https://upload.wikimedia.org/wikipedia/commons/3/34/Excelsior-Caffe-Runroad.jpg",
+          "https://upload.wikimedia.org/wikipedia/commons/5/55/TULLYS-COFFEE-Toyohashi-station.jpg"
+        ],
+      lat: 35.671,
+      lng: 139.767,
+    },
 
 ];
