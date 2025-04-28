@@ -12,10 +12,11 @@ interface CafeDetailCardProps {
   cafe: Cafe;
   selectedMap: { id: number; name: string } | null; 
   myCafeList?: Cafe[]; // ✅ 追加
+  setMyCafeList: React.Dispatch<React.SetStateAction<Cafe[]>>; // ✅ これにする！！
 }
 
 
-const CafeDetailCard = ({ cafe, selectedMap, myCafeList }: CafeDetailCardProps) => {
+const CafeDetailCard = ({ cafe, selectedMap, myCafeList, setMyCafeList }: CafeDetailCardProps) => {
 
   // ✅ このカフェが登録済みか？
   const isRegistered = myCafeList?.some((myCafe) => myCafe.placeId === cafe.placeId) ?? false;
@@ -26,6 +27,7 @@ const CafeDetailCard = ({ cafe, selectedMap, myCafeList }: CafeDetailCardProps) 
       return;
     }
     addCafeToMyCafe(selectedMap.id, cafe);
+    setMyCafeList(prev => [...prev, cafe]); // ✅ ここでmyCafeListを更新する！
   }
 
   return (

@@ -40,6 +40,7 @@ const HomePage: React.FC = () => {
         }}
         selectedMap={selectedMap}
         myCafeList={myCafeList} // ✅ 渡す
+        setMyCafeList={setMyCafeList} // ✅ 追加
       />
 
       <MyCafeListPanel
