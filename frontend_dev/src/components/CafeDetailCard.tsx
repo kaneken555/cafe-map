@@ -4,8 +4,8 @@ import { Heart, Share2 } from "lucide-react";
 import GoogleMapButton from "./GoogleMapButton"; // 先ほど作ったボタンコンポーネント
 import { Cafe } from "../api/mockCafeData";
 import { addCafeToMyCafe } from "../api/cafe"; 
-import CafeImageCarousel from "./CafeImageCarousel"; // ✅ 追加
-import CafeDetailInfoTable from "./CafeDetailInfoTable"; // ✅ 追加
+import CafeImageCarousel from "./CafeImageCarousel"; 
+import CafeDetailInfoTable from "./CafeDetailInfoTable"; 
 
 
 interface CafeDetailCardProps {

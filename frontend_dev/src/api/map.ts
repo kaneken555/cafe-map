@@ -13,13 +13,13 @@ export const createMap = async (params: CreateMapRequest): Promise<void> => {
 
     try {
         const response = await axios.post(`http://localhost:8000/api/maps/`, 
-        { name: params.name }, 
-        { 
-            headers: {
-            "X-CSRFToken": csrfToken,
-            },
-            withCredentials: true ,
-        }, // クッキーを送信する
+            { name: params.name }, 
+            { 
+                headers: {
+                "X-CSRFToken": csrfToken,
+                },
+                withCredentials: true ,
+            }, // クッキーを送信する
         );
         return response.data;
     } catch (error) {
