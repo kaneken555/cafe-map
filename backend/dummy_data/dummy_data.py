@@ -26,6 +26,7 @@ mock_cafes = [
         "latitude": 35.681,
         "longitude": 139.765,
         "rating": 4.5,
+        "price_level": 2,
         "photo_urls": [
             "https://upload.wikimedia.org/wikipedia/commons/3/3f/Starbucks_Coffee_restaurant.png",
             "https://upload.wikimedia.org/wikipedia/commons/3/3f/Starbucks_Coffee_restaurant.png",
@@ -43,6 +44,7 @@ mock_cafes = [
         "latitude": 35.675,
         "longitude": 139.760,
         "rating": 4.5,
+        "price_level": 3,
         "photo_urls": [
             "https://upload.wikimedia.org/wikipedia/commons/f/fe/Doutor_Stand_Sennichimae.jpg",
             "https://upload.wikimedia.org/wikipedia/commons/f/fe/Doutor_Stand_Sennichimae.jpg",
@@ -59,6 +61,7 @@ mock_cafes = [
         "latitude": 35.681,
         "longitude": 139.760,
         "rating": 4.5,
+        "price_level": 2,
         "photo_urls": [
             "https://upload.wikimedia.org/wikipedia/commons/b/b7/%E3%82%A4%E3%83%8E%E3%83%80%E6%9C%AC%E5%BA%97%E5%A4%96%E8%A6%B3.JPG",
             "https://upload.wikimedia.org/wikipedia/commons/b/b7/%E3%82%A4%E3%83%8E%E3%83%80%E6%9C%AC%E5%BA%97%E5%A4%96%E8%A6%B3.JPG",
@@ -75,6 +78,7 @@ mock_cafes = [
         "latitude": 35.681,
         "longitude": 139.770,
         "rating": 4.5,
+        "price_level": 1,
         "photo_urls": [
             "https://upload.wikimedia.org/wikipedia/commons/5/55/TULLYS-COFFEE-Toyohashi-station.jpg",
             "https://upload.wikimedia.org/wikipedia/commons/5/55/TULLYS-COFFEE-Toyohashi-station.jpg",
@@ -91,6 +95,7 @@ mock_cafes = [
         "latitude": 35.675,
         "longitude": 139.765,
         "rating": 4.5,
+        "price_level": 2,
         "photo_urls": [
             "https://upload.wikimedia.org/wikipedia/commons/9/9f/Komeda_Coffee_Higashi-Shinsaibashi.jpg",
             "https://upload.wikimedia.org/wikipedia/commons/9/9f/Komeda_Coffee_Higashi-Shinsaibashi.jpg",
@@ -107,6 +112,7 @@ mock_cafes = [
         "latitude": 35.680,
         "longitude": 139.775,
         "rating": 4.5,
+        "price_level": 1,
         "photo_urls": [
             "https://upload.wikimedia.org/wikipedia/commons/b/b4/Saint_Marc_Cafe_Hirakata.JPG",
             "https://upload.wikimedia.org/wikipedia/commons/b/b4/Saint_Marc_Cafe_Hirakata.JPG",

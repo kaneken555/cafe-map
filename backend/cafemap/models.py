@@ -65,12 +65,13 @@ class Cafe(models.Model):
     longitude = models.DecimalField(max_digits=10, decimal_places=7)
     rating = models.FloatField(null=True, blank=True)
     user_ratings_total = models.IntegerField(null=True, blank=True)
+    price_level = models.IntegerField(null=True, blank=True)
     photo_reference = models.CharField(max_length=255, null=True, blank=True)
     photo_url = models.CharField(max_length=255, null=True, blank=True)
     photo_urls = models.JSONField(null=True, blank=True)
     phone_number = models.CharField(max_length=20, null=True, blank=True)
     opening_hours = models.TextField(null=True, blank=True)
-    website = models.URLField(max_length=255, null=True, blank=True)  # 👈 追加
+    website = models.URLField(max_length=255, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

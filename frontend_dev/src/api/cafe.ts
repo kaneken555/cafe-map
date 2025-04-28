@@ -31,6 +31,7 @@ export const getCafeList = async (mapId: number): Promise<Cafe[]> => {
       phoneNumber: cafe.phone_number, // phone_number → phoneNumber
       openTime: cafe.opening_hours,
       website: cafe.website,
+      priceLevel: cafe.price_level,
     }));
     return cafes;
   } catch (error) {

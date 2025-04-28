@@ -10,8 +10,9 @@ export interface Cafe {
     distance: string;
     price_day?: string;
     price_night?: string;
-    photoUrls: string[]; // ← photoUrl から変更
+    photoUrls: string[];
     rating: number;
+    priceLevel?: number;
     phoneNumber?: string;
     website?: string;
     lat: number;
@@ -31,6 +32,7 @@ export const mockCafeData: { [key: number]: Cafe[] } = {
       price_day: "￥999",
       price_night: "￥999",
       rating: 4.5,
+      priceLevel: 2,
       phoneNumber: "03-1234-5678",
       website: "https://www.starbucks.co.jp/",
       photoUrls: [
@@ -53,6 +55,7 @@ export const mockCafeData: { [key: number]: Cafe[] } = {
       price_night: "￥999",
       distance: "1.6km",
       rating: 4.5,
+      priceLevel: 2,
       phoneNumber: "03-1234-5678",
       website: "https://www.starbucks.co.jp/",
       photoUrls: [
@@ -76,6 +79,7 @@ export const mockCafeData: { [key: number]: Cafe[] } = {
       price_day: "￥999",
       price_night: "￥999",
       rating: 4.5,
+      priceLevel: 2,
       phoneNumber: "03-1234-5678",
       website: "https://www.inoda-coffee.co.jp/",
       photoUrls: [
@@ -99,6 +103,7 @@ export const mockCafeData: { [key: number]: Cafe[] } = {
       price_day: "￥999",
       price_night: "￥999",
       rating: 4.5,
+      priceLevel: 2,
       phoneNumber: "03-1234-5678",
       website: "https://www.tullys.co.jp/",
       photoUrls: [
@@ -120,6 +125,7 @@ export const mockCafeData: { [key: number]: Cafe[] } = {
       price_day: "￥999",
       price_night: "￥999",
       rating: 4.5,
+      priceLevel: 2,
       phoneNumber: "03-1234-5678",
       website: "https://www.tullys.co.jp/",
       photoUrls: [
@@ -143,6 +149,7 @@ export const mockCafeData: { [key: number]: Cafe[] } = {
       price_day: "￥999",
       price_night: "￥999",
       rating: 4.5,
+      priceLevel: 2,
       phoneNumber: "03-1234-5678",
       website: "https://www.tullys.co.jp/",
       photoUrls: [
@@ -165,6 +172,7 @@ export const mockCafeData: { [key: number]: Cafe[] } = {
       price_day: "￥999",
       price_night: "￥999",
       rating: 4.5,
+      priceLevel: 2,
       phoneNumber: "03-1234-5678",
       website: "https://www.tullys.co.jp/",
       photoUrls: [
@@ -190,6 +198,7 @@ export const mockSearchResults: Cafe[] = [
       price_day: "￥999",
       price_night: "￥999",
       rating: 4.5,
+      priceLevel: 2,
       phoneNumber: "03-1234-5678",
       website: "https://www.starbucks.co.jp/",
       photoUrls: [
@@ -212,6 +221,7 @@ export const mockSearchResults: Cafe[] = [
       price_day: "￥999",
       price_night: "￥999",
       rating: 4.5,
+      priceLevel: 2,
       phoneNumber: "03-1234-5678",
       website: "https://www.tullys.co.jp/",
       photoUrls: [
@@ -233,6 +243,7 @@ export const mockSearchResults: Cafe[] = [
       price_day: "￥999",
       price_night: "￥999",
       rating: 4.5,
+      priceLevel: 2,
       phoneNumber: "03-1234-5678",
       website: "https://www.inoda-coffee.co.jp/",
       photoUrls: [
@@ -254,6 +265,7 @@ export const mockSearchResults: Cafe[] = [
       price_day: "￥999",
       price_night: "￥999",
       rating: 4.5,
+      priceLevel: 2,
       phoneNumber: "03-1234-5678",
       website: "https://www.tullys.co.jp/",
       photoUrls: [
@@ -275,6 +287,7 @@ export const mockSearchResults: Cafe[] = [
       price_day: "￥999",
       price_night: "￥999",
       rating: 4.5,
+      priceLevel: 2,
       phoneNumber: "03-1234-5678",
       website: "https://www.tullys.co.jp/",
       photoUrls: [
@@ -297,6 +310,7 @@ export const mockSearchResults: Cafe[] = [
       price_day: "￥999",
       price_night: "￥999",
       rating: 4.5,
+      priceLevel: 2,
       phoneNumber: "03-1234-5678",
       website: "https://www.tullys.co.jp/",
       photoUrls: [
@@ -319,6 +333,7 @@ export const mockSearchResults: Cafe[] = [
       price_day: "￥999",
       price_night: "￥999",
       rating: 4.5,
+      priceLevel: 2,
       phoneNumber: "03-1234-5678",
       website: "https://www.tullys.co.jp/",
       photoUrls: [
@@ -341,6 +356,7 @@ export const mockSearchResults: Cafe[] = [
       price_day: "￥999",
       price_night: "￥999",
       rating: 4.5,
+      priceLevel: 2,
       phoneNumber: "03-1234-5678",
       website: "https://www.tullys.co.jp/",
       photoUrls: [
@@ -363,6 +379,7 @@ export const mockSearchResults: Cafe[] = [
       price_day: "￥999",
       price_night: "￥999",
       rating: 4.5,
+      priceLevel: 2,
       phoneNumber: "03-1234-5678",
       website: "https://www.tullys.co.jp/",
       photoUrls: [
@@ -385,6 +402,7 @@ export const mockSearchResults: Cafe[] = [
       price_day: "￥999",
       price_night: "￥999",
       rating: 4.5,
+      priceLevel: 2,
       phoneNumber: "03-1234-5678",
       website: "https://www.tullys.co.jp/",
       photoUrls: [
@@ -407,6 +425,7 @@ export const mockSearchResults: Cafe[] = [
       price_day: "￥999",
       price_night: "￥999",
       rating: 4.5,
+      priceLevel: 2,
       phoneNumber: "03-1234-5678",
       website: "https://www.tullys.co.jp/",
       photoUrls: [
@@ -429,6 +448,7 @@ export const mockSearchResults: Cafe[] = [
       price_day: "￥999",
       price_night: "￥999",
       rating: 4.5,
+      priceLevel: 2,
       phoneNumber: "03-1234-5678",
       website: "https://www.tullys.co.jp/",
       photoUrls: [
@@ -451,6 +471,7 @@ export const mockSearchResults: Cafe[] = [
       price_day: "￥999",
       price_night: "￥999",
       rating: 4.5,
+      priceLevel: 2,
       phoneNumber: "03-1234-5678",
       website: "https://www.tullys.co.jp/",
       photoUrls: [

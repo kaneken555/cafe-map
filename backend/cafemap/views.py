@@ -205,7 +205,8 @@ class MapDetailAPIView(APIView):
                      "opening_hours": cafe.opening_hours,
                      "website": cafe.website,
                      "latitude": cafe.latitude, 
-                     "longitude": cafe.longitude
+                     "longitude": cafe.longitude,
+                     "price_level": cafe.price_level,
                     } 
                      for cafe in cafe_list
                 ]
@@ -278,6 +279,7 @@ class CafeAPIView(APIView):
             longitude = request.data.get("lng")
             rating = request.data.get("rating")
             user_ratings_total = request.data.get("user_ratings_total")
+            price_level = request.data.get("price_level")
             photo_reference = request.data.get("photo_reference")
             photo_url = request.data.get("photo_url")
             photo_urls = request.data.get("photoUrls")
@@ -299,12 +301,13 @@ class CafeAPIView(APIView):
                     "longitude": longitude,
                     "rating": rating,
                     "user_ratings_total": user_ratings_total,
+                    "price_level": price_level,
                     "photo_reference": photo_reference,
                     "photo_url": photo_url,
                     "photo_urls": photo_urls,
                     "phone_number": phone_number,
                     "opening_hours": opening_hours,
-                    "website": website,  # 👈 ここ！
+                    "website": website,
                     
                 }
             )

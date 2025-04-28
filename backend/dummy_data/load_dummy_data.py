@@ -74,6 +74,7 @@ def load_cafes():
                     "phone_number": cafe_data["phone_number"],
                     "opening_hours": cafe_data["opening_hours"],
                     "website": cafe_data["website"], 
+                    "price_level": cafe_data["price_level"],
                 }
             )
             if created:
