@@ -1,15 +1,15 @@
 // components/Map.tsx
 import React from "react"; // ← useStateを追加
 import { GoogleMap, LoadScript, OverlayView } from "@react-google-maps/api";
-import MapButton from "./MapButton"; // 新規追加
+import MapButton from "./MapButton"; 
 import { mockCafeData, Cafe } from "../api/mockCafeData"; // 👈 Cafe 型を import
 
 interface MapProps {
-  cafes: Cafe[]; // ← 追加
+  cafes: Cafe[];
   onCafeIconClick: (cafe: Cafe) => void; // 👈 カフェ情報を渡すように変更
-  setMapMode: (mode: "search" | "mycafe") => void; // ✅ 追加
-  selectedCafeId: number | null; // ✅ 追加
-  setSelectedCafeId: (id: number | null) => void; // ✅ 追加
+  setMapMode: (mode: "search" | "mycafe") => void; 
+  selectedCafeId: number | null; 
+  setSelectedCafeId: (id: number | null) => void; 
 }
 
 const containerStyle = {

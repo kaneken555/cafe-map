@@ -73,7 +73,7 @@ const CafeDetailCard = ({ cafe, selectedMap }: CafeDetailCardProps) => {
         <div>
           <GoogleMapButton url="https://www.google.com/maps/place/渋谷TSUTAYA/" />
         </div>
-        </div>
+      </div>
 
       {/* TODO: 画像サイズ合わせ */}
       {/* カルーセル式画像表示 */}
@@ -149,7 +149,6 @@ const CafeDetailCard = ({ cafe, selectedMap }: CafeDetailCardProps) => {
           </tbody>
         </table>
       </div>
-
     </div>
   );
 };

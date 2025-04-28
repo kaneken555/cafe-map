@@ -1,12 +1,14 @@
 // components/Header.tsx
 import React, { useState } from "react";
 import SideMenu from "./SideMenu";
-import MapListModal from "./MapListModal"; // ← 追加
+import MapListModal from "./MapListModal"; 
 import { ArrowRightToLine, User, LogIn, Coffee, Map as MapIcon } from "lucide-react";
 import { getCafeList } from "../api/cafe"; // Cafe 型も import
-import { Cafe } from "../api/mockCafeData"; // ← 追加
-import { guestLogin } from "../api/auth"; // ← 追加
+import { Cafe } from "../api/mockCafeData"; 
+import { guestLogin } from "../api/auth";
 import { getMapList } from "../api/map";
+import LoginMenu from "./LoginMenu"; // 追加
+import HeaderButton from "./HeaderButton"; // ✅ 追加
 
 interface HeaderProps {
   selectedMap: { id: number; name: string } | null;
@@ -14,8 +16,8 @@ interface HeaderProps {
   cafeList: Cafe[];
   setCafeList: (cafes: Cafe[]) => void;
   openCafeListPanel: () => void;
-  setMyCafeList: (cafes: Cafe[]) => void;     // ✅ 追加
-  setMapMode: (mode: "search" | "mycafe") => void; // ✅ 追加
+  setMyCafeList: (cafes: Cafe[]) => void;   
+  setMapMode: (mode: "search" | "mycafe") => void; 
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -56,7 +58,7 @@ const Header: React.FC<HeaderProps> = ({
     setIsMapListOpen(true);
   }
 
-  const hundleGuestLogin = async () => {
+  const handleGuestLogin = async () => {
     // フロントエンドのみの仮実装
     //   setUser({ id: 1, name: "ゲストユーザー" });
     //   setIsLoginMenuOpen(false);
@@ -85,6 +87,7 @@ const Header: React.FC<HeaderProps> = ({
     setIsLoginMenuOpen(false);  // メニューを閉じる
   }
 
+
   return (
     <>
       <SideMenu isOpen={isSideMenuOpen} onClose={() => setIsSideMenuOpen(false)} />
@@ -101,8 +104,8 @@ const Header: React.FC<HeaderProps> = ({
           }}
           selectedMapId={selectedMap?.id ?? null} // 👈 ここ！
           mapList={mapList} // 👈 ここ！
-          setMapList={setMapList} // ✅追加
-          user={user} // ✅ 追加
+          setMapList={setMapList}
+          user={user} 
         />
         
     <header className="w-full h-16 px-4 flex justify-between items-center bg-gradient-to-r from-yellow-300 to-yellow-500 shadow-md">
@@ -121,95 +124,54 @@ const Header: React.FC<HeaderProps> = ({
 
       {/* 右：操作ボタン群 */}
       <div className="flex items-center space-x-2">
-        <button
+        <HeaderButton
           onClick={handleOpenCafeList}
-          disabled={!user} // ✅ 追加
-          className={`flex flex-col items-center justify-center px-2 py-1 border rounded w-21 h-14
-            ${user ? "bg-white text-black hover:bg-gray-100 border-black" : "bg-gray-300 text-gray-500 border-gray-400 cursor-not-allowed"}
-          `}
-        >
-          <MapIcon size={24} />
-          <span className="text-[10px] mt-1">My Café List</span>
-        </button>
+          disabled={!user}
+          icon={<MapIcon size={24} />}
+          label="My Café List"
+        />
 
-        <button
+        <HeaderButton
           onClick={handleShowCafeMap}
-          disabled={!user} // ✅ 追加
-          className={`flex flex-col items-center justify-center px-2 py-1 border rounded w-21 h-14
-            ${user ? "bg-white text-black hover:bg-gray-100 border-black" : "bg-gray-300 text-gray-500 border-gray-400 cursor-not-allowed"}
-          `}
-        >
-          <MapIcon size={24} />
-          <span className="text-[10px] mt-1">My Café Map</span>
-        </button>
+          disabled={!user}
+          icon={<MapIcon size={24} />}
+          label="My Café Map"
+        />
 
-        <button
+        <HeaderButton
           onClick={handleOpenMapList}
-          disabled={!user} // ✅ 追加
-          className={`flex flex-col items-center justify-center px-2 py-1 border rounded w-21 h-14
-            ${user ? "bg-white text-black hover:bg-gray-100 border-black" : "bg-gray-300 text-gray-500 border-gray-400 cursor-not-allowed"}
-          `}
-        >
-          <MapIcon size={24} />
-          <span className="text-[10px] mt-1">
-            {selectedMap?.name || "My Map List"}
-          </span>
-        </button>
+          disabled={!user}
+          icon={<MapIcon size={24} />}
+          label={selectedMap?.name || "My Map List"}
+        />
 
-        {/* ▼ ログインボタン */}
-        <div className="relative">
-          <button
-            onClick={() => setIsLoginMenuOpen((prev) => !prev)}
-            className="flex flex-col items-center justify-center px-2 py-1 border border-black rounded bg-white text-black hover:bg-gray-100 w-18 h-14"
-            title={user ? user.name : "ログイン"} // ✅ ツールチップも切り替えられる
-            >
-            <ArrowRightToLine size={22} />
-            <span className="text-[10px] mt-1">
-              {user ? user.name : "ログイン"} {/* ✅ ここも */}
-            </span>
-          </button>
 
-            {/* ▼ ドロップダウンメニュー */}
-            {isLoginMenuOpen && (
-              <div className="absolute right-0 mt-2 w-64 bg-white border rounded shadow-lg z-50">
-                {/* ▼ ログインしていない場合のメニュー */}
-                {!user && (
-                  <>
-                    <button
-                      className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center space-x-2"
-                      onClick={hundleGuestLogin}
-                    >
-                      <User size={16} />
-                      <span>ゲストユーザーとしてログイン</span>
-                    </button>
-                    <button
-                      className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center space-x-2"
-                      onClick={() => {
-                        setUser({ id: 2, name: "テストユーザー" });
-                        setIsLoginMenuOpen(false);
-                      }}
-                    >
-                      <LogIn size={16} />
-                      <span>Googleアカウントでログイン</span>
-                    </button>
-                  </>
-                )}
+          {/* ▼ ログインボタン */}
+          <div className="relative">
+            <button
+              onClick={() => setIsLoginMenuOpen((prev) => !prev)}
+              className="flex flex-col items-center justify-center px-2 py-1 border border-black rounded bg-white text-black hover:bg-gray-100 w-18 h-14"
+              title={user ? user.name : "ログイン"} // ✅ ツールチップも切り替えられる
+              >
+              <ArrowRightToLine size={22} />
+              <span className="text-[10px] mt-1">
+                {user ? user.name : "ログイン"} {/* ✅ ここも */}
+              </span>
+            </button>
 
-                {/* ▼ ログイン中の場合のメニュー */}
-                {user && (
-                  <button
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center space-x-2"
-                    onClick={handleLogout}
-                  >
-                    <ArrowRightToLine size={16} />
-                    <span>ログアウト</span>
-                  </button>
-                )}
-              </div>
-            )}
+              {/* ▼ ドロップダウンメニュー */}
+              <LoginMenu
+                isOpen={isLoginMenuOpen}
+                user={user}
+                onGuestLogin={handleGuestLogin}
+                onTestLogin={() => {
+                  setUser({ id: 2, name: "テストユーザー" });
+                  setIsLoginMenuOpen(false);
+                }}
+                onLogout={handleLogout}
+              />
           </div>
       </div>
-
     </header>
     </>
   );

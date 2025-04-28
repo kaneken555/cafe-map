@@ -1,7 +1,8 @@
 // components/MapListModal.tsx
 import React, { useState } from "react";
-import MapCreateModal from "./MapCreateModal"; // ← 追加
-import { mockMapData, MapItem } from "../api/mockMapData"; // ✅ 追加
+import MapCreateModal from "./MapCreateModal"; 
+import { mockMapData, MapItem } from "../api/mockMapData"; 
+import MapListItem from "./MapListItem"; 
 
 interface Props {
   isOpen: boolean;
@@ -10,12 +11,12 @@ interface Props {
   onSelectMap: (map: { id: number; name: string }) => void;
   selectedMapId: number | null; // 👈 追加
   mapList: { id: number; name: string }[];
-  setMapList: React.Dispatch<React.SetStateAction<{ id: number; name: string }[]>>; // ✅追加
-  user: { id: number; name: string } | null; // 👈 追加
+  setMapList: React.Dispatch<React.SetStateAction<{ id: number; name: string }[]>>; 
+  user: { id: number; name: string } | null; 
 }
 
 const MapListModal: React.FC<Props> = ({ isOpen, onClose, onSelectMap, selectedMapId, mapList, setMapList, user }) => {
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false); // ← 追加
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false); 
   const filteredMaps = mapList;
   // const filteredMaps = user
   // ? mockMapData.filter((map) => map.userId === user.id) // ✅ userId一致のみ
@@ -30,7 +31,7 @@ const MapListModal: React.FC<Props> = ({ isOpen, onClose, onSelectMap, selectedM
       <MapCreateModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
-        setMapList={setMapList} // ✅追加
+        setMapList={setMapList} 
       />
 
       {/* マップ一覧モーダル */}
@@ -53,35 +54,13 @@ const MapListModal: React.FC<Props> = ({ isOpen, onClose, onSelectMap, selectedM
 
           <ul className="space-y-2 mb-4">
             {filteredMaps.map((map) => (
-              <li
+              <MapListItem
                 key={map.id}
-                className="flex justify-between items-center border px-4 py-2 rounded"
-              >
-                <span className="truncate">{map.name}</span>
-                <div className="flex space-x-2">
-                {map.id === selectedMapId ? (
-                  <span className="text-sm text-white bg-green-500 px-2 py-1 rounded">
-                    選択中
-                  </span>
-                ) : (
-                  <button
-                    className="text-sm text-white bg-blue-500 hover:bg-blue-600 px-2 py-1 rounded"
-                    onClick={() => {
-                      onSelectMap(map);
-                      onClose();
-                    }}
-                  >
-                    選択
-                  </button>
-                )}
-                  <button className="text-sm text-white bg-red-500 hover:bg-red-600 px-2 py-1 rounded">
-                    削除
-                  </button>
-                  <button className="text-sm text-white bg-gray-500 hover:bg-gray-600 px-2 py-1 rounded">
-                    共有
-                  </button>
-                </div>
-              </li>
+                map={map}
+                selectedMapId={selectedMapId}
+                onSelect={onSelectMap}
+                onClose={onClose}
+              />
             ))}
           </ul>
 

@@ -16,7 +16,6 @@ const CafeDetailPanel: React.FC<Props> = ({ cafe, onClose, selectedMap }) => {
       className={`fixed left-0 top-16 h-[calc(100vh-4rem)] w-[400px] bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-40
         ${cafe ? "translate-x-0" : "-translate-x-full"}`}
     >
-
       <div className="p-1">
         {/* 閉じるボタン */}
         <button

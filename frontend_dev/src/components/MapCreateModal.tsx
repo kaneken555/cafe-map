@@ -1,13 +1,13 @@
 // components/MapCreateModal.tsx
 import React, { useState } from "react";
-import { createMap } from "../api/map"; // 追加
+import { createMap } from "../api/map"; 
 import { getMapList } from "../api/map";
 
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  setMapList: React.Dispatch<React.SetStateAction<{ id: number; name: string }[]>>; // ✅追加
+  setMapList: React.Dispatch<React.SetStateAction<{ id: number; name: string }[]>>; 
 }
 
 const MapCreateModal: React.FC<Props> = ({ isOpen, onClose, setMapList }) => {
