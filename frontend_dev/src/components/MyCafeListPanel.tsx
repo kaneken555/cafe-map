@@ -3,14 +3,14 @@ import React from "react";
 import { Cafe } from "../api/mockCafeData"; // ✅ Cafe型をインポート
 
 
-interface Props {
+interface MyCafeListPanelProps {
   isOpen: boolean;
   onClose: () => void;
   cafes: Cafe[];
 }
 
 
-const MyCafeListPanel: React.FC<Props> = ({ isOpen, onClose, cafes }) => {
+const MyCafeListPanel: React.FC<MyCafeListPanelProps> = ({ isOpen, onClose, cafes }) => {
   return (
     <div
       className={`fixed top-16 left-0 h-[calc(100vh-4rem)] w-[400px] bg-white shadow-lg z-40 transform transition-transform duration-300 ease-in-out ${
@@ -26,11 +26,11 @@ const MyCafeListPanel: React.FC<Props> = ({ isOpen, onClose, cafes }) => {
           ×
         </button>
         <div className="text-2xl font-bold mb-4">My Café List</div>
-            <input
-              type="text"
-              placeholder="キーワードを入力"
-              className="w-full mb-4 px-3 py-2 border rounded focus:outline-none"
-            />
+          <input
+            type="text"
+            placeholder="キーワードを入力"
+            className="w-full mb-4 px-3 py-2 border rounded focus:outline-none"
+          />
         {/* カフェリスト */}
         {cafes.length === 0 ? (
           <p className="text-gray-500 text-sm">このマップにカフェは登録されていません。</p>

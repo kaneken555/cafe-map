@@ -4,7 +4,7 @@ import MapCreateModal from "./MapCreateModal";
 import { mockMapData, MapItem } from "../api/mockMapData"; 
 import MapListItem from "./MapListItem"; 
 
-interface Props {
+interface MapListModalProps {
   isOpen: boolean;
   onClose: () => void;
   // onSelectMap: (map: MapItem) => void;
@@ -15,7 +15,7 @@ interface Props {
   user: { id: number; name: string } | null; 
 }
 
-const MapListModal: React.FC<Props> = ({ isOpen, onClose, onSelectMap, selectedMapId, mapList, setMapList, user }) => {
+const MapListModal: React.FC<MapListModalProps> = ({ isOpen, onClose, onSelectMap, selectedMapId, mapList, setMapList, user }) => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false); 
   const filteredMaps = mapList;
   // const filteredMaps = user

@@ -4,13 +4,13 @@ import { createMap } from "../api/map";
 import { getMapList } from "../api/map";
 
 
-interface Props {
+interface MapCreateModalProps {
   isOpen: boolean;
   onClose: () => void;
   setMapList: React.Dispatch<React.SetStateAction<{ id: number; name: string }[]>>; 
 }
 
-const MapCreateModal: React.FC<Props> = ({ isOpen, onClose, setMapList }) => {
+const MapCreateModal: React.FC<MapCreateModalProps> = ({ isOpen, onClose, setMapList }) => {
   const [mapName, setMapName] = useState(""); // ✅ 入力値を管理
 
   // ✅ onCloseとmapNameリセットをまとめた関数

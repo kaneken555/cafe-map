@@ -4,15 +4,15 @@ import CafeDetailCard from "./CafeDetailCard";
 import { Cafe } from "../api/mockCafeData"; // 👈 Cafe 型を import
 
 
-interface Props {
+interface CafeDetailPanelProps {
   cafe: Cafe | null;
   onClose: () => void;
   selectedMap: { id: number; name: string } | null;
-  myCafeList: Cafe[]; // ✅ 追加
-  setMyCafeList: React.Dispatch<React.SetStateAction<Cafe[]>>; // ✅ これにする！！
+  myCafeList: Cafe[];
+  setMyCafeList: React.Dispatch<React.SetStateAction<Cafe[]>>; 
 }
 
-const CafeDetailPanel: React.FC<Props> = ({ cafe, onClose, selectedMap, myCafeList, setMyCafeList }) => {
+const CafeDetailPanel: React.FC<CafeDetailPanelProps> = ({ cafe, onClose, selectedMap, myCafeList, setMyCafeList }) => {
   return (
     <div
       className={`fixed left-0 top-16 h-[calc(100vh-4rem)] w-[400px] bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-40 overflow-y-auto
@@ -33,7 +33,7 @@ const CafeDetailPanel: React.FC<Props> = ({ cafe, onClose, selectedMap, myCafeLi
           cafe={cafe}
           selectedMap={selectedMap}
           myCafeList={myCafeList || []} // ←ここで空配列にしてあげると安全
-          setMyCafeList={setMyCafeList} // ✅ 追加
+          setMyCafeList={setMyCafeList} 
           />
       )}
     </div>

@@ -1,7 +1,7 @@
 // components/CafeDetailCard.tsx
-import { useState } from "react";
+import React from "react";
 import { Heart, Share2 } from "lucide-react";
-import GoogleMapButton from "./GoogleMapButton"; // 先ほど作ったボタンコンポーネント
+import GoogleMapButton from "./GoogleMapButton";
 import { Cafe } from "../api/mockCafeData";
 import { addCafeToMyCafe } from "../api/cafe"; 
 import CafeImageCarousel from "./CafeImageCarousel"; 
@@ -11,21 +11,18 @@ import CafeDetailInfoTable from "./CafeDetailInfoTable";
 interface CafeDetailCardProps {
   cafe: Cafe;
   selectedMap: { id: number; name: string } | null; 
-  myCafeList?: Cafe[]; // ✅ 追加
-  setMyCafeList: React.Dispatch<React.SetStateAction<Cafe[]>>; // ✅ これにする！！
+  myCafeList?: Cafe[];
+  setMyCafeList: React.Dispatch<React.SetStateAction<Cafe[]>>;
 }
 
 
-const CafeDetailCard = ({ cafe, selectedMap, myCafeList, setMyCafeList }: CafeDetailCardProps) => {
+const CafeDetailCard: React.FC<CafeDetailCardProps> = ({ cafe, selectedMap, myCafeList, setMyCafeList }) => {
 
   // ✅ このカフェが登録済みか？
   const isRegistered = myCafeList?.some((myCafe) => myCafe.placeId === cafe.placeId) ?? false;
 
   const handleAddCafe = () => {
-    if (!selectedMap) {
-      alert("マップを選択してください");
-      return;
-    }
+    if (!selectedMap) return alert("マップを選択してください");
     addCafeToMyCafe(selectedMap.id, cafe);
     setMyCafeList(prev => [...prev, cafe]); // ✅ ここでmyCafeListを更新する！
   }
