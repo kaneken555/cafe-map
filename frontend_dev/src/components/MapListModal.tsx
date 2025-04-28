@@ -6,16 +6,20 @@ import { mockMapData, MapItem } from "../api/mockMapData"; // ✅ 追加
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  onSelectMap: (map: MapItem) => void;
+  // onSelectMap: (map: MapItem) => void;
+  onSelectMap: (map: { id: number; name: string }) => void;
   selectedMapId: number | null; // 👈 追加
+  mapList: { id: number; name: string }[];
+  setMapList: React.Dispatch<React.SetStateAction<{ id: number; name: string }[]>>; // ✅追加
   user: { id: number; name: string } | null; // 👈 追加
 }
 
-const MapListModal: React.FC<Props> = ({ isOpen, onClose, onSelectMap, selectedMapId, user }) => {
+const MapListModal: React.FC<Props> = ({ isOpen, onClose, onSelectMap, selectedMapId, mapList, setMapList, user }) => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false); // ← 追加
-  const filteredMaps = user
-  ? mockMapData.filter((map) => map.userId === user.id) // ✅ userId一致のみ
-  : []; // 未ログインなら空配列
+  const filteredMaps = mapList;
+  // const filteredMaps = user
+  // ? mockMapData.filter((map) => map.userId === user.id) // ✅ userId一致のみ
+  // : []; // 未ログインなら空配列
 
   if (!isOpen) return null;
 
@@ -26,6 +30,7 @@ const MapListModal: React.FC<Props> = ({ isOpen, onClose, onSelectMap, selectedM
       <MapCreateModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
+        setMapList={setMapList} // ✅追加
       />
 
       {/* マップ一覧モーダル */}

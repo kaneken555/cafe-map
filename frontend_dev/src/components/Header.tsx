@@ -6,7 +6,8 @@ import MyCafeListPanel from "./MyCafeListPanel"; // ← 追加
 import { ArrowRightToLine, User, LogIn, Coffee, Map as MapIcon } from "lucide-react";
 import { getCafeList } from "../api/cafe"; // Cafe 型も import
 import { Cafe } from "../api/mockCafeData"; // ← 追加
-
+import { guestLogin } from "../api/auth"; // ← 追加
+import { getMapList } from "../api/map";
 
 interface HeaderProps {
   selectedMap: { id: number; name: string } | null;
@@ -17,7 +18,6 @@ interface HeaderProps {
   setMyCafeList: (cafes: Cafe[]) => void;     // ✅ 追加
   setMapMode: (mode: "search" | "mycafe") => void; // ✅ 追加
 }
-
 
 const Header: React.FC<HeaderProps> = ({
   selectedMap,
@@ -33,51 +33,72 @@ const Header: React.FC<HeaderProps> = ({
   const [isMapListOpen, setIsMapListOpen] = useState(false);
   const [isLoginMenuOpen, setIsLoginMenuOpen] = useState(false);
   const [user, setUser] = useState<{ id: number; name: string } | null>(null); // ✅ ログインユーザー保持
-
+  const [mapList, setMapList] = useState<{ id: number; name: string }[]>([]); // ✅ マップ一覧保持
 
   
-    const handleOpenCafeList = async () => {
-      if (!selectedMap) {
-        alert("マップを選択してください");
-        return;
-      }
-  
-      const cafes = await getCafeList(selectedMap.id);
-      setCafeList(cafes);
-      openCafeListPanel();
-    };
+  const handleOpenCafeList = async () => {
+    if (!selectedMap) {
+      alert("マップを選択してください");
+      return;
+    }
+    openCafeListPanel();
+  };
 
-    const handleShowCafeMap = async () => {
-      if (!selectedMap) {
-        alert("マップを選択してください");
-        return;
-      }
-    
-      const cafes = await getCafeList(selectedMap.id);
-      setMyCafeList(cafes);         // 地図用のデータとして保存
-      setMapMode("mycafe");         // 表示モード切り替え
-      setCafeList(cafes);           // 地図に反映（Mapに渡す用）
-    };
+  const handleShowCafeMap = async () => {
+    if (!selectedMap) {
+      alert("マップを選択してください");
+      return;
+    }
+    setMapMode("mycafe");         // 表示モード切り替え
+  };
 
-    return (
+
+  const handleOpenMapList = async () => {
+    setIsMapListOpen(true);
+  }
+
+  const hundleGuestLogin = async () => {
+    // フロントエンドのみの仮実装
+    //   setUser({ id: 1, name: "ゲストユーザー" });
+    //   setIsLoginMenuOpen(false);
+    //   guestLogin();
+
+    const userData = await guestLogin();  // 👈 ここで待つ！
+    if (userData) {
+      setUser({ id: userData.id, name: userData.name }); // 👈 サーバーが返してきた本物のゲストユーザー情報をセット
+
+      // ログイン時にマップを取得する
+      const maps = await getMapList();
+      setMapList(maps);
+      console.log("取得したマップ一覧:", maps);
+      
+
+    } else {
+      alert("ゲストログインに失敗しました");
+    }
+    setIsLoginMenuOpen(false);
+  }
+
+
+  return (
     <>
       <SideMenu isOpen={isSideMenuOpen} onClose={() => setIsSideMenuOpen(false)} />
       <MapListModal
           isOpen={isMapListOpen}
           onClose={() => setIsMapListOpen(false)}
-          onSelectMap={(map) => {
+          onSelectMap={async (map) => {
             setSelectedMap(map);
             setIsMapListOpen(false);
+
+            const cafes = await getCafeList(map.id);  // ✅ マップ選択と同時にカフェ取得
+            setCafeList(cafes);
+            setMyCafeList(cafes); // 地図用にも保存（もし必要なら）
           }}
           selectedMapId={selectedMap?.id ?? null} // 👈 ここ！
+          mapList={mapList} // 👈 ここ！
+          setMapList={setMapList} // ✅追加
           user={user} // ✅ 追加
         />
-      {/* MyCafeListPanel に取得済み cafeList を渡す */}
-      {/* <MyCafeListPanel
-        isOpen={isMyCafeListOpen}
-        onClose={() => setIsMyCafeListOpen(false)}
-        cafes={cafeList}
-      /> */}
         
     <header className="w-full h-16 px-4 flex justify-between items-center bg-gradient-to-r from-yellow-300 to-yellow-500 shadow-md">
       {/* 左：メニュー */}
@@ -118,7 +139,7 @@ const Header: React.FC<HeaderProps> = ({
         </button>
 
         <button
-          onClick={() => setIsMapListOpen(true)}
+          onClick={handleOpenMapList}
           disabled={!user} // ✅ 追加
           className={`flex flex-col items-center justify-center px-2 py-1 border rounded w-21 h-14
             ${user ? "bg-white text-black hover:bg-gray-100 border-black" : "bg-gray-300 text-gray-500 border-gray-400 cursor-not-allowed"}
@@ -151,10 +172,7 @@ const Header: React.FC<HeaderProps> = ({
                   <>
                     <button
                       className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center space-x-2"
-                      onClick={() => {
-                        setUser({ id: 1, name: "ゲストユーザー" });
-                        setIsLoginMenuOpen(false);
-                      }}
+                      onClick={hundleGuestLogin}
                     >
                       <User size={16} />
                       <span>ゲストユーザーとしてログイン</span>

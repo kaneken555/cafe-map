@@ -17,17 +17,32 @@ export const getCafeList = async (mapId: number): Promise<Cafe[]> => {
         } // クッキーを送信する
       );
       console.log("📡 カフェ一覧取得リクエスト:", response.data);
-      // return response.data;
+      console.log("📡 カフェ一覧取得リクエスト:", response.data.cafes);
+
+      // ✅ cafesだけを取り出して、さらにフィールド名を変換して返す
+      const cafes = response.data.cafes.map((cafe: any) => ({
+        id: cafe.id,
+        name: cafe.name,
+        lat: cafe.latitude,        // latitude → lat
+        lng: cafe.longitude,       // longitude → lng
+        placeId: cafe.place_id,     // place_id → placeId
+        photoUrls: cafe.photo_urls, // photo_urls → photoUrls
+        address: cafe.address,
+        rating: cafe.rating,
+        phoneNumber: cafe.phone_number, // phone_number → phoneNumber
+      }));
+
+      return cafes;
     } catch (error) {
       console.error("addCafe エラー:", error);
       throw error;
     } 
 
 
-
-    return new Promise((resolve) => {
-        setTimeout(() => resolve(mockCafeData[mapId] || []), 200);
-    });
+    // フロントエンドのみの仮実装
+    // return new Promise((resolve) => {
+    //     setTimeout(() => resolve(mockCafeData[mapId] || []), 200);
+    // });
 };
 
 // 仮のPOSTリクエスト関数

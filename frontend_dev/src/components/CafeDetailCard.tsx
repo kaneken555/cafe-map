@@ -42,7 +42,7 @@ const CafeDetailCard = ({ cafe, selectedMap }: CafeDetailCardProps) => {
                 alert("マップを選択してください");
                 return;
               }
-              addCafeToMyCafe(cafe);
+              addCafeToMyCafe(selectedMap.id, cafe);
             }}
           >
             <Heart size={20} />
