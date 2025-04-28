@@ -287,27 +287,35 @@ class CafeAPIView(APIView):
             target_map = Map.objects.get(id=map_id)
             
             # 1. カフェ本体を作成
-            new_cafe = Cafe.objects.create(
+            # ✅ まずカフェが存在するかチェック
+            cafe, created = Cafe.objects.get_or_create(
                 place_id=place_id,
-                name=name,
-                address=address,
-                latitude=latitude,
-                longitude=longitude,
-                rating=rating,
-                user_ratings_total=user_ratings_total,
-                photo_reference=photo_reference,
-                photo_url=photo_url,
-                photo_urls=photo_urls,
-                phone_number=phone_number,
-                opening_hours=opening_hours
+                defaults={
+                    "name": name,
+                    "address": address,
+                    "latitude": latitude,
+                    "longitude": longitude,
+                    "rating": rating,
+                    "user_ratings_total": user_ratings_total,
+                    "photo_reference": photo_reference,
+                    "photo_url": photo_url,
+                    "photo_urls": photo_urls,
+                    "phone_number": phone_number,
+                    "opening_hours": opening_hours
+                }
             )
             # 2. Map と Cafe の関連を作成（中間テーブルへの登録）
-            CafeMapRelation.objects.create(
+            # ✅ カフェとマップの関連もチェックしてから作成
+            relation, relation_created = CafeMapRelation.objects.get_or_create(
                 map=target_map,
-                cafe=new_cafe
+                cafe=cafe
             )
             
-            return Response({"id": new_cafe.id, "name": new_cafe.name}, status=status.HTTP_201_CREATED)
+            return Response({
+                "id": cafe.id,
+                "name": cafe.name,
+                "already_existed": not created  # 👈 作ったかどうかをレスポンスで返してもいい
+            }, status=status.HTTP_200_OK)  # ←201(Created)じゃなくてもいい（正常終了）
         
         except Map.DoesNotExist:
             return Response({"error": "Map not found"}, status=status.HTTP_404_NOT_FOUND)
