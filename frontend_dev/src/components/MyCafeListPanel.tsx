@@ -27,9 +27,9 @@ const MyCafeListPanel: React.FC<Props> = ({ isOpen, onClose, cafes }) => {
         </button>
         <div className="text-2xl font-bold mb-4">My Café List</div>
             <input
-            type="text"
-            placeholder="キーワードを入力"
-            className="w-full mb-4 px-3 py-2 border rounded focus:outline-none"
+              type="text"
+              placeholder="キーワードを入力"
+              className="w-full mb-4 px-3 py-2 border rounded focus:outline-none"
             />
         {/* カフェリスト */}
         {cafes.length === 0 ? (

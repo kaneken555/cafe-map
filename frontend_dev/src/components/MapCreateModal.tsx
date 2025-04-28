@@ -27,7 +27,6 @@ const MapCreateModal: React.FC<Props> = ({ isOpen, onClose, setMapList }) => {
       }
   
       await createMap({ name: mapName }); // ✅ マップ作成
-  
       alert("マップが作成されました");
   
       const maps = await getMapList(); // ✅ 最新のマップリスト取得

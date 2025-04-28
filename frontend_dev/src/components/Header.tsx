@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import SideMenu from "./SideMenu";
 import MapListModal from "./MapListModal"; // ← 追加
-import MyCafeListPanel from "./MyCafeListPanel"; // ← 追加
 import { ArrowRightToLine, User, LogIn, Coffee, Map as MapIcon } from "lucide-react";
 import { getCafeList } from "../api/cafe"; // Cafe 型も import
 import { Cafe } from "../api/mockCafeData"; // ← 追加
@@ -72,7 +71,6 @@ const Header: React.FC<HeaderProps> = ({
       setMapList(maps);
       console.log("取得したマップ一覧:", maps);
       
-
     } else {
       alert("ゲストログインに失敗しました");
     }
