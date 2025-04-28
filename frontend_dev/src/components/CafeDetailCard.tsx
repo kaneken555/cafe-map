@@ -26,6 +26,14 @@ const CafeDetailCard = ({ cafe, selectedMap }: CafeDetailCardProps) => {
     );
   };
 
+  const handleAddCafe = () => {
+    if (!selectedMap) {
+      alert("マップを選択してください");
+      return;
+    }
+    addCafeToMyCafe(selectedMap.id, cafe);
+  }
+
   return (
     <div className="p-3">
       {/* タイトル・アイコン */}
@@ -37,13 +45,7 @@ const CafeDetailCard = ({ cafe, selectedMap }: CafeDetailCardProps) => {
         <div className="flex space-x-2 mt-1">
           <button 
             className="text-gray-600 hover:text-black"
-            onClick={() => {
-              if (!selectedMap) {
-                alert("マップを選択してください");
-                return;
-              }
-              addCafeToMyCafe(selectedMap.id, cafe);
-            }}
+            onClick={handleAddCafe}
           >
             <Heart size={20} />
           </button>

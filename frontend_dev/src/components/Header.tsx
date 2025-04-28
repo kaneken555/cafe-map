@@ -79,6 +79,13 @@ const Header: React.FC<HeaderProps> = ({
     setIsLoginMenuOpen(false);
   }
 
+  const handleLogout = () => {
+    setUser(null);              // ✅ ログアウト（ユーザー消す）
+    setSelectedMap(null);       // ✅ 選択中マップもリセット
+    setCafeList([]);            // ✅ カフェリストもリセット（オプション）
+    setMapMode("search");       // ✅ マップモードもリセット（オプション）
+    setIsLoginMenuOpen(false);  // メニューを閉じる
+  }
 
   return (
     <>
@@ -194,13 +201,7 @@ const Header: React.FC<HeaderProps> = ({
                 {user && (
                   <button
                     className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center space-x-2"
-                    onClick={() => {
-                      setUser(null);              // ✅ ログアウト（ユーザー消す）
-                      setSelectedMap(null);       // ✅ 選択中マップもリセット
-                      setCafeList([]);            // ✅ カフェリストもリセット（オプション）
-                      setMapMode("search");       // ✅ マップモードもリセット（オプション）
-                      setIsLoginMenuOpen(false);  // メニューを閉じる
-                    }}
+                    onClick={handleLogout}
                   >
                     <ArrowRightToLine size={16} />
                     <span>ログアウト</span>
