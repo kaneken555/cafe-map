@@ -4,6 +4,9 @@ import { Heart, Share2 } from "lucide-react";
 import GoogleMapButton from "./GoogleMapButton"; // 先ほど作ったボタンコンポーネント
 import { Cafe } from "../api/mockCafeData";
 import { addCafeToMyCafe } from "../api/cafe"; 
+import CafeImageCarousel from "./CafeImageCarousel"; // ✅ 追加
+import CafeDetailInfoTable from "./CafeDetailInfoTable"; // ✅ 追加
+
 
 interface CafeDetailCardProps {
   cafe: Cafe;
@@ -12,19 +15,6 @@ interface CafeDetailCardProps {
 
 
 const CafeDetailCard = ({ cafe, selectedMap }: CafeDetailCardProps) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  const handlePrev = () => {
-    setCurrentIndex((prev) =>
-      prev === 0 ? cafe.photoUrls.length - 1 : prev - 1
-    );
-  };
-
-  const handleNext = () => {
-    setCurrentIndex((prev) =>
-      prev === cafe.photoUrls.length - 1 ? 0 : prev + 1
-    );
-  };
 
   const handleAddCafe = () => {
     if (!selectedMap) {
@@ -77,78 +67,20 @@ const CafeDetailCard = ({ cafe, selectedMap }: CafeDetailCardProps) => {
 
       {/* TODO: 画像サイズ合わせ */}
       {/* カルーセル式画像表示 */}
-      <div className="mt-4 relative">
-        <img
-          src={cafe.photoUrls[currentIndex]}
-          alt={cafe.name}
-          className="rounded-xl w-full object-cover"
-        />
-        {/* ← / → ボタン */}
-        {cafe.photoUrls.length > 1 && (
-          <>
-            <button
-              onClick={handlePrev}
-              className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/50 rounded-full p-1"
-            >
-              ◀
-            </button>
-            <button
-              onClick={handleNext}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/50 rounded-full p-1"
-            >
-              ▶
-            </button>
-          </>
-        )}
-        {/* インジケーター */}
-        <div className="flex justify-center mt-2 space-x-1">
-          {cafe.photoUrls.map((_, index) => (
-            <span
-              key={index}
-              className={`w-2 h-2 rounded-full ${
-                currentIndex === index ? "bg-gray-800" : "bg-gray-300"
-              }`}
-            />
-          ))}
-        </div>
-      </div>
-
+      <CafeImageCarousel
+        photoUrls={cafe.photoUrls}
+        altText={cafe.name}
+      />
 
       {/* 住所・評価 (テーブル形式) */}
-      <div className="mt-2 text-sm text-gray-700 overflow-x-auto">
-        <table className="w-full border-collapse">
-          <tbody>
-            <tr className="border-b">
-              <th className="text-left font-semibold pr-2 py-1 align-top">住所:</th>
-              <td className="py-1">{cafe.address}</td>
-            </tr>
-            <tr className="border-b">
-              <th className="text-left font-semibold pr-2 py-1 align-top">評価:</th>
-              <td className="py-1">⭐️ {cafe.rating.toFixed(1)} / 5</td>
-            </tr>
-            <tr className="border-b">
-              <th className="text-left font-semibold pr-2 py-1 align-top">営業時間:</th>
-              <td className="py-1">{cafe.openTime}</td>
-            </tr>
-            <tr className="border-b">
-              <th className="text-left font-semibold pr-2 py-1 align-top">電話番号:</th>
-              <td className="py-1">{cafe.phoneNumber}</td>
-            </tr>
-            <tr>
-              <th className="text-left font-semibold pr-2 py-1 align-top">HP:</th>
-              <td className="py-1">
-                {cafe.website ? (
-                  <a href={cafe.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-words">
-                    {cafe.website}
-                  </a>
-                ) : (
-                  "なし"
-                )}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <CafeDetailInfoTable
+        address={cafe.address}
+        rating={cafe.rating}
+        openTime={cafe.openTime}
+        phoneNumber={cafe.phoneNumber}
+        website={cafe.website}
+      />
+
     </div>
   );
 };

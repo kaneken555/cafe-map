@@ -7,8 +7,8 @@ import { getCafeList } from "../api/cafe"; // Cafe 型も import
 import { Cafe } from "../api/mockCafeData"; 
 import { guestLogin } from "../api/auth";
 import { getMapList } from "../api/map";
-import LoginMenu from "./LoginMenu"; // 追加
-import HeaderButton from "./HeaderButton"; // ✅ 追加
+import LoginMenu from "./LoginMenu"; 
+import HeaderButton from "./HeaderButton"; 
 
 interface HeaderProps {
   selectedMap: { id: number; name: string } | null;
@@ -27,7 +27,7 @@ const Header: React.FC<HeaderProps> = ({
   setCafeList,
   openCafeListPanel,
   setMyCafeList,
-  setMapMode, // ← 追加
+  setMapMode, 
 
 }) => {    
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
@@ -102,48 +102,48 @@ const Header: React.FC<HeaderProps> = ({
             setCafeList(cafes);
             setMyCafeList(cafes); // 地図用にも保存（もし必要なら）
           }}
-          selectedMapId={selectedMap?.id ?? null} // 👈 ここ！
-          mapList={mapList} // 👈 ここ！
+          selectedMapId={selectedMap?.id ?? null} 
+          mapList={mapList} 
           setMapList={setMapList}
           user={user} 
         />
         
-    <header className="w-full h-16 px-4 flex justify-between items-center bg-gradient-to-r from-yellow-300 to-yellow-500 shadow-md">
-      {/* 左：メニュー */}
-      <div className="flex items-center">
-        <button onClick={() => setIsSideMenuOpen(true)} className="text-2xl">
-            ☰
-        </button>
-      </div>
+      <header className="w-full h-16 px-4 flex justify-between items-center bg-gradient-to-r from-yellow-300 to-yellow-500 shadow-md">
+        {/* 左：メニュー */}
+        <div className="flex items-center">
+          <button onClick={() => setIsSideMenuOpen(true)} className="text-2xl">
+              ☰
+          </button>
+        </div>
 
-      {/* 中央：タイトル */}
-      <div className="flex-grow flex justify-center items-center space-x-2">
-        <Coffee size={24} />
-        <h1 className="text-2xl font-bold text-black">Café Map</h1>
-      </div>
+        {/* 中央：タイトル */}
+        <div className="flex-grow flex justify-center items-center space-x-2">
+          <Coffee size={24} />
+          <h1 className="text-2xl font-bold text-black">Café Map</h1>
+        </div>
 
-      {/* 右：操作ボタン群 */}
-      <div className="flex items-center space-x-2">
-        <HeaderButton
-          onClick={handleOpenCafeList}
-          disabled={!user}
-          icon={<MapIcon size={24} />}
-          label="My Café List"
-        />
+        {/* 右：操作ボタン群 */}
+        <div className="flex items-center space-x-2">
+          <HeaderButton
+            onClick={handleOpenCafeList}
+            disabled={!user}
+            icon={<MapIcon size={24} />}
+            label="My Café List"
+          />
 
-        <HeaderButton
-          onClick={handleShowCafeMap}
-          disabled={!user}
-          icon={<MapIcon size={24} />}
-          label="My Café Map"
-        />
+          <HeaderButton
+            onClick={handleShowCafeMap}
+            disabled={!user}
+            icon={<MapIcon size={24} />}
+            label="My Café Map"
+          />
 
-        <HeaderButton
-          onClick={handleOpenMapList}
-          disabled={!user}
-          icon={<MapIcon size={24} />}
-          label={selectedMap?.name || "My Map List"}
-        />
+          <HeaderButton
+            onClick={handleOpenMapList}
+            disabled={!user}
+            icon={<MapIcon size={24} />}
+            label={selectedMap?.name || "My Map List"}
+          />
 
 
           {/* ▼ ログインボタン */}
@@ -171,8 +171,8 @@ const Header: React.FC<HeaderProps> = ({
                 onLogout={handleLogout}
               />
           </div>
-      </div>
-    </header>
+        </div>
+      </header>
     </>
   );
 }
