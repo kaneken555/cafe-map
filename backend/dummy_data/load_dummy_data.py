@@ -44,36 +44,47 @@ def load_maps():
         MapUserRelation.objects.get_or_create(user=user, map=map_obj)
 
 def load_cafes():
-    try:
-        target_map = Map.objects.get(id=1)  # ✅ 渋谷カフェマップに紐づけ
-    except Map.DoesNotExist:
-        print("対象のマップ（id=1）が存在しません")
-        return
+    # カフェとマップの対応を決めるルール
+    map_assignments = {
+        1: [0, 1],  # 渋谷カフェマップ → スタバ・コトカフェ
+        2: [2],     # 東京駅カフェマップ → イノダコーヒ
+        3: [3, 4],  # 京都カフェ巡り → タリーズ・コメダ
+        4: [5],     # 大阪カフェ巡り → サンマルク
+        # 必要に応じて追加
+    }
 
-    for idx, cafe_data in enumerate(mock_cafes, start=1):
-        cafe, created = Cafe.objects.get_or_create(
-            place_id=cafe_data["place_id"],
-            defaults={
-                "name": cafe_data["name"],
-                "address": cafe_data["address"],
-                "latitude": cafe_data["latitude"],
-                "longitude": cafe_data["longitude"],
-                "rating": cafe_data["rating"],
-                "photo_urls": cafe_data["photo_urls"],
-                "phone_number": cafe_data["phone_number"],
-                "opening_hours": cafe_data["opening_hours"],
-            }
-        )
-        if created:
-            print(f"Created cafe: {cafe.name}")
+    for map_id, cafe_indexes in map_assignments.items():
+        try:
+            target_map = Map.objects.get(id=map_id)
+        except Map.DoesNotExist:
+            print(f"対象のマップ（id={map_id}）が存在しません")
+            continue
 
-        # ✅ ここでCafeMapRelationも作成する
-        relation, relation_created = CafeMapRelation.objects.get_or_create(
-            map=target_map,
-            cafe=cafe
-        )
-        if relation_created:
-            print(f"Linked {cafe.name} to map: {target_map.name}")
+        for idx in cafe_indexes:
+            cafe_data = mock_cafes[idx]
+            cafe, created = Cafe.objects.get_or_create(
+                place_id=cafe_data["place_id"],
+                defaults={
+                    "name": cafe_data["name"],
+                    "address": cafe_data["address"],
+                    "latitude": cafe_data["latitude"],
+                    "longitude": cafe_data["longitude"],
+                    "rating": cafe_data["rating"],
+                    "photo_urls": cafe_data["photo_urls"],
+                    "phone_number": cafe_data["phone_number"],
+                    "opening_hours": cafe_data["opening_hours"],
+                }
+            )
+            if created:
+                print(f"Created cafe: {cafe.name}")
+
+            relation, relation_created = CafeMapRelation.objects.get_or_create(
+                map=target_map,
+                cafe=cafe
+            )
+            if relation_created:
+                print(f"Linked {cafe.name} to map: {target_map.name}")
+
 
 def main():
     load_users()
