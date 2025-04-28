@@ -17,6 +17,7 @@ interface HeaderProps {
   setCafeList: (cafes: Cafe[]) => void;
   openCafeListPanel: () => void;
   setMyCafeList: (cafes: Cafe[]) => void;   
+  mapMode: "search" | "mycafe"; // ✅ 追加！
   setMapMode: (mode: "search" | "mycafe") => void; 
 }
 
@@ -27,6 +28,7 @@ const Header: React.FC<HeaderProps> = ({
   setCafeList,
   openCafeListPanel,
   setMyCafeList,
+  mapMode,
   setMapMode, 
 
 }) => {    
@@ -136,6 +138,7 @@ const Header: React.FC<HeaderProps> = ({
             disabled={!user}
             icon={<MapIcon size={24} />}
             label="My Café Map"
+            active={mapMode === "mycafe"} // ✅ 現在のモードによって強調
           />
 
           <HeaderButton
@@ -159,17 +162,17 @@ const Header: React.FC<HeaderProps> = ({
               </span>
             </button>
 
-              {/* ▼ ドロップダウンメニュー */}
-              <LoginMenu
-                isOpen={isLoginMenuOpen}
-                user={user}
-                onGuestLogin={handleGuestLogin}
-                onTestLogin={() => {
-                  setUser({ id: 2, name: "テストユーザー" });
-                  setIsLoginMenuOpen(false);
-                }}
-                onLogout={handleLogout}
-              />
+            {/* ▼ ドロップダウンメニュー */}
+            <LoginMenu
+              isOpen={isLoginMenuOpen}
+              user={user}
+              onGuestLogin={handleGuestLogin}
+              onTestLogin={() => {
+                setUser({ id: 2, name: "テストユーザー" });
+                setIsLoginMenuOpen(false);
+              }}
+              onLogout={handleLogout}
+            />
           </div>
         </div>
       </header>

@@ -29,6 +29,7 @@ const HomePage: React.FC = () => {
         openCafeListPanel={() => setIsMyCafeListOpen(true)}
         setMyCafeList={setMyCafeList}     
         setMapMode={setMapMode}        
+        mapMode={mapMode} // ✅ 追加
       />
       {/* カフェ詳細パネル */}
       <CafeDetailPanel
