@@ -34,6 +34,7 @@ mock_cafes = [
         ],
         "phone_number": "03-1234-5678",
         "opening_hours": "07:00 - 22:30",
+        "website": "https://www.inoda-coffee.co.jp/",
     },
     {
         "place_id": "ChIJL8g5x1lLGGAR2v4q3X9f7mB",
@@ -49,6 +50,7 @@ mock_cafes = [
         ],
         "phone_number": "03-1234-5678",
         "opening_hours": "11:00 - 21:00",
+        "website": "https://www.inoda-coffee.co.jp/",
     },
     {
         "place_id": "ChIJL8g5x1lLGGAR2v4q3X9f7mC",
@@ -64,6 +66,7 @@ mock_cafes = [
         ],
         "phone_number": "03-1234-5678",
         "opening_hours": "08:00 - 18:00",
+        "website": "https://www.inoda-coffee.co.jp/",
     },
     {
         "place_id": "ChIJL8g5x1lLGGAR2v4q3X9f7mD",
@@ -79,6 +82,7 @@ mock_cafes = [
         ],
         "phone_number": "03-1234-5678",
         "opening_hours": "08:00 - 20:00",
+        "website": "https://www.tullys.co.jp/",
     },
     {
         "place_id": "ChIJL8g5x1lLGGAR2v4q3X9f7mE",
@@ -94,6 +98,7 @@ mock_cafes = [
         ],
         "phone_number": "03-1234-5678",
         "opening_hours": "07:00 - 23:00",
+        "website": "https://www.tullys.co.jp/",
     },
     {
         "place_id": "ChIJL8g5x1lLGGAR2v4q3X9f7mF",
@@ -110,5 +115,6 @@ mock_cafes = [
         ],
         "phone_number": "03-1234-5678",
         "opening_hours": "07:00 - 21:00",
+        "website": "https://www.tullys.co.jp/",
     },
 ]

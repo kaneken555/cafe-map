@@ -203,6 +203,7 @@ class MapDetailAPIView(APIView):
                      "phone_number": cafe.phone_number,
                      "address": cafe.address,
                      "opening_hours": cafe.opening_hours,
+                     "website": cafe.website,
                      "latitude": cafe.latitude, 
                      "longitude": cafe.longitude
                     } 
@@ -282,6 +283,7 @@ class CafeAPIView(APIView):
             photo_urls = request.data.get("photoUrls")
             phone_number = request.data.get("phone_number")
             opening_hours = request.data.get("opening_hours")
+            website = request.data.get("website")
             
             # マップが存在するか確認
             target_map = Map.objects.get(id=map_id)
@@ -301,7 +303,9 @@ class CafeAPIView(APIView):
                     "photo_url": photo_url,
                     "photo_urls": photo_urls,
                     "phone_number": phone_number,
-                    "opening_hours": opening_hours
+                    "opening_hours": opening_hours,
+                    "website": website,  # 👈 ここ！
+                    
                 }
             )
             # 2. Map と Cafe の関連を作成（中間テーブルへの登録）

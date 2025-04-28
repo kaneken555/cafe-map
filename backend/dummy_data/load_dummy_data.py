@@ -73,6 +73,7 @@ def load_cafes():
                     "photo_urls": cafe_data["photo_urls"],
                     "phone_number": cafe_data["phone_number"],
                     "opening_hours": cafe_data["opening_hours"],
+                    "website": cafe_data["website"], 
                 }
             )
             if created:
