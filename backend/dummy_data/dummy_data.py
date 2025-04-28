@@ -43,8 +43,8 @@ mock_cafes = [
         "longitude": 139.760,
         "rating": 4.5,
         "photo_urls": [
-            "https://upload.wikimedia.org/wikipedia/commons/e/e2/Doutor_Coffee_Senbayashi.jpg",
-            "https://upload.wikimedia.org/wikipedia/commons/e/e2/Doutor_Coffee_Senbayashi.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/f/fe/Doutor_Stand_Sennichimae.jpg",
+            "https://upload.wikimedia.org/wikipedia/commons/f/fe/Doutor_Stand_Sennichimae.jpg",
             "https://upload.wikimedia.org/wikipedia/commons/e/e2/Doutor_Coffee_Senbayashi.jpg",
         ],
         "phone_number": "03-1234-5678",

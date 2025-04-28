@@ -11,10 +11,14 @@ import CafeDetailInfoTable from "./CafeDetailInfoTable";
 interface CafeDetailCardProps {
   cafe: Cafe;
   selectedMap: { id: number; name: string } | null; 
+  myCafeList?: Cafe[]; // ✅ 追加
 }
 
 
-const CafeDetailCard = ({ cafe, selectedMap }: CafeDetailCardProps) => {
+const CafeDetailCard = ({ cafe, selectedMap, myCafeList }: CafeDetailCardProps) => {
+
+  // ✅ このカフェが登録済みか？
+  const isRegistered = myCafeList?.some((myCafe) => myCafe.placeId === cafe.placeId) ?? false;
 
   const handleAddCafe = () => {
     if (!selectedMap) {
@@ -34,7 +38,7 @@ const CafeDetailCard = ({ cafe, selectedMap }: CafeDetailCardProps) => {
         </div>
         <div className="flex space-x-2 mt-1">
           <button 
-            className="text-gray-600 hover:text-black"
+            className={`${isRegistered ? "text-red-500" : "text-gray-600"} hover:text-black`} // ✅ 色を切り替え
             onClick={handleAddCafe}
           >
             <Heart size={20} />

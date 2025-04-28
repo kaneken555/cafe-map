@@ -440,5 +440,25 @@ export const mockSearchResults: Cafe[] = [
       lat: 35.671,
       lng: 139.767,
     },
-
+    {
+      id: 113,
+      placeId: "ChIJL8g5x1lLGGAR2v4q3X9f7mB",
+      name: "コトカフェ",
+      address: "東京都渋谷区宇田川町21-6",
+      openTime: "11:00 - 20:00",
+      status: "現在営業中",
+      distance: "1.2km",
+      price_day: "￥999",
+      price_night: "￥999",
+      rating: 4.5,
+      phoneNumber: "03-1234-5678",
+      website: "https://www.tullys.co.jp/",
+      photoUrls: [
+          "https://upload.wikimedia.org/wikipedia/commons/f/fe/Doutor_Stand_Sennichimae.jpg",
+          "https://upload.wikimedia.org/wikipedia/commons/f/fe/Doutor_Stand_Sennichimae.jpg",
+          "https://upload.wikimedia.org/wikipedia/commons/e/e2/Doutor_Coffee_Senbayashi.jpg",
+        ],
+      lat: 35.675,
+      lng: 139.760,
+    },
 ];

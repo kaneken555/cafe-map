@@ -38,7 +38,8 @@ const HomePage: React.FC = () => {
           setSelectedCafe(null);
           setSelectedCafeId(null); // ✅ ここで選択解除！
         }}
-        selectedMap={selectedMap} // ✅ 追加
+        selectedMap={selectedMap}
+        myCafeList={myCafeList} // ✅ 渡す
       />
 
       <MyCafeListPanel
