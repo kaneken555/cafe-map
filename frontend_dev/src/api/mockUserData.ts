@@ -5,7 +5,7 @@ export interface User {
     name: string;
   }
   
-  export const mockUsers: User[] = [
-    { id: 1, name: "ゲストユーザー" },
-    { id: 2, name: "テストユーザー" },
-  ];
+export const mockUsers: User[] = [
+  { id: 1, name: "ゲストユーザー" },
+  { id: 2, name: "テストユーザー" },
+];

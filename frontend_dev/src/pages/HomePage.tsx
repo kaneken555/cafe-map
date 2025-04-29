@@ -29,6 +29,17 @@ const HomePage: React.FC = () => {
         openCafeListPanel={() => setIsMyCafeListOpen(true)}
         setMyCafeList={setMyCafeList}     
         setMapMode={setMapMode}        
+        mapMode={mapMode}
+      />
+      {/* マイカフェ一覧パネル */}
+      <MyCafeListPanel
+        isOpen={isMyCafeListOpen}
+        onClose={() => setIsMyCafeListOpen(false)}
+        cafes={cafeList}
+        onCafeClick={(cafe) => {
+          setSelectedCafe(cafe); // ✅ 選択カフェセット
+          setSelectedCafeId(cafe.id); // ✅ 選択IDセット（今後何かに使う用？）
+        }}
       />
       {/* カフェ詳細パネル */}
       <CafeDetailPanel
@@ -37,13 +48,9 @@ const HomePage: React.FC = () => {
           setSelectedCafe(null);
           setSelectedCafeId(null); // ✅ ここで選択解除！
         }}
-        selectedMap={selectedMap} // ✅ 追加
-      />
-
-      <MyCafeListPanel
-        isOpen={isMyCafeListOpen}
-        onClose={() => setIsMyCafeListOpen(false)}
-        cafes={cafeList}
+        selectedMap={selectedMap}
+        myCafeList={myCafeList} // ✅ 渡す
+        setMyCafeList={setMyCafeList}
       />
 
       {/* Map（ここにアイコンボタンを配置） */}
@@ -51,8 +58,8 @@ const HomePage: React.FC = () => {
         <Map 
           cafes={mapMode === "mycafe" ? myCafeList : searchResultCafes}
           onCafeIconClick={(cafe) => setSelectedCafe(cafe)} 
-          setMapMode={setMapMode}
           selectedCafeId={selectedCafeId}
+          setMapMode={setMapMode}
           setSelectedCafeId={setSelectedCafeId}
           />
       </div>

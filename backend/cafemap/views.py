@@ -113,15 +113,21 @@ def guest_login(request):
     print("✅ ゲストログイン API が呼ばれました")  # ✅ 追加
 
     try:
-        # ゲストユーザーを作成
-        guest_name = f"guest_{get_random_string(8)}"
-        guest_user = User.objects.create(name=guest_name)
+        # # ゲストユーザーを作成
+        # guest_name = f"guest_{get_random_string(8)}"
+        # guest_user = User.objects.create(name=guest_name)
+
+        # 「ゲストユーザー」を取得（なければ作成する）
+        guest_user, created = User.objects.get_or_create(
+            name="ゲストユーザー",  # 固定の名前
+            defaults={}
+        )
 
         # ログイン処理
         login(request, guest_user)
 
         print(f"ゲストユーザー作成成功: {guest_user.name}")  # 追加
-        return Response({"name": guest_user.name}, status=status.HTTP_200_OK)
+        return Response({"id": guest_user.id, "name": guest_user.name}, status=status.HTTP_200_OK)
 
     except Exception as e:
         print(f"ゲストログインエラー: {e}")  # 追加
@@ -136,6 +142,9 @@ def csrf_token_view(request):
 # TODO: MapAPIViewとMapDetailAPIViewを実装
 # /api/maps/
 class MapAPIView(APIView):
+    # # TODO: 認証つける(↓現在は認証なしで登録可能)
+    # permission_classes = [AllowAny]
+
     def get(self, request, *args, **kwargs):
         """ マップの一覧を取得 """
         if not request.user.is_authenticated:
@@ -189,8 +198,15 @@ class MapDetailAPIView(APIView):
                     {"id": cafe.id, 
                      "place_id": cafe.place_id, 
                      "name": cafe.name, 
+                     "photo_urls": cafe.photo_urls,
+                     "rating": cafe.rating,
+                     "phone_number": cafe.phone_number,
+                     "address": cafe.address,
+                     "opening_hours": cafe.opening_hours,
+                     "website": cafe.website,
                      "latitude": cafe.latitude, 
-                     "longitude": cafe.longitude
+                     "longitude": cafe.longitude,
+                     "price_level": cafe.price_level,
                     } 
                      for cafe in cafe_list
                 ]
@@ -228,6 +244,9 @@ class MapDetailAPIView(APIView):
 # TODO: CafeAPIViewとCafeDetailAPIViewを実装
 # /api/maps/<int:map_id>/cafes/
 class CafeAPIView(APIView):
+    # # TODO: 認証つける(↓現在は認証なしで登録可能)
+    # permission_classes = [AllowAny]
+
     def get(self, request, *args, **kwargs):
         """ カフェの一覧を取得 """
         try: 
@@ -253,44 +272,57 @@ class CafeAPIView(APIView):
             # TODO: フィールドの修正
             # リクエストから必要な情報を取得
             map_id = kwargs.get("map_id")
-            place_id = request.data.get("place_id")
+            place_id = request.data.get("placeId")
             name = request.data.get("name")
             address = request.data.get("address")
-            latitude = request.data.get("latitude")
-            longitude = request.data.get("longitude")
+            latitude = request.data.get("lat")
+            longitude = request.data.get("lng")
             rating = request.data.get("rating")
             user_ratings_total = request.data.get("user_ratings_total")
+            price_level = request.data.get("price_level")
             photo_reference = request.data.get("photo_reference")
             photo_url = request.data.get("photo_url")
-            photo_urls = request.data.get("photos")
+            photo_urls = request.data.get("photoUrls")
             phone_number = request.data.get("phone_number")
             opening_hours = request.data.get("opening_hours")
+            website = request.data.get("website")
             
             # マップが存在するか確認
             target_map = Map.objects.get(id=map_id)
             
             # 1. カフェ本体を作成
-            new_cafe = Cafe.objects.create(
+            # ✅ まずカフェが存在するかチェック
+            cafe, created = Cafe.objects.get_or_create(
                 place_id=place_id,
-                name=name,
-                address=address,
-                latitude=latitude,
-                longitude=longitude,
-                rating=rating,
-                user_ratings_total=user_ratings_total,
-                photo_reference=photo_reference,
-                photo_url=photo_url,
-                photo_urls=photo_urls,
-                phone_number=phone_number,
-                opening_hours=opening_hours
+                defaults={
+                    "name": name,
+                    "address": address,
+                    "latitude": latitude,
+                    "longitude": longitude,
+                    "rating": rating,
+                    "user_ratings_total": user_ratings_total,
+                    "price_level": price_level,
+                    "photo_reference": photo_reference,
+                    "photo_url": photo_url,
+                    "photo_urls": photo_urls,
+                    "phone_number": phone_number,
+                    "opening_hours": opening_hours,
+                    "website": website,
+                    
+                }
             )
             # 2. Map と Cafe の関連を作成（中間テーブルへの登録）
-            CafeMapRelation.objects.create(
+            # ✅ カフェとマップの関連もチェックしてから作成
+            relation, relation_created = CafeMapRelation.objects.get_or_create(
                 map=target_map,
-                cafe=new_cafe
+                cafe=cafe
             )
             
-            return Response({"id": new_cafe.id, "name": new_cafe.name}, status=status.HTTP_201_CREATED)
+            return Response({
+                "id": cafe.id,
+                "name": cafe.name,
+                "already_existed": not created  # 👈 作ったかどうかをレスポンスで返してもいい
+            }, status=status.HTTP_200_OK)  # ←201(Created)じゃなくてもいい（正常終了）
         
         except Map.DoesNotExist:
             return Response({"error": "Map not found"}, status=status.HTTP_404_NOT_FOUND)
