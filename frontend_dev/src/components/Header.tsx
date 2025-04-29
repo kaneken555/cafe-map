@@ -9,6 +9,7 @@ import { guestLogin } from "../api/auth";
 import { getMapList } from "../api/map";
 import LoginMenu from "./LoginMenu"; 
 import HeaderButton from "./HeaderButton"; 
+import { toast } from "react-hot-toast";
 
 interface HeaderProps {
   selectedMap: { id: number; name: string } | null;
@@ -41,7 +42,7 @@ const Header: React.FC<HeaderProps> = ({
   
   const handleOpenCafeList = async () => {
     if (!selectedMap) {
-      alert("マップを選択してください");
+      toast.error("マップを選択してください"); 
       return;
     }
     openCafeListPanel();
@@ -49,7 +50,7 @@ const Header: React.FC<HeaderProps> = ({
 
   const handleShowCafeMap = async () => {
     if (!selectedMap) {
-      alert("マップを選択してください");
+      toast.error("マップを選択してください"); 
       return;
     }
     setMapMode("mycafe");         // 表示モード切り替え
@@ -76,7 +77,7 @@ const Header: React.FC<HeaderProps> = ({
       console.log("取得したマップ一覧:", maps);
       
     } else {
-      alert("ゲストログインに失敗しました");
+      toast.error("ゲストログインに失敗しました");
     }
     setIsLoginMenuOpen(false);
   }

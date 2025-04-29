@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { getMapList, deleteMap } from "../api/map";
 import MapDeleteModal from "./MapDeleteModal";
+import { toast } from "react-hot-toast"; // ✅ 追加
 
 interface MapListItemProps {
   map: { id: number; name: string };
@@ -24,15 +25,16 @@ const MapListItem: React.FC<MapListItemProps> = ({ map, selectedMapId, onSelect,
       await deleteMap(map.id);
       const maps = await getMapList();
       setMapList(maps);
-      console.log("取得したマップ一覧:", maps); // 開発用コメント
+      console.log("取得したマップ一覧:", maps); // 開発用ログ
+      toast.success("マップを削除しました");
     } catch (error) {
       console.error("マップ削除エラー:", error);
-      alert("マップの削除に失敗しました。");
+      toast.error("マップの削除に失敗しました");
     }
   };
 
   const handleShare = () => {
-    alert("マップ共有機能は未実装です");
+    toast("マップ共有機能は未実装です");
   };
 
   return (

@@ -6,7 +6,7 @@ import { Cafe } from "../api/mockCafeData";
 import { addCafeToMyCafe } from "../api/cafe"; 
 import CafeImageCarousel from "./CafeImageCarousel"; 
 import CafeDetailInfoTable from "./CafeDetailInfoTable"; 
-
+import { toast } from "react-hot-toast";
 
 interface CafeDetailCardProps {
   cafe: Cafe;
@@ -22,7 +22,7 @@ const CafeDetailCard: React.FC<CafeDetailCardProps> = ({ cafe, selectedMap, myCa
   const isRegistered = myCafeList?.some((myCafe) => myCafe.placeId === cafe.placeId) ?? false;
 
   const handleAddCafe = () => {
-    if (!selectedMap) return alert("マップを選択してください");
+    if (!selectedMap) return toast.error("マップを選択してください");
     addCafeToMyCafe(selectedMap.id, cafe);
     setMyCafeList(prev => [...prev, cafe]); // ✅ ここでmyCafeListを更新する！
   }

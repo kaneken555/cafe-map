@@ -2,6 +2,7 @@
 import { Cafe, mockCafeData } from "./mockCafeData";
 import axios from "axios";
 import { getCsrfToken } from "./auth";
+import { toast } from "react-hot-toast";
 
 // ✅ mockData を参照するだけのメソッド
 export const getCafeList = async (mapId: number): Promise<Cafe[]> => {
@@ -49,7 +50,7 @@ export const getCafeList = async (mapId: number): Promise<Cafe[]> => {
 export const addCafeToMyCafe = async (mapId: number ,cafe: Cafe): Promise<void> => {
   // 本来は fetch/axios でPOSTする処理を書く
   console.log("📡 MyCafeに追加リクエスト:", cafe);
-  alert("カフェがマイカフェに追加されました");
+  toast.success("カフェがマイカフェに追加されました");
 
   const csrfToken = await getCsrfToken(); // CSRF トークンを取得
 

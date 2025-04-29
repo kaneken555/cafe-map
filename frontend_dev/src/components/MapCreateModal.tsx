@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { createMap } from "../api/map"; 
 import { getMapList } from "../api/map";
-
+import { toast } from "react-hot-toast"; // 追加！
 
 interface MapCreateModalProps {
   isOpen: boolean;
@@ -22,13 +22,13 @@ const MapCreateModal: React.FC<MapCreateModalProps> = ({ isOpen, onClose, setMap
   const handleCreateMap = async () => {
     try {
       if (mapName.trim() === "") {
-        alert("マップ名を入力してください");
+        toast.error("マップ名を入力してください");
         return;
       }
   
       await createMap({ name: mapName }); // ✅ マップ作成
-      alert("マップが作成されました");
-  
+      toast.success("マップが作成されました");
+
       const maps = await getMapList(); // ✅ 最新のマップリスト取得
       setMapList(maps); // ✅ 親コンポーネントにマップリストを渡す
       console.log("取得したマップ一覧:", maps);
@@ -36,7 +36,7 @@ const MapCreateModal: React.FC<MapCreateModalProps> = ({ isOpen, onClose, setMap
       handleClose(); // ✅ モーダル閉じる
     } catch (error) {
       console.error("マップ作成エラー:", error);
-      alert("マップ作成に失敗しました");
+      toast.error("マップ作成に失敗しました");
     }
   };
   
