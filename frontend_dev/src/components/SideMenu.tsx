@@ -19,10 +19,28 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
         </button>
       </div>
       <nav className="flex flex-col items-center space-y-6 mt-10 text-md font-medium">
-        <a href="#">アプリの使い方・よくある質問</a>
+        <a
+          href="https://perfect-august-4fc.notion.site/Mappin-1e4ba3d0ae1b8085a82fe5eefaf9fe96?pvs=74"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          アプリの使い方・よくある質問
+        </a>
         <a href="#">運営会社について</a>
-        <a href="#">個人情報の取り扱いについて</a>
-        <a href="#">利用規約</a>
+        <a
+          href="https://perfect-august-4fc.notion.site/1e4ba3d0ae1b80dabec3ca45657e966d"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          プライバシーポリシー
+        </a>
+        <a
+          href="https://perfect-august-4fc.notion.site/1e4ba3d0ae1b80a9b678d58d18acdd34?pvs=74"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          利用規約
+        </a>
         <a href="#">フィードバック・ご要望</a>
         <a href="#">お問い合わせ</a>
       </nav>
