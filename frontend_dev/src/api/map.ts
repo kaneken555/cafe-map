@@ -41,3 +41,23 @@ export const getMapList = async (): Promise<any> => {
     }
 };
 
+export const deleteMap = async (mapId: number): Promise<void> => {
+    console.log("📡 マップ削除リクエスト:", mapId);
+
+    const csrfToken = await getCsrfToken(); // CSRF トークンを取得
+
+    try {
+        const response = await axios.delete(`http://localhost:8000/api/maps/${mapId}/`, 
+            { 
+                headers: {
+                    "X-CSRFToken": csrfToken,
+                },
+                withCredentials: true ,
+            }, // クッキーを送信する
+        );
+        return response.data;
+    } catch (error) {
+        console.error("deleteMap エラー:", error);
+        throw error;
+    } 
+}

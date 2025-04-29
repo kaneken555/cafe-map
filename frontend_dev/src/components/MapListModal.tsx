@@ -60,6 +60,7 @@ const MapListModal: React.FC<MapListModalProps> = ({ isOpen, onClose, onSelectMa
                 selectedMapId={selectedMapId}
                 onSelect={onSelectMap}
                 onClose={onClose}
+                setMapList={setMapList} 
               />
             ))}
           </ul>
