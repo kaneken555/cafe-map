@@ -17,13 +17,13 @@ const MapDeleteModal: React.FC<MapDeleteModalProps> = ({ isOpen, onClose, onConf
         <p className="mb-6 text-sm">「{mapName}」を削除してもよろしいですか？</p>
         <div className="flex justify-end space-x-4">
           <button
-            className="px-4 py-2 text-sm text-gray-600 bg-gray-200 rounded hover:bg-gray-300"
+            className="px-4 py-2 text-sm text-gray-600 bg-gray-200 rounded hover:bg-gray-300 cursor-pointer"
             onClick={onClose}
           >
             キャンセル
           </button>
           <button
-            className="px-4 py-2 text-sm text-white bg-red-500 rounded hover:bg-red-600"
+            className="px-4 py-2 text-sm text-white bg-red-500 rounded hover:bg-red-600 cursor-pointer"
             onClick={onConfirm}
           >
             削除する

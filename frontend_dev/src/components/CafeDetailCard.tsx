@@ -53,8 +53,8 @@ const CafeDetailCard: React.FC<CafeDetailCardProps> = ({ cafe, selectedMap, myCa
         {/* 左側：営業情報 */}
         <div className="text-sm text-gray-800">
           <div className="flex space-x-4">
-            <span>昼：{cafe.price_day}</span>
-            <span>夜：{cafe.price_night}</span>
+            <span>昼：{cafe.price_day || "不明"}</span>
+            <span>夜：{cafe.price_night || "不明"}</span>
           </div>
           <div className="flex items-center space-x-2 mt-1">
             <span className="text-blue-600 font-semibold">{cafe.status}</span>
@@ -64,7 +64,9 @@ const CafeDetailCard: React.FC<CafeDetailCardProps> = ({ cafe, selectedMap, myCa
 
         {/* 右側：Google Mapボタン */}
         <div>
-          <GoogleMapButton url={`https://www.google.com/maps/place/?q=place_id:${cafe.placeId}`} />
+          <GoogleMapButton
+            url={`https://www.google.com/maps/place/?q=place_id:${cafe.placeId}`} 
+          />
         </div>
       </div>
 
