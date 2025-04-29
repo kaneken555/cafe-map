@@ -64,7 +64,7 @@ const CafeDetailCard: React.FC<CafeDetailCardProps> = ({ cafe, selectedMap, myCa
 
         {/* 右側：Google Mapボタン */}
         <div>
-          <GoogleMapButton url="https://www.google.com/maps/place/渋谷TSUTAYA/" />
+          <GoogleMapButton url={`https://www.google.com/maps/place/?q=place_id:${cafe.placeId}`} />
         </div>
       </div>
 
