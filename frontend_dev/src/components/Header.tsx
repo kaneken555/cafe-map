@@ -88,6 +88,7 @@ const Header: React.FC<HeaderProps> = ({
     setCafeList([]);            // ✅ カフェリストもリセット（オプション）
     setMapMode("search");       // ✅ マップモードもリセット（オプション）
     setIsLoginMenuOpen(false);  // メニューを閉じる
+    toast.success("ログアウトしました");
   }
 
 
@@ -153,8 +154,8 @@ const Header: React.FC<HeaderProps> = ({
           {/* ▼ ログインボタン */}
           <div className="relative">
             <button
+              className="flex flex-col items-center justify-center px-2 py-1 border border-black rounded bg-white text-black cursor-pointer hover:bg-gray-100 w-18 h-14"
               onClick={() => setIsLoginMenuOpen((prev) => !prev)}
-              className="flex flex-col items-center justify-center px-2 py-1 border border-black rounded bg-white text-black hover:bg-gray-100 w-18 h-14"
               title={user ? user.name : "ログイン"} // ✅ ツールチップも切り替えられる
               >
               <ArrowRightToLine size={22} />
@@ -169,7 +170,8 @@ const Header: React.FC<HeaderProps> = ({
               user={user}
               onGuestLogin={handleGuestLogin}
               onTestLogin={() => {
-                setUser({ id: 2, name: "テストユーザー" });
+                // setUser({ id: 2, name: "テストユーザー" });
+                toast.error("Googleログインは未実装です");
                 setIsLoginMenuOpen(false);
               }}
               onLogout={handleLogout}

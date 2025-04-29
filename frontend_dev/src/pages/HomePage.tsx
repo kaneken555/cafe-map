@@ -29,13 +29,17 @@ const HomePage: React.FC = () => {
         openCafeListPanel={() => setIsMyCafeListOpen(true)}
         setMyCafeList={setMyCafeList}     
         setMapMode={setMapMode}        
-        mapMode={mapMode} // ✅ 追加
+        mapMode={mapMode}
       />
       {/* マイカフェ一覧パネル */}
       <MyCafeListPanel
         isOpen={isMyCafeListOpen}
         onClose={() => setIsMyCafeListOpen(false)}
         cafes={cafeList}
+        onCafeClick={(cafe) => {
+          setSelectedCafe(cafe); // ✅ 選択カフェセット
+          setSelectedCafeId(cafe.id); // ✅ 選択IDセット（今後何かに使う用？）
+        }}
       />
       {/* カフェ詳細パネル */}
       <CafeDetailPanel
@@ -46,7 +50,7 @@ const HomePage: React.FC = () => {
         }}
         selectedMap={selectedMap}
         myCafeList={myCafeList} // ✅ 渡す
-        setMyCafeList={setMyCafeList} // ✅ 追加
+        setMyCafeList={setMyCafeList}
       />
 
       {/* Map（ここにアイコンボタンを配置） */}
@@ -54,8 +58,8 @@ const HomePage: React.FC = () => {
         <Map 
           cafes={mapMode === "mycafe" ? myCafeList : searchResultCafes}
           onCafeIconClick={(cafe) => setSelectedCafe(cafe)} 
-          setMapMode={setMapMode}
           selectedCafeId={selectedCafeId}
+          setMapMode={setMapMode}
           setSelectedCafeId={setSelectedCafeId}
           />
       </div>

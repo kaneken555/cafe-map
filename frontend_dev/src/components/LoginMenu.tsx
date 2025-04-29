@@ -1,6 +1,7 @@
 // components/LoginMenu.tsx
 import React from "react";
-import { ArrowRightToLine, User, LogIn } from "lucide-react";
+import { ArrowRightToLine, User, LogIn, Users } from "lucide-react";
+import toast from "react-hot-toast";
 
 
 interface LoginMenuProps {
@@ -19,14 +20,14 @@ const LoginMenu: React.FC<LoginMenuProps> = ({ isOpen, user, onGuestLogin, onTes
       {!user ? (
         <>
           <button
-            className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center space-x-2"
+            className="w-full text-left px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-center space-x-2"
             onClick={onGuestLogin}
           >
             <User size={16} />
             <span>ゲストユーザーとしてログイン</span>
           </button>
           <button
-            className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center space-x-2"
+            className="w-full text-left px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-center space-x-2"
             onClick={onTestLogin}
           >
             <LogIn size={16} />
@@ -34,13 +35,27 @@ const LoginMenu: React.FC<LoginMenuProps> = ({ isOpen, user, onGuestLogin, onTes
           </button>
         </>
       ) : (
-        <button
-          className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center space-x-2"
-          onClick={onLogout}
-        >
-          <ArrowRightToLine size={16} />
-          <span>ログアウト</span>
-        </button>
+        <>
+          {/* ✅ ログイン中ならグループボタンを表示 */}
+          <button
+            className="w-full text-left px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-center space-x-2"
+            onClick={() => {
+              toast.error("グループ機能は未実装です");
+            }}
+          >
+            <Users size={16} />
+            <span>グループ</span>
+          </button>
+          
+          <button
+            className="w-full text-left px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-center space-x-2"
+            onClick={onLogout}
+          >
+            <ArrowRightToLine size={16} />
+            <span>ログアウト</span>
+          </button>
+        </>
+
       )}
     </div>
   );
