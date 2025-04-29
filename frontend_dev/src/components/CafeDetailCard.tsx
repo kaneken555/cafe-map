@@ -37,12 +37,12 @@ const CafeDetailCard: React.FC<CafeDetailCardProps> = ({ cafe, selectedMap, myCa
         </div>
         <div className="flex space-x-2 mt-1">
           <button 
-            className={`${isRegistered ? "text-red-500" : "text-gray-600"} hover:text-black`} // ✅ 色を切り替え
+            className={`${isRegistered ? "text-red-500" : "text-gray-600"} hover:text-black cursor-pointer`} // ✅ 色を切り替え
             onClick={handleAddCafe}
           >
             <Heart size={20} />
           </button>
-          <button className="text-gray-600 hover:text-black">
+          <button className="text-gray-600 hover:text-black cursor-pointer">
             <Share2 size={20} />
           </button>
         </div>

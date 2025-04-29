@@ -14,7 +14,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
       }`}
     >
       <div className="p-4 text-right">
-        <button onClick={onClose} className="text-xl font-bold">
+        <button onClick={onClose} className="text-xl font-bold cursor-pointer">
           &laquo;
         </button>
       </div>

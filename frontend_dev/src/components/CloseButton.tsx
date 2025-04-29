@@ -8,7 +8,7 @@ const CloseButton: React.FC<CloseButtonProps> = ({ onClick }) => {
   return (
     <button
       onClick={onClick}
-      className="absolute top-0 right-3 text-lg font-bold text-gray-600 hover:text-black"
+      className="absolute top-0 right-3 text-lg font-bold text-gray-600 hover:text-black cursor-pointer"
       aria-label="Close"
     >
       ×
