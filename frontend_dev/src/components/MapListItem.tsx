@@ -2,7 +2,8 @@
 import React, { useState } from "react";
 import { getMapList, deleteMap } from "../api/map";
 import MapDeleteModal from "./MapDeleteModal";
-import { toast } from "react-hot-toast"; // ✅ 追加
+import { toast } from "react-hot-toast";
+import { CheckCircle, Trash2, Share } from "lucide-react"; // ← 追加
 
 interface MapListItemProps {
   map: { id: number; name: string };
@@ -17,6 +18,7 @@ const MapListItem: React.FC<MapListItemProps> = ({ map, selectedMapId, onSelect,
 
   const handleSelect = () => {
     onSelect(map);
+    toast.success(`マップ「${map.name}」を選択しました`);
     onClose();
   };
 
@@ -53,29 +55,33 @@ const MapListItem: React.FC<MapListItemProps> = ({ map, selectedMapId, onSelect,
       <li className="flex justify-between items-center border px-4 py-2 rounded">
         <span className="truncate">{map.name}</span>
         <div className="flex space-x-2">
-          {map.id === selectedMapId ? (
-            <span className="text-sm text-white bg-green-500 px-2 py-1 rounded">
-              選択中
-            </span>
-          ) : (
-            <button
-              className="text-sm text-white bg-blue-500 hover:bg-blue-600 px-2 py-1 rounded"
-              onClick={handleSelect}
-            >
-              選択
-            </button>
-          )}
-          <button 
-            className="text-sm text-white bg-red-500 hover:bg-red-600 px-2 py-1 rounded"
-            onClick={() => setIsDeleteModalOpen(true)}
+        {map.id === selectedMapId ? (
+          <div className="flex flex-col items-center text-green-600">
+            <CheckCircle size={24} />
+            <span className="text-sm">選択中</span>
+          </div>
+        ) : (
+          <button
+            onClick={handleSelect}
+            className="flex flex-col items-center text-gray-700 hover:text-blue-500 cursor-pointer"
           >
-            削除
+            <CheckCircle size={24} />
+            <span className="text-sm">選択</span>
           </button>
-          <button 
-            className="text-sm text-white bg-gray-500 hover:bg-gray-600 px-2 py-1 rounded"
-            onClick={handleShare}
+        )}
+          <button
+            onClick={() => setIsDeleteModalOpen(true)}
+            className="flex flex-col items-center text-gray-700 hover:text-red-500 cursor-pointer"
           >
-            共有
+            <Trash2 size={24} />  {/* ゴミ箱アイコン */}
+            <span className="text-sm">Delete</span>
+          </button>
+          <button
+            onClick={handleShare}
+            className="flex flex-col items-center text-gray-700 hover:text-blue-500 cursor-pointer"
+          >
+            <Share size={24} /> {/* シェアアイコン */}
+            <span className="text-sm">Share</span>
           </button>
         </div>
       </li>
