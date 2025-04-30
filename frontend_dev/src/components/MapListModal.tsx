@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import MapCreateModal from "./MapCreateModal"; 
 import { mockMapData, MapItem } from "../api/mockMapData"; 
 import MapListItem from "./MapListItem"; 
+import { Coffee } from "lucide-react";
 
 interface MapListModalProps {
   isOpen: boolean;
@@ -40,17 +41,21 @@ const MapListModal: React.FC<MapListModalProps> = ({ isOpen, onClose, onSelectMa
         onClick={onClose}
       >
         <div
-          className="bg-white w-[700px] max-w-full rounded-lg p-6 shadow-xl relative"
+          className="bg-[#fffaf0] w-[700px] max-w-full rounded-lg p-6 shadow-xl relative"
           onClick={(e) => e.stopPropagation()}
         >
           <button
             onClick={onClose}
-            className="absolute top-2 right-3 text-lg font-bold text-gray-600 hover:text-black"
+            className="absolute top-4 right-4 text-lg font-bold text-[#6b4226] hover:text-black cursor-pointer"
           >
             ×
           </button>
 
-          <h2 className="text-xl font-bold mb-4 text-center">マップ一覧</h2>
+          {/* タイトル + アイコン */}
+          <div className="flex items-center mb-6">
+            <Coffee className="w-6 h-6 text-[#6b4226] mr-2" />
+            <h2 className="text-xl font-bold text-[#6b4226]">マイカフェマップ一覧</h2>
+          </div>
 
           <ul className="space-y-2 mb-4">
             {filteredMaps.map((map) => (
@@ -66,10 +71,10 @@ const MapListModal: React.FC<MapListModalProps> = ({ isOpen, onClose, onSelectMa
           </ul>
 
           <button
-            className="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            className="w-full py-3 bg-[#FFC800] hover:bg-[#D8A900] cursor-pointer text-black text-lg rounded-xl"
             onClick={() => setIsCreateModalOpen(true)} // ← ここで表示
           >
-            + 新規マップを作成
+            + 新しいカフェマップをつくる
           </button>
         </div>
       </div>

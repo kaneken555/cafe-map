@@ -1,6 +1,7 @@
 // components/MyCafeListPanel.tsx
 import React from "react";
 import { Cafe } from "../api/mockCafeData"; // ✅ Cafe型をインポート
+import CloseButton from "./CloseButton";
 
 
 interface MyCafeListPanelProps {
@@ -20,12 +21,9 @@ const MyCafeListPanel: React.FC<MyCafeListPanelProps> = ({ isOpen, onClose, cafe
     >
       <div className="h-full overflow-y-auto p-4 relative">
         {/* 閉じるボタン */}
-        <button
-          className="absolute top-2 right-3 text-lg font-bold text-gray-600 hover:text-black"
-          onClick={onClose}
-        >
-          ×
-        </button>
+        <div className="p-1">
+          <CloseButton onClick={onClose} />
+        </div>
         <div className="text-2xl font-bold mb-4">My Café List</div>
           <input
             type="text"

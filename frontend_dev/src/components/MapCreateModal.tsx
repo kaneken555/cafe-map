@@ -54,7 +54,7 @@ const MapCreateModal: React.FC<MapCreateModalProps> = ({ isOpen, onClose, setMap
       >
         <button
           onClick={handleClose}
-          className="absolute top-2 right-3 text-lg font-bold text-gray-600 hover:text-black"
+          className="absolute top-2 right-3 text-lg font-bold text-gray-600 hover:text-black cursor-pointer"
         >
           ×
         </button>
@@ -70,7 +70,7 @@ const MapCreateModal: React.FC<MapCreateModalProps> = ({ isOpen, onClose, setMap
         />
 
         <button 
-          className="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          className="w-full px-4 py-2 bg-[#FFC800] hover:bg-[#D8A900] cursor-pointer text-black rounded "
           onClick={handleCreateMap} // ✅ マップ作成関数を呼び出す
           >
           作成
