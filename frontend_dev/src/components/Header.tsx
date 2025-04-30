@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import SideMenu from "./SideMenu";
 import MapListModal from "./MapListModal"; 
-import { LogIn, Coffee, Map as MapIcon, List, Layers } from "lucide-react";
+import { LogIn, Coffee, Map as MapIcon, List, Layers, Menu } from "lucide-react";
 import { getCafeList } from "../api/cafe"; // Cafe 型も import
 import { Cafe } from "../api/mockCafeData"; 
 import { guestLogin } from "../api/auth";
@@ -118,7 +118,7 @@ const Header: React.FC<HeaderProps> = ({
         {/* 左：サイドメニュー */}
         <div className="flex items-center">
           <button onClick={() => setIsSideMenuOpen(true)} className="text-2xl cursor-pointer">
-              ☰
+            <Menu size={24} />
           </button>
         </div>
 
@@ -162,7 +162,7 @@ const Header: React.FC<HeaderProps> = ({
               onClick={() => setIsLoginMenuOpen((prev) => !prev)}
               title={user ? user.name : "ログイン"} // ✅ ツールチップも切り替えられる
               >
-              <LogIn size={22} />
+              <LogIn size={24} />
               <span className="text-[10px] mt-1">
                 {user ? user.name : "ログイン"}
               </span>
