@@ -49,7 +49,7 @@ const MapCreateModal: React.FC<MapCreateModalProps> = ({ isOpen, onClose, setMap
       onClick={handleClose}
     >
       <div
-        className="bg-white w-96 max-w-full rounded-lg p-6 shadow-xl relative"
+        className="bg-[#fffaf0] w-96 max-w-full rounded-lg p-6 shadow-xl relative"
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -58,7 +58,7 @@ const MapCreateModal: React.FC<MapCreateModalProps> = ({ isOpen, onClose, setMap
         >
           ×
         </button>
-        <h2 className="text-xl font-bold mb-4">新規マップを作成</h2>
+        <h2 className="text-xl font-bold mb-4 text-[#6b4226]">新規マップを作成</h2>
 
         {/* 仮の入力フィールド */}
         <input

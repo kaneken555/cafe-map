@@ -14,9 +14,10 @@ interface MapListModalProps {
   mapList: { id: number; name: string }[];
   setMapList: React.Dispatch<React.SetStateAction<{ id: number; name: string }[]>>; 
   user: { id: number; name: string } | null; 
+  setSelectedMap: (map: { id: number; name: string } | null) => void;
 }
 
-const MapListModal: React.FC<MapListModalProps> = ({ isOpen, onClose, onSelectMap, selectedMapId, mapList, setMapList, user }) => {
+const MapListModal: React.FC<MapListModalProps> = ({ isOpen, onClose, onSelectMap, selectedMapId, mapList, setMapList, user, setSelectedMap }) => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false); 
   const filteredMaps = mapList;
   // const filteredMaps = user
@@ -66,13 +67,14 @@ const MapListModal: React.FC<MapListModalProps> = ({ isOpen, onClose, onSelectMa
                 onSelect={onSelectMap}
                 onClose={onClose}
                 setMapList={setMapList} 
+                setSelectedMap={setSelectedMap}
               />
             ))}
           </ul>
 
           <button
             className="w-full py-3 bg-[#FFC800] hover:bg-[#D8A900] cursor-pointer text-black text-lg rounded-xl"
-            onClick={() => setIsCreateModalOpen(true)} // ← ここで表示
+            onClick={() => setIsCreateModalOpen(true)} 
           >
             + 新しいカフェマップをつくる
           </button>

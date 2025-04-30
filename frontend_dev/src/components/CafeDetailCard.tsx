@@ -27,9 +27,13 @@ const CafeDetailCard: React.FC<CafeDetailCardProps> = ({ cafe, selectedMap, myCa
     setMyCafeList(prev => [...prev, cafe]); // ✅ ここでmyCafeListを更新する！
   }
 
+  const handleShareCafe = () => {
+    toast("カフェ共有機能は未実装です");
+  }
+
   return (
-    <div className="p-3">
-      {/* タイトル・アイコン */}
+    <div className="p-4">
+      {/* タイトルとアクションボタン（お気に入り・共有） */}
       <div className="flex justify-between items-start">
         <div>
           <h2 className="text-xl font-bold">{cafe.name}</h2>
@@ -37,24 +41,24 @@ const CafeDetailCard: React.FC<CafeDetailCardProps> = ({ cafe, selectedMap, myCa
         </div>
         <div className="flex space-x-2 mt-1">
           <button 
-            className={`${isRegistered ? "text-red-500" : "text-gray-600"} hover:text-black cursor-pointer`} // ✅ 色を切り替え
+            className={`${
+              isRegistered ? "text-red-500" : "text-gray-600"
+            } hover:text-black cursor-pointer`}
             onClick={handleAddCafe}
           >
             <Heart size={20} />
           </button>
           <button 
             className="text-gray-600 hover:text-black cursor-pointer"
-            onClick={() => {
-              toast("カフェ共有機能は未実装です");
-            }}
+            onClick={handleShareCafe}
           >
             <Share2 size={20} />
           </button>
         </div>
       </div>
 
-      {/* 営業情報 + Mapボタン */}
-      <div className="mt-2 flex justify-between items-start">
+      {/* 営業情報とGoogle Mapリンク */}
+      <div className="mt-3 flex justify-between items-start">
         {/* 左側：営業情報 */}
         <div className="text-sm text-gray-800">
           <div className="flex space-x-4">
@@ -66,8 +70,6 @@ const CafeDetailCard: React.FC<CafeDetailCardProps> = ({ cafe, selectedMap, myCa
             <span className="text-gray-600">({cafe.openTime})</span>
           </div>
         </div>
-
-        {/* 右側：Google Mapボタン */}
         <div>
           <GoogleMapButton
             url={`https://www.google.com/maps/place/?q=place_id:${cafe.placeId}`} 
@@ -76,13 +78,13 @@ const CafeDetailCard: React.FC<CafeDetailCardProps> = ({ cafe, selectedMap, myCa
       </div>
 
       {/* TODO: 画像サイズ合わせ */}
-      {/* カルーセル式画像表示 */}
+      {/* カフェ画像カルーセル */}
       <CafeImageCarousel
         photoUrls={cafe.photoUrls}
         altText={cafe.name}
       />
 
-      {/* 住所・評価 (テーブル形式) */}
+      {/* 詳細情報テーブル */}
       <CafeDetailInfoTable
         address={cafe.address}
         rating={cafe.rating}

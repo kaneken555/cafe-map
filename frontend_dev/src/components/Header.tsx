@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import SideMenu from "./SideMenu";
 import MapListModal from "./MapListModal"; 
-import { ArrowRightToLine, User, LogIn, Coffee, Map as MapIcon } from "lucide-react";
+import { LogIn, Coffee, Map as MapIcon, List, Layers } from "lucide-react";
 import { getCafeList } from "../api/cafe"; // Cafe 型も import
 import { Cafe } from "../api/mockCafeData"; 
 import { guestLogin } from "../api/auth";
@@ -18,8 +18,9 @@ interface HeaderProps {
   setCafeList: (cafes: Cafe[]) => void;
   openCafeListPanel: () => void;
   setMyCafeList: (cafes: Cafe[]) => void;   
-  mapMode: "search" | "mycafe"; // ✅ 追加！
+  mapMode: "search" | "mycafe";
   setMapMode: (mode: "search" | "mycafe") => void; 
+  isMyCafeListOpen: boolean;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -31,6 +32,7 @@ const Header: React.FC<HeaderProps> = ({
   setMyCafeList,
   mapMode,
   setMapMode, 
+  isMyCafeListOpen,
 
 }) => {    
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
@@ -40,24 +42,22 @@ const Header: React.FC<HeaderProps> = ({
   const [mapList, setMapList] = useState<{ id: number; name: string }[]>([]); // ✅ マップ一覧保持
 
   
-  const handleOpenCafeList = async () => {
+  const requireMapSelected = (action: () => void) => {
     if (!selectedMap) {
-      toast.error("マップを選択してください"); 
+      toast.error("マップを選択してください");
       return;
     }
-    openCafeListPanel();
+    action();
   };
 
-  const handleShowCafeMap = async () => {
-    if (!selectedMap) {
-      toast.error("マップを選択してください"); 
-      return;
-    }
-    setMapMode("mycafe");         // 表示モード切り替え
-  };
+  const handleOpenCafeList = () =>
+    requireMapSelected(openCafeListPanel);
+
+  const handleShowMyCafeMap = () =>
+    requireMapSelected(() => setMapMode("mycafe"));
 
 
-  const handleOpenMapList = async () => {
+  const handleOpenMapList = () => {
     setIsMapListOpen(true);
   }
 
@@ -111,10 +111,11 @@ const Header: React.FC<HeaderProps> = ({
           mapList={mapList} 
           setMapList={setMapList}
           user={user} 
+          setSelectedMap={setSelectedMap}
         />
         
       <header className="w-full h-16 px-4 flex justify-between items-center bg-gradient-to-r from-yellow-300 to-yellow-500 shadow-md">
-        {/* 左：メニュー */}
+        {/* 左：サイドメニュー */}
         <div className="flex items-center">
           <button onClick={() => setIsSideMenuOpen(true)} className="text-2xl cursor-pointer">
               ☰
@@ -132,12 +133,13 @@ const Header: React.FC<HeaderProps> = ({
           <HeaderButton
             onClick={handleOpenCafeList}
             disabled={!user}
-            icon={<MapIcon size={24} />}
+            icon={<List size={24} />}
             label="My Café List"
+            active={isMyCafeListOpen}
           />
 
           <HeaderButton
-            onClick={handleShowCafeMap}
+            onClick={handleShowMyCafeMap}
             disabled={!user}
             icon={<MapIcon size={24} />}
             label="My Café Map"
@@ -147,8 +149,9 @@ const Header: React.FC<HeaderProps> = ({
           <HeaderButton
             onClick={handleOpenMapList}
             disabled={!user}
-            icon={<MapIcon size={24} />}
+            icon={<Layers size={24} />}
             label={selectedMap?.name || "My Map List"}
+            active={!!selectedMap} // ✅ 現在のマップによって強調
           />
 
 
@@ -159,9 +162,9 @@ const Header: React.FC<HeaderProps> = ({
               onClick={() => setIsLoginMenuOpen((prev) => !prev)}
               title={user ? user.name : "ログイン"} // ✅ ツールチップも切り替えられる
               >
-              <ArrowRightToLine size={22} />
+              <LogIn size={22} />
               <span className="text-[10px] mt-1">
-                {user ? user.name : "ログイン"} {/* ✅ ここも */}
+                {user ? user.name : "ログイン"}
               </span>
             </button>
 

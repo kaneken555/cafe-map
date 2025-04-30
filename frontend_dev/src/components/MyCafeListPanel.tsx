@@ -37,7 +37,7 @@ const MyCafeListPanel: React.FC<MyCafeListPanelProps> = ({ isOpen, onClose, cafe
           cafes.map((cafe, i) => (
             <div 
               key={i} 
-              className="flex items-center justify-between mb-4 cursor-pointer hover:bg-gray-100 p-2 rounded"
+              className="flex items-center justify-between mb-4 cursor-pointer hover:bg-gray-100 border rounded-lg shadow-sm p-2"
               onClick={() => onCafeClick(cafe)} // ✅ クリックでカフェ詳細オープン
             >
               <div>

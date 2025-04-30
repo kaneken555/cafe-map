@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { getMapList, deleteMap } from "../api/map";
 import MapDeleteModal from "./MapDeleteModal";
 import { toast } from "react-hot-toast";
-import { CheckCircle, Trash2, Share } from "lucide-react"; // ← 追加
+import { CheckCircle, Trash2, Share } from "lucide-react";
 
 interface MapListItemProps {
   map: { id: number; name: string };
@@ -11,9 +11,10 @@ interface MapListItemProps {
   onSelect: (map: { id: number; name: string }) => void;
   onClose: () => void;
   setMapList: React.Dispatch<React.SetStateAction<{ id: number; name: string }[]>>;   
+  setSelectedMap: (map: { id: number; name: string } | null) => void;
 }
   
-const MapListItem: React.FC<MapListItemProps> = ({ map, selectedMapId, onSelect, onClose , setMapList }) => {
+const MapListItem: React.FC<MapListItemProps> = ({ map, selectedMapId, onSelect, onClose , setMapList, setSelectedMap }) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const handleSelect = () => {
@@ -27,6 +28,7 @@ const MapListItem: React.FC<MapListItemProps> = ({ map, selectedMapId, onSelect,
       await deleteMap(map.id);
       const maps = await getMapList();
       setMapList(maps);
+      setSelectedMap(null); // マップ削除後に選択マップをリセット
       console.log("取得したマップ一覧:", maps); // 開発用ログ
       toast.success("マップを削除しました");
     } catch (error) {
