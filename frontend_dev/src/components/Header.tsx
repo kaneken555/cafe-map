@@ -70,6 +70,7 @@ const Header: React.FC<HeaderProps> = ({
     const userData = await guestLogin();  // 👈 ここで待つ！
     if (userData) {
       setUser({ id: userData.id, name: userData.name }); // 👈 サーバーが返してきた本物のゲストユーザー情報をセット
+      toast.success("ゲストログインしました");
 
       // ログイン時にマップを取得する
       const maps = await getMapList();
@@ -171,7 +172,7 @@ const Header: React.FC<HeaderProps> = ({
               onGuestLogin={handleGuestLogin}
               onTestLogin={() => {
                 // setUser({ id: 2, name: "テストユーザー" });
-                toast.error("Googleログインは未実装です");
+                toast("Googleログインは未実装です");
                 setIsLoginMenuOpen(false);
               }}
               onLogout={handleLogout}

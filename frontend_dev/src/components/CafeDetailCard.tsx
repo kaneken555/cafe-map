@@ -42,7 +42,12 @@ const CafeDetailCard: React.FC<CafeDetailCardProps> = ({ cafe, selectedMap, myCa
           >
             <Heart size={20} />
           </button>
-          <button className="text-gray-600 hover:text-black cursor-pointer">
+          <button 
+            className="text-gray-600 hover:text-black cursor-pointer"
+            onClick={() => {
+              toast("カフェ共有機能は未実装です");
+            }}
+          >
             <Share2 size={20} />
           </button>
         </div>
