@@ -17,6 +17,7 @@ interface HeaderProps {
   cafeList: Cafe[];
   setCafeList: (cafes: Cafe[]) => void;
   openCafeListPanel: () => void;
+  closeCafeListPanel: () => void;
   setMyCafeList: (cafes: Cafe[]) => void;   
   mapMode: "search" | "mycafe";
   setMapMode: (mode: "search" | "mycafe") => void; 
@@ -29,6 +30,7 @@ const Header: React.FC<HeaderProps> = ({
   cafeList,
   setCafeList,
   openCafeListPanel,
+  closeCafeListPanel,
   setMyCafeList,
   mapMode,
   setMapMode, 
@@ -66,7 +68,7 @@ const Header: React.FC<HeaderProps> = ({
     //   setIsLoginMenuOpen(false);
     //   guestLogin();
 
-    const userData = await guestLogin();  // 👈 ここで待つ！
+    const userData = await guestLogin();
     if (userData) {
       setUser({ id: userData.id, name: userData.name }); // 👈 サーバーが返してきた本物のゲストユーザー情報をセット
       toast.success("ゲストログインしました");
@@ -85,10 +87,20 @@ const Header: React.FC<HeaderProps> = ({
   const handleLogout = () => {
     setUser(null);              // ✅ ログアウト（ユーザー消す）
     setSelectedMap(null);       // ✅ 選択中マップもリセット
+    closeCafeListPanel();       // カフェ一覧パネルを閉じる
     setCafeList([]);            // ✅ カフェリストもリセット（オプション）
     setMapMode("search");       // ✅ マップモードもリセット（オプション）
     setIsLoginMenuOpen(false);  // メニューを閉じる
     toast.success("ログアウトしました");
+  }
+
+  const handleMapSelect = async (map: { id: number; name: string }) => {
+    setSelectedMap(map);
+    setIsMapListOpen(false);
+
+    const cafes = await getCafeList(map.id);  // ✅ マップ選択と同時にカフェ取得
+    setCafeList(cafes);
+    setMyCafeList(cafes); // 地図用にも保存（もし必要なら）
   }
 
 
@@ -101,14 +113,7 @@ const Header: React.FC<HeaderProps> = ({
       <MapListModal
           isOpen={isMapListOpen}
           onClose={() => setIsMapListOpen(false)}
-          onSelectMap={async (map) => {
-            setSelectedMap(map);
-            setIsMapListOpen(false);
-
-            const cafes = await getCafeList(map.id);  // ✅ マップ選択と同時にカフェ取得
-            setCafeList(cafes);
-            setMyCafeList(cafes); // 地図用にも保存（もし必要なら）
-          }}
+          onSelectMap={handleMapSelect}
           selectedMapId={selectedMap?.id ?? null} 
           mapList={mapList} 
           setMapList={setMapList}

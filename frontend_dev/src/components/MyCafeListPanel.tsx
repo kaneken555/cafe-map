@@ -19,7 +19,7 @@ const MyCafeListPanel: React.FC<MyCafeListPanelProps> = ({ isOpen, onClose, cafe
         isOpen ? "translate-x-0" : "-translate-x-full"
       }`}
     >
-      <div className="h-full p-4 relative flex flex-col">
+      <div className="h-full p-3 relative flex flex-col">
         {/* 閉じるボタン */}
         <div className="p-1">
           <CloseButton onClick={onClose} />

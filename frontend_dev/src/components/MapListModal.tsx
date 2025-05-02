@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import MapCreateModal from "./MapCreateModal"; 
 import { mockMapData, MapItem } from "../api/mockMapData"; 
 import MapListItem from "./MapListItem"; 
-import { Coffee } from "lucide-react";
+import { Coffee, X } from "lucide-react";
 
 interface MapListModalProps {
   isOpen: boolean;
@@ -49,7 +49,7 @@ const MapListModal: React.FC<MapListModalProps> = ({ isOpen, onClose, onSelectMa
             onClick={onClose}
             className="absolute top-4 right-4 text-lg font-bold text-[#6b4226] hover:text-black cursor-pointer"
           >
-            ×
+            <X size={24} />
           </button>
 
           {/* タイトル + アイコン */}
