@@ -2,7 +2,7 @@
 import React from "react";
 import { Cafe } from "../api/mockCafeData"; // ✅ Cafe型をインポート
 import CloseButton from "./CloseButton";
-
+import CafeListItem from "./CafeListItem";
 
 interface MyCafeListPanelProps {
   isOpen: boolean;
@@ -35,23 +35,7 @@ const MyCafeListPanel: React.FC<MyCafeListPanelProps> = ({ isOpen, onClose, cafe
           <p className="text-gray-500 text-sm">このマップにカフェは登録されていません。</p>
         ) : (
           cafes.map((cafe, i) => (
-            <div 
-              key={i} 
-              className="flex items-center justify-between mb-4 cursor-pointer hover:bg-gray-100 border rounded-lg shadow-sm p-2"
-              onClick={() => onCafeClick(cafe)} // ✅ クリックでカフェ詳細オープン
-            >
-              <div>
-                <div className="font-bold text-sm">{cafe.name}</div>
-                <div className="text-blue-600 text-xs font-semibold">{cafe.status}</div>
-                <div className="text-xs text-gray-500">{cafe.openTime}</div>
-                <div className="text-xs text-gray-500">{cafe.distance}</div>
-              </div>
-              <img
-                src={cafe.photoUrls?.[0] || "/no-image.png"}
-                alt={cafe.name}
-                className="w-16 h-16 rounded object-cover ml-2"
-              />
-            </div>
+            <CafeListItem key={i} cafe={cafe} onClick={onCafeClick} />
           ))
         )}
       </div>
