@@ -71,3 +71,55 @@ export const addCafeToMyCafe = async (mapId: number ,cafe: Cafe): Promise<void> 
     throw error;
   } 
 };
+
+export const searchCafe = async (lat: number, lng: number): Promise<Cafe[]> => {
+  const csrfToken = await getCsrfToken(); // CSRF トークンを取得
+
+  try {
+    // 1. 検索APIからplace_id一覧を取得
+    const baseRes = await axios.get(`http://localhost:8000/api/fetch-cafes/?lat=${lat}&lng=${lng}`, {
+      headers: { "X-CSRFToken": csrfToken },
+      withCredentials: true,
+    });
+
+    const baseCafes = baseRes.data.cafes;
+    console.log("📡 カフェ一覧取得リクエスト:", baseCafes);
+
+
+  // 2. 各place_idについて詳細情報取得
+  const detailPromises = baseCafes.map(async (cafe: any, index: number) => {
+    const detailRes = await axios.get(`http://localhost:8000/api/fetch-cafe-detail/?place_id=${cafe.place_id}`, {
+      headers: { "X-CSRFToken": csrfToken },
+      withCredentials: true,
+    });
+
+    const detail = detailRes.data;
+
+    return {
+      id: index + 1,
+      placeId: detail.place_id,
+      name: detail.name,
+      address: detail.address,
+      openTime: (detail.opening_hours ?? []).join(", "),
+      status: detail.opening_hours?.length > 0 ? "現在営業中" : "営業時間外",
+      distance: "", // ※後で中心からの距離計算で追加可
+      price_day: "", // 任意
+      price_night: "", // 任意
+      priceLevel: detail.price_level ?? 0,
+      rating: detail.rating ?? 0,
+      userRatingTotal: detail.user_ratings_total ?? 0,
+      photoUrls: detail.photos ?? [],
+      phoneNumber: detail.phone_number ?? "",
+      website: detail.website ?? "",
+      lat: detail.latitude,
+      lng: detail.longitude,
+      businessStatus: detail.business_status ?? "",
+    } as Cafe;
+  });
+
+  return await Promise.all(detailPromises);
+} catch (error) {
+  console.error("カフェ検索/詳細取得エラー:", error);
+  return [];
+}
+};
