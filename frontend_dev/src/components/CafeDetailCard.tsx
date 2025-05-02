@@ -32,9 +32,9 @@ const CafeDetailCard: React.FC<CafeDetailCardProps> = ({ cafe, selectedMap, myCa
   }
 
   return (
-    <div className="p-4">
+    <div className="h-[calc(100vh-4rem-2rem)] flex flex-col px-2">
       {/* タイトルとアクションボタン（お気に入り・共有） */}
-      <div className="flex justify-between items-start">
+      <div className="flex justify-between items-start mt-4 mb-3">
         <div>
           <h2 className="text-xl font-bold">{cafe.name}</h2>
           {/* <h3 className="text-xl font-black">{cafe.name_en}</h3> */}
@@ -57,42 +57,43 @@ const CafeDetailCard: React.FC<CafeDetailCardProps> = ({ cafe, selectedMap, myCa
         </div>
       </div>
 
-      {/* 営業情報とGoogle Mapリンク */}
-      <div className="mt-3 flex justify-between items-start">
-        {/* 左側：営業情報 */}
-        <div className="text-sm text-gray-800">
-          <div className="flex space-x-4">
-            <span>昼：{cafe.price_day || "不明"}</span>
-            <span>夜：{cafe.price_night || "不明"}</span>
+      <div className="overflow-y-auto flex-1 pr-1">
+        {/* 営業情報とGoogle Mapリンク */}
+        <div className="mt-3 flex justify-between items-start">
+          {/* 左側：営業情報 */}
+          <div className="text-sm text-gray-800">
+            <div className="flex space-x-4">
+              <span>昼：{cafe.price_day || "不明"}</span>
+              <span>夜：{cafe.price_night || "不明"}</span>
+            </div>
+            <div className="flex items-center space-x-2 mt-1">
+              <span className="text-blue-600 font-semibold">{cafe.status}</span>
+              <span className="text-gray-600">({cafe.openTime})</span>
+            </div>
           </div>
-          <div className="flex items-center space-x-2 mt-1">
-            <span className="text-blue-600 font-semibold">{cafe.status}</span>
-            <span className="text-gray-600">({cafe.openTime})</span>
+          <div>
+            <GoogleMapButton
+              url={`https://www.google.com/maps/place/?q=place_id:${cafe.placeId}`} 
+            />
           </div>
         </div>
-        <div>
-          <GoogleMapButton
-            url={`https://www.google.com/maps/place/?q=place_id:${cafe.placeId}`} 
-          />
-        </div>
+
+        {/* TODO: 画像サイズ合わせ */}
+        {/* カフェ画像カルーセル */}
+        <CafeImageCarousel
+          photoUrls={cafe.photoUrls}
+          altText={cafe.name}
+        />
+
+        {/* 詳細情報テーブル */}
+        <CafeDetailInfoTable
+          address={cafe.address}
+          rating={cafe.rating}
+          openTime={cafe.openTime}
+          phoneNumber={cafe.phoneNumber}
+          website={cafe.website}
+        />
       </div>
-
-      {/* TODO: 画像サイズ合わせ */}
-      {/* カフェ画像カルーセル */}
-      <CafeImageCarousel
-        photoUrls={cafe.photoUrls}
-        altText={cafe.name}
-      />
-
-      {/* 詳細情報テーブル */}
-      <CafeDetailInfoTable
-        address={cafe.address}
-        rating={cafe.rating}
-        openTime={cafe.openTime}
-        phoneNumber={cafe.phoneNumber}
-        website={cafe.website}
-      />
-
     </div>
   );
 };
