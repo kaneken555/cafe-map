@@ -77,7 +77,19 @@ def get_cafe_detail(request):
     url = "https://maps.googleapis.com/maps/api/place/details/json"
     params = {
         "place_id": place_id,
-        "fields": "name,formatted_address,formatted_phone_number,opening_hours,photos,geometry,rating,user_ratings_total",
+        "fields": (
+            "name,"
+            "formatted_address,"
+            "formatted_phone_number,"
+            "website,"
+            "opening_hours,"
+            "photos,"
+            "geometry,"
+            "rating,"
+            "user_ratings_total,"
+            "business_status,"
+            "price_level"
+        ),
         "language": "ja",
         "key": GOOGLE_MAPS_API_KEY,
     }
@@ -88,7 +100,7 @@ def get_cafe_detail(request):
         data = response.json()
         if data.get("status") == "OK":
             result = data.get("result", {})
-            location = result.get("geometry", {}).get("location", {})  # 👈 追加
+            location = result.get("geometry", {}).get("location", {}) 
 
             return JsonResponse({
                 "name": result.get("name", ""),
@@ -100,8 +112,12 @@ def get_cafe_detail(request):
                     f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference={photo['photo_reference']}&key={GOOGLE_MAPS_API_KEY}"
                     for photo in result.get("photos", [])[:5]
                 ],
-                "latitude": location.get("lat"),   # ✅ 緯度追加
-                "longitude": location.get("lng"),  # ✅ 経度追加
+                "latitude": location.get("lat"),   # ✅ 緯度
+                "longitude": location.get("lng"),  # ✅ 経度
+                "phone_number": result.get("formatted_phone_number", ""),  # ✅ 電話番号
+                "website": result.get("website", ""),                     # ✅ Webサイト
+                "business_status": result.get("business_status", ""),  # ✅ 営業状態
+                "price_level": result.get("price_level", None),        # ✅ 価格帯（0〜4、またはnull）
             })
     return JsonResponse({"error": "Failed to fetch cafe details"}, status=500)
 
@@ -110,7 +126,7 @@ def get_cafe_detail(request):
 @permission_classes([AllowAny])  # ✅ 認証なしでもアクセス可能にする
 @csrf_exempt  # CSRF チェックを無効化
 def guest_login(request):
-    print("✅ ゲストログイン API が呼ばれました")  # ✅ 追加
+    print("✅ ゲストログイン API が呼ばれました")
 
     try:
         # # ゲストユーザーを作成
@@ -126,11 +142,11 @@ def guest_login(request):
         # ログイン処理
         login(request, guest_user)
 
-        print(f"ゲストユーザー作成成功: {guest_user.name}")  # 追加
+        print(f"ゲストユーザー作成成功: {guest_user.name}")
         return Response({"id": guest_user.id, "name": guest_user.name}, status=status.HTTP_200_OK)
 
     except Exception as e:
-        print(f"ゲストログインエラー: {e}")  # 追加
+        print(f"ゲストログインエラー: {e}")
         return Response({"error": "Internal Server Error", "message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
