@@ -1,14 +1,14 @@
 // components/Header.tsx
 import React, { useState } from "react";
 import SideMenu from "./SideMenu";
-import MapListModal from "./MapListModal"; 
-import { LogIn, Coffee, Map as MapIcon, List, Layers, Menu } from "lucide-react";
-import { getCafeList } from "../api/cafe"; // Cafe 型も import
-import { Cafe } from "../api/mockCafeData"; 
+import MapListModal from "./MapListModal";
+import { Coffee, Map as MapIcon, List, Layers, Menu } from "lucide-react";
+import { getCafeList } from "../api/cafe";
+import { Cafe } from "../api/mockCafeData";
 import { guestLogin } from "../api/auth";
 import { getMapList } from "../api/map";
-import LoginMenu from "./LoginMenu"; 
-import HeaderButton from "./HeaderButton"; 
+import HeaderButton from "./HeaderButton";
+import UserMenu from "./UserMenu";
 import { toast } from "react-hot-toast";
 
 interface HeaderProps {
@@ -56,7 +56,6 @@ const Header: React.FC<HeaderProps> = ({
   const handleShowMyCafeMap = () =>
     requireMapSelected(() => setMapMode("mycafe"));
 
-
   const handleOpenMapList = () => {
     setIsMapListOpen(true);
   }
@@ -95,7 +94,10 @@ const Header: React.FC<HeaderProps> = ({
 
   return (
     <>
-      <SideMenu isOpen={isSideMenuOpen} onClose={() => setIsSideMenuOpen(false)} />
+      <SideMenu 
+        isOpen={isSideMenuOpen} 
+        onClose={() => setIsSideMenuOpen(false)} 
+      />
       <MapListModal
           isOpen={isMapListOpen}
           onClose={() => setIsMapListOpen(false)}
@@ -154,33 +156,13 @@ const Header: React.FC<HeaderProps> = ({
             active={!!selectedMap} // ✅ 現在のマップによって強調
           />
 
-
-          {/* ▼ ログインボタン */}
-          <div className="relative">
-            <button
-              className="flex flex-col items-center justify-center px-2 py-1 border border-black rounded bg-white text-black cursor-pointer hover:bg-gray-100 w-18 h-14"
-              onClick={() => setIsLoginMenuOpen((prev) => !prev)}
-              title={user ? user.name : "ログイン"} // ✅ ツールチップも切り替えられる
-              >
-              <LogIn size={24} />
-              <span className="text-[10px] mt-1">
-                {user ? user.name : "ログイン"}
-              </span>
-            </button>
-
-            {/* ▼ ドロップダウンメニュー */}
-            <LoginMenu
-              isOpen={isLoginMenuOpen}
-              user={user}
-              onGuestLogin={handleGuestLogin}
-              onTestLogin={() => {
-                // setUser({ id: 2, name: "テストユーザー" });
-                toast("Googleログインは未実装です");
-                setIsLoginMenuOpen(false);
-              }}
-              onLogout={handleLogout}
-            />
-          </div>
+          <UserMenu
+            user={user}
+            isOpen={isLoginMenuOpen}
+            onToggle={() => setIsLoginMenuOpen((prev) => !prev)}
+            onGuestLogin={handleGuestLogin}
+            onLogout={handleLogout}
+          />
         </div>
       </header>
     </>
