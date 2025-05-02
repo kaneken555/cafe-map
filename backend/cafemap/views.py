@@ -2,7 +2,6 @@ import os
 import requests
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.utils.crypto import get_random_string
 from django.contrib.auth import login
 from rest_framework import status
 from rest_framework.response import Response
@@ -107,6 +106,7 @@ def get_cafe_detail(request):
                 "address": result.get("formatted_address", ""),
                 "place_id": place_id,
                 "rating": result.get("rating", ""),
+                "user_ratings_total": result.get("user_ratings_total", 0),
                 "opening_hours": result.get("opening_hours", {}).get("weekday_text", []),
                 "photos": [
                     f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference={photo['photo_reference']}&key={GOOGLE_MAPS_API_KEY}"
@@ -129,10 +129,6 @@ def guest_login(request):
     print("✅ ゲストログイン API が呼ばれました")
 
     try:
-        # # ゲストユーザーを作成
-        # guest_name = f"guest_{get_random_string(8)}"
-        # guest_user = User.objects.create(name=guest_name)
-
         # 「ゲストユーザー」を取得（なければ作成する）
         guest_user, created = User.objects.get_or_create(
             name="ゲストユーザー",  # 固定の名前
@@ -295,12 +291,12 @@ class CafeAPIView(APIView):
             longitude = request.data.get("lng")
             rating = request.data.get("rating")
             user_ratings_total = request.data.get("user_ratings_total")
-            price_level = request.data.get("price_level")
+            price_level = request.data.get("priceLevel")
             photo_reference = request.data.get("photo_reference")
             photo_url = request.data.get("photo_url")
             photo_urls = request.data.get("photoUrls")
-            phone_number = request.data.get("phone_number")
-            opening_hours = request.data.get("opening_hours")
+            phone_number = request.data.get("phoneNumber")
+            opening_hours = request.data.get("openTime")
             website = request.data.get("website")
             
             # マップが存在するか確認
