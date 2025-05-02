@@ -30,7 +30,7 @@ const MapListItem: React.FC<MapListItemProps> = ({ map, selectedMapId, onSelect,
       setMapList(maps);
       setSelectedMap(null); // マップ削除後に選択マップをリセット
       console.log("取得したマップ一覧:", maps); // 開発用ログ
-      toast.success("マップを削除しました");
+      toast.success(`マップ「${map.name}」を削除しました`);
     } catch (error) {
       console.error("マップ削除エラー:", error);
       toast.error("マップの削除に失敗しました");
