@@ -22,7 +22,7 @@ const CafeListItem: React.FC<CafeListItemProps> = ({ cafe, onClick }) => {
       <img
         src={cafe.photoUrls?.[0] || "/no-image.png"}
         alt={cafe.name}
-        className="w-16 h-16 rounded object-cover ml-2"
+        className="w-20 h-16 rounded object-cover ml-2"
       />
     </div>
   );

@@ -27,6 +27,7 @@ const HomePage: React.FC = () => {
         cafeList={cafeList}
         setCafeList={setCafeList}
         openCafeListPanel={() => setIsMyCafeListOpen(true)}
+        closeCafeListPanel={() => setIsMyCafeListOpen(false)}
         setMyCafeList={setMyCafeList}     
         setMapMode={setMapMode}        
         mapMode={mapMode}
@@ -47,10 +48,10 @@ const HomePage: React.FC = () => {
         cafe={selectedCafe}
         onClose={() => {
           setSelectedCafe(null);
-          setSelectedCafeId(null); // ✅ ここで選択解除！
+          setSelectedCafeId(null);
         }}
         selectedMap={selectedMap}
-        myCafeList={myCafeList} // ✅ 渡す
+        myCafeList={myCafeList}
         setMyCafeList={setMyCafeList}
       />
 
@@ -62,6 +63,7 @@ const HomePage: React.FC = () => {
           selectedCafeId={selectedCafeId}
           setMapMode={setMapMode}
           setSelectedCafeId={setSelectedCafeId}
+          setSearchResultCafes={setSearchResultCafes}
           />
       </div>
 

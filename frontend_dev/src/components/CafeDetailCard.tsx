@@ -2,10 +2,10 @@
 import React from "react";
 import { Heart, Share2 } from "lucide-react";
 import GoogleMapButton from "./GoogleMapButton";
-import { Cafe } from "../api/mockCafeData";
-import { addCafeToMyCafe } from "../api/cafe"; 
 import CafeImageCarousel from "./CafeImageCarousel"; 
 import CafeDetailInfoTable from "./CafeDetailInfoTable"; 
+import { Cafe } from "../api/mockCafeData";
+import { addCafeToMyCafe } from "../api/cafe"; 
 import { toast } from "react-hot-toast";
 
 interface CafeDetailCardProps {
@@ -17,7 +17,6 @@ interface CafeDetailCardProps {
 
 
 const CafeDetailCard: React.FC<CafeDetailCardProps> = ({ cafe, selectedMap, myCafeList, setMyCafeList }) => {
-
   // ✅ このカフェが登録済みか？
   const isRegistered = myCafeList?.some((myCafe) => myCafe.placeId === cafe.placeId) ?? false;
 

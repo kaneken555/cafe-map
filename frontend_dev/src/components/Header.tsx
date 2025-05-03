@@ -76,7 +76,7 @@ const Header: React.FC<HeaderProps> = ({
       // ログイン時にマップを取得する
       const maps = await getMapList();
       setMapList(maps);
-      console.log("取得したマップ一覧:", maps);
+      // console.log("取得したマップ一覧:", maps);
       
     } else {
       toast.error("ゲストログインに失敗しました");

@@ -3,6 +3,7 @@ import React from "react";
 import { LogIn } from "lucide-react";
 import LoginMenu from "./LoginMenu";
 import { toast } from "react-hot-toast";
+import { googleLogin, guestLogin } from "../api/auth";
 
 interface Props {
   user: { id: number; name: string } | null;
@@ -20,7 +21,7 @@ const UserMenu: React.FC<Props> = ({
   onLogout,
 }) => {
   const handleTestLogin = () => {
-    toast("Googleログインは未実装です");
+    googleLogin();
     onToggle(); // メニューを閉じる
   };
 
