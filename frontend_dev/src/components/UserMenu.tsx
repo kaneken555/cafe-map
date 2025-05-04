@@ -2,8 +2,7 @@
 import React from "react";
 import { LogIn } from "lucide-react";
 import LoginMenu from "./LoginMenu";
-import { toast } from "react-hot-toast";
-import { googleLogin, guestLogin } from "../api/auth";
+import { googleLogin } from "../api/auth";
 
 interface Props {
   user: { id: number; name: string } | null;
