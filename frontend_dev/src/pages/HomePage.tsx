@@ -7,7 +7,12 @@ import MyCafeListPanel from "../components/MyCafeListPanel"; // ✅ カフェ一
 import { Cafe, mockSearchResults } from "../api/mockCafeData"; // ✅ Cafe型をインポート
 
 
-const HomePage: React.FC = () => {
+interface Props {
+  user: { id: number; name: string } | null;
+  setUser: React.Dispatch<React.SetStateAction<{ id: number; name: string } | null>>;
+}
+
+const HomePage: React.FC<Props> = ({ user, setUser }) => {
   const [selectedMap, setSelectedMap] = useState<{ id: number; name: string } | null>(null); // ✅ マップ選択
   const [cafeList, setCafeList] = useState<Cafe[]>([]); // ✅ 表示カフェリスト
   const [selectedCafe, setSelectedCafe] = useState<Cafe | null>(null); // ✅ カフェ詳細
@@ -22,6 +27,8 @@ const HomePage: React.FC = () => {
   return (
     <div className="flex flex-col h-screen w-full">
       <Header
+        user={user}
+        setUser={setUser}
         selectedMap={selectedMap}
         setSelectedMap={setSelectedMap}
         cafeList={cafeList}
@@ -55,7 +62,7 @@ const HomePage: React.FC = () => {
         setMyCafeList={setMyCafeList}
       />
 
-      {/* Map（ここにアイコンボタンを配置） */}
+      {/* Map */}
       <div className="flex-grow">
         <Map 
           cafes={mapMode === "mycafe" ? myCafeList : searchResultCafes}

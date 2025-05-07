@@ -8,11 +8,11 @@ interface LoginMenuProps {
   isOpen: boolean;
   user: { id: number; name: string } | null;
   onGuestLogin: () => void;
-  onTestLogin: () => void;
+  onGoogleLogin: () => void;
   onLogout: () => void;
 }
 
-const LoginMenu: React.FC<LoginMenuProps> = ({ isOpen, user, onGuestLogin, onTestLogin, onLogout }) => {
+const LoginMenu: React.FC<LoginMenuProps> = ({ isOpen, user, onGuestLogin, onGoogleLogin, onLogout }) => {
   if (!isOpen) return null;
 
   return (
@@ -28,7 +28,7 @@ const LoginMenu: React.FC<LoginMenuProps> = ({ isOpen, user, onGuestLogin, onTes
           </button>
           <button
             className="w-full text-left px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-center space-x-2"
-            onClick={onTestLogin}
+            onClick={onGoogleLogin}
           >
             <LogIn size={16} />
             <span>Googleアカウントでログイン</span>

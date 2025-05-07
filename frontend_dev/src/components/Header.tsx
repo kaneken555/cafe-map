@@ -5,13 +5,15 @@ import MapListModal from "./MapListModal";
 import { Coffee, Map as MapIcon, List, Layers, Menu } from "lucide-react";
 import { getCafeList } from "../api/cafe";
 import { Cafe } from "../api/mockCafeData";
-import { guestLogin } from "../api/auth";
+import { guestLogin, logout } from "../api/auth";
 import { getMapList } from "../api/map";
 import HeaderButton from "./HeaderButton";
 import UserMenu from "./UserMenu";
 import { toast } from "react-hot-toast";
 
 interface HeaderProps {
+  user: { id: number; name: string } | null;
+  setUser: React.Dispatch<React.SetStateAction<{ id: number; name: string } | null>>;
   selectedMap: { id: number; name: string } | null;
   setSelectedMap: (map: { id: number; name: string } | null) => void;
   cafeList: Cafe[];
@@ -25,6 +27,8 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({
+  user,
+  setUser,
   selectedMap,
   setSelectedMap,
   cafeList,
@@ -40,8 +44,7 @@ const Header: React.FC<HeaderProps> = ({
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const [isMapListOpen, setIsMapListOpen] = useState(false);
   const [isLoginMenuOpen, setIsLoginMenuOpen] = useState(false);
-  const [user, setUser] = useState<{ id: number; name: string } | null>(null); // ✅ ログインユーザー保持
-  const [mapList, setMapList] = useState<{ id: number; name: string }[]>([]); // ✅ マップ一覧保持
+  const [mapList, setMapList] = useState<{ id: number; name: string }[]>([]);
 
   
   const requireMapSelected = (action: () => void) => {
@@ -76,7 +79,6 @@ const Header: React.FC<HeaderProps> = ({
       // ログイン時にマップを取得する
       const maps = await getMapList();
       setMapList(maps);
-      // console.log("取得したマップ一覧:", maps);
       
     } else {
       toast.error("ゲストログインに失敗しました");
@@ -84,14 +86,15 @@ const Header: React.FC<HeaderProps> = ({
     setIsLoginMenuOpen(false);
   }
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await logout();
     setUser(null);              // ✅ ログアウト（ユーザー消す）
     setSelectedMap(null);       // ✅ 選択中マップもリセット
     closeCafeListPanel();       // カフェ一覧パネルを閉じる
     setCafeList([]);            // ✅ カフェリストもリセット（オプション）
     setMapMode("search");       // ✅ マップモードもリセット（オプション）
     setIsLoginMenuOpen(false);  // メニューを閉じる
-    toast.success("ログアウトしました");
+    // toast.success("ログアウトしました");
   }
 
   const handleMapSelect = async (map: { id: number; name: string }) => {
@@ -163,6 +166,7 @@ const Header: React.FC<HeaderProps> = ({
 
           <UserMenu
             user={user}
+            setUser={setUser}
             isOpen={isLoginMenuOpen}
             onToggle={() => setIsLoginMenuOpen((prev) => !prev)}
             onGuestLogin={handleGuestLogin}
