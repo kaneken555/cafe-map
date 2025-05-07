@@ -1,4 +1,7 @@
-from django.urls import path
+from django.urls import path, include
+from django.http import JsonResponse
+from django.shortcuts import render
+from django.contrib.auth import logout
 from . import views
 from .views import MapAPIView, MapDetailAPIView, CafeAPIView, CafeDetailAPIView, TagAPIView, TagDetailAPIView, CafeTagAPIView, CafeTagDetailAPIView, CafeMemoAPIView
 
@@ -24,5 +27,9 @@ urlpatterns = [
 
     path("api/csrf/", views.csrf_token_view, name="csrf_token"),
 
+    path("api/auth/login/success/", views.login_success_view, name="login_success"),
+    path("api/auth/logout/", views.logout_view, name="logout"),
+    path("api/auth/login/success-popup/", lambda request: render(request, "popup_login_success.html")),
+    path("api/auth/", include("social_django.urls", namespace="social")),
 
 ]

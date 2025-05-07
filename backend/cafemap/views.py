@@ -2,7 +2,7 @@ import os
 import requests
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth import login
+from django.contrib.auth import login, logout 
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
@@ -131,10 +131,12 @@ def guest_login(request):
     try:
         # 「ゲストユーザー」を取得（なければ作成する）
         guest_user, created = User.objects.get_or_create(
-            name="ゲストユーザー",  # 固定の名前
-            defaults={}
+            name="guest",  # 固定の名前
+            defaults={"email": "guest@example.com"}
         )
-
+        
+        # 🔑 backend を明示的に指定（複数の認証バックエンドがあるため）
+        guest_user.backend = 'django.contrib.auth.backends.ModelBackend'
         # ログイン処理
         login(request, guest_user)
 
@@ -148,6 +150,20 @@ def guest_login(request):
 
 def csrf_token_view(request):
     return JsonResponse({"csrfToken": get_token(request)})
+
+@api_view(['POST'])
+def logout_view(request):
+    logout(request)
+    return JsonResponse({"message": "ログアウトしました"})
+
+def login_success_view(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "未ログインです"}, status=401)
+
+    return JsonResponse({
+        "id": request.user.id,
+        "name": request.user.get_username()
+    })
 
 
 # マップ登録・一覧取得用のAPIViewを実装
@@ -334,7 +350,7 @@ class CafeAPIView(APIView):
                 "id": cafe.id,
                 "name": cafe.name,
                 "already_existed": not created  # 👈 作ったかどうかをレスポンスで返してもいい
-            }, status=status.HTTP_200_OK)  # ←201(Created)じゃなくてもいい（正常終了）
+            }, status=status.HTTP_200_OK)
         
         except Map.DoesNotExist:
             return Response({"error": "Map not found"}, status=status.HTTP_404_NOT_FOUND)
