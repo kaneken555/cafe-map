@@ -3,7 +3,6 @@ import os
 import sys
 import django
 
-
 sys.path.append('/app')
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')  # あなたのプロジェクト名に合わせて
@@ -14,13 +13,15 @@ from dummy_data import mock_users, mock_maps, mock_cafes  # 作ったダミー�
 
 def load_users():
     for user_data in mock_users:
+        email = f"{user_data['name'].replace(' ', '_').lower()}@example.com"  # ユニークなメールを自動生成
         user, created = User.objects.get_or_create(
-            name=user_data["name"]  # ← idを指定しない！
+            name=user_data["name"],
+            defaults={"email": email}
         )
         if created:
             if user.name == "admin":
                 # adminユーザーだけ、パスワードと権限を設定する
-                user.set_password("admin123")  # 👈 任意のパスワード
+                user.set_password("admin123")
                 user.is_staff = True
                 user.is_superuser = True
                 user.is_active = True
