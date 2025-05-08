@@ -4,6 +4,7 @@ import CafeDetailPanel from "../components/CafeDetailPanel";
 import Header from "../components/Header";
 import Map from "../components/Map";
 import MyCafeListPanel from "../components/MyCafeListPanel"; // ✅ カフェ一覧パネル
+import SearchResultPanel from "../components/SearchResultPanel";
 import { Cafe, mockSearchResults } from "../api/mockCafeData"; // ✅ Cafe型をインポート
 
 
@@ -18,6 +19,7 @@ const HomePage: React.FC<Props> = ({ user, setUser }) => {
   const [selectedCafe, setSelectedCafe] = useState<Cafe | null>(null); // ✅ カフェ詳細
   const [isMyCafeListOpen, setIsMyCafeListOpen] = useState(false); // ✅ カフェ一覧パネルの表示
   const [searchResultCafes, setSearchResultCafes] = useState<Cafe[]>(mockSearchResults); // 検索結果
+  const [isSearchResultOpen, setIsSearchResultOpen] = useState(false); // ✅ 検索パネル表示用
   const [myCafeList, setMyCafeList] = useState<Cafe[]>([]); // マイマップのカフェ
   const [mapMode, setMapMode] = useState<"search" | "mycafe">("search"); // 表示切替モード
   const [selectedCafeId, setSelectedCafeId] = useState<number | null>(null);
@@ -50,6 +52,18 @@ const HomePage: React.FC<Props> = ({ user, setUser }) => {
           setSelectedCafeId(cafe.id); // ✅ 選択IDセット（今後何かに使う用？）
         }}
       />
+
+      {/* 検索結果パネル */}
+      <SearchResultPanel
+        isOpen={isSearchResultOpen}
+        onClose={() => setIsSearchResultOpen(false)}
+        cafes={searchResultCafes}
+        onCafeClick={(cafe) => {
+          setSelectedCafe(cafe);
+          setSelectedCafeId(cafe.id);
+        }}
+      />
+
       {/* カフェ詳細パネル */}
       <CafeDetailPanel
         cafe={selectedCafe}
@@ -70,8 +84,11 @@ const HomePage: React.FC<Props> = ({ user, setUser }) => {
           selectedCafeId={selectedCafeId}
           setMapMode={setMapMode}
           setSelectedCafeId={setSelectedCafeId}
-          setSearchResultCafes={setSearchResultCafes}
-          />
+          setSearchResultCafes={(cafes) => {
+            setSearchResultCafes(cafes);
+            setIsSearchResultOpen(true); // ✅ 検索結果パネル表示
+          }}
+        />
       </div>
 
     </div>
