@@ -1,12 +1,13 @@
 // components/LoginMenu.tsx
 import React from "react";
-import { ArrowRightToLine, User, LogIn, Users } from "lucide-react";
+import { ArrowRightToLine, User as UserIcon, LogIn, Users } from "lucide-react";
 import toast from "react-hot-toast";
+import { User as UserType } from "../types/user";
 
 
 interface LoginMenuProps {
   isOpen: boolean;
-  user: { id: number; name: string } | null;
+  user: UserType | null;
   onGuestLogin: () => void;
   onGoogleLogin: () => void;
   onLogout: () => void;
@@ -23,7 +24,7 @@ const LoginMenu: React.FC<LoginMenuProps> = ({ isOpen, user, onGuestLogin, onGoo
             className="w-full text-left px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-center space-x-2"
             onClick={onGuestLogin}
           >
-            <User size={16} />
+            <UserIcon size={16} />
             <span>ゲストユーザーとしてログイン</span>
           </button>
           <button

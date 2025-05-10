@@ -3,8 +3,8 @@ import React, { useState } from "react";
 import { getMapList, deleteMap } from "../api/map";
 import MapDeleteModal from "./MapDeleteModal";
 import { toast } from "react-hot-toast";
-import { CheckCircle, Trash2, Share } from "lucide-react";
-import { MapItem } from "../types/map"; // ← 共通型をインポート
+import { CheckCircle, Trash2, Share as ShareIcon } from "lucide-react";
+import { MapItem } from "../types/map";
 
 
 interface MapListItemProps {
@@ -84,7 +84,7 @@ const MapListItem: React.FC<MapListItemProps> = ({ map, selectedMapId, onSelect,
             onClick={handleShare}
             className="flex flex-col items-center text-gray-700 hover:text-blue-500 cursor-pointer"
           >
-            <Share size={24} /> {/* シェアアイコン */}
+            <ShareIcon size={24} /> {/* シェアアイコン */}
             <span className="text-sm">Share</span>
           </button>
         </div>

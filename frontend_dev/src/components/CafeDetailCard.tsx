@@ -4,10 +4,10 @@ import { Heart, Share2 } from "lucide-react";
 import GoogleMapButton from "./GoogleMapButton";
 import CafeImageCarousel from "./CafeImageCarousel"; 
 import CafeDetailInfoTable from "./CafeDetailInfoTable"; 
-import { Cafe } from "../api/mockCafeData";
 import { addCafeToMyCafe } from "../api/cafe"; 
 import { toast } from "react-hot-toast";
-import { MapItem } from "../types/map"; // ← 共通型をインポート
+import { MapItem } from "../types/map";
+import { Cafe } from "../types/cafe";
 
 
 interface CafeDetailCardProps {

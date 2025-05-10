@@ -4,9 +4,10 @@ import { GoogleMap, LoadScript } from "@react-google-maps/api";
 import MapButton from "./MapButton"; 
 import CafeOverlayIcon from "./CafeOverlayIcon"; // ✅ 切り出したカフェアイコン表示用コンポーネント
 import KeywordSearchModal from "./KeywordSearchModal"; // ✅ キーワード検索モーダルをインポート
-import { mockCafeData, Cafe } from "../api/mockCafeData"; // 👈 Cafe 型を import
+import { mockCafeData } from "../api/mockCafeData";
 import LoadingOverlay from "./LoadingOverlay"; // ✅ ローディングオーバーレイコンポーネントをインポート
 import { searchCafe, searchCafeByKeyword } from "../api/cafe"; // ✅ カフェ検索APIをインポート
+import { Cafe } from "../types/cafe";
 
 
 interface MapProps {
@@ -58,13 +59,12 @@ const Map: React.FC<MapProps> = ({ cafes, onCafeIconClick, setMapMode, selectedC
   
     const cafeResults = await searchCafe(center.lat, center.lng);
     console.log("📡 カフェ一覧取得結果:", cafeResults);
-    setSearchResultCafes(cafeResults); // ✅ こちらを更新する
+    setSearchResultCafes(cafeResults);
     setMapMode("search");
 
   };
 
   const handleKeywordSearchClick = async (keyword: string) => {
-    // toast('キーワード検索は未実装です');
     console.log("📡 キーワード検索実行:", keyword);
 
     const center = getMapCenter();

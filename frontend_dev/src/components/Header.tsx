@@ -2,20 +2,21 @@
 import React, { useState } from "react";
 import SideMenu from "./SideMenu";
 import MapListModal from "./MapListModal";
-import { Coffee, Map as MapIcon, List, Layers, Menu } from "lucide-react";
+import { Coffee, Map as MapIcon, List as ListIcon, Layers, Menu } from "lucide-react";
 import { getCafeList } from "../api/cafe";
-import { Cafe } from "../api/mockCafeData";
 import { guestLogin, logout } from "../api/auth";
 import { getMapList } from "../api/map";
 import HeaderButton from "./HeaderButton";
 import UserMenu from "./UserMenu";
 import { toast } from "react-hot-toast";
-import { MapItem } from "../types/map"; // ← 共通型をインポート
+import { MapItem } from "../types/map";
+import { User as UserType } from "../types/user";
+import { Cafe } from "../types/cafe";
 
 
 interface HeaderProps {
-  user: { id: number; name: string } | null;
-  setUser: React.Dispatch<React.SetStateAction<{ id: number; name: string } | null>>;
+  user: UserType | null;
+  setUser: React.Dispatch<React.SetStateAction<UserType | null>>;
   selectedMap: MapItem | null;
   setSelectedMap: (map: MapItem | null) => void;
   cafeList: Cafe[];
@@ -145,7 +146,7 @@ const Header: React.FC<HeaderProps> = ({
           <HeaderButton
             onClick={handleOpenCafeList}
             disabled={!user}
-            icon={<List size={24} />}
+            icon={<ListIcon size={24} />}
             label="My Café List"
             active={isMyCafeListOpen}
           />

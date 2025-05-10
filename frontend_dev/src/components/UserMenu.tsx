@@ -1,13 +1,15 @@
 // components/UserMenu.tsx
 import React from "react";
-import { LogIn, User } from "lucide-react";
+import { LogIn, User as UserIcon } from "lucide-react";
 import LoginMenu from "./LoginMenu";
 import { googleLoginWithPopup } from "../api/auth";
 import { toast } from "react-hot-toast";
+import { User as UserType } from "../types/user";
+
 
 interface Props {
-  user: { id: number; name: string } | null;
-  setUser: React.Dispatch<React.SetStateAction<{ id: number; name: string } | null>>;
+  user: UserType | null;
+  setUser: React.Dispatch<React.SetStateAction<UserType | null>>;
   isOpen: boolean;
   onToggle: () => void;
   onGuestLogin: () => void;
@@ -40,7 +42,7 @@ const UserMenu: React.FC<Props> = ({
         onClick={onToggle}
         title={user ? user.name : "ログイン"}
       >
-        {user ? <User size={24} /> : <LogIn size={24} />}
+        {user ? <UserIcon size={24} /> : <LogIn size={24} />}
         <span className="text-[10px] mt-1">{user ? user.name : "ログイン"}</span>
       </button>
 

@@ -1,4 +1,6 @@
+// components/MapDeleteModal.tsx
 import React from "react";
+
 
 interface MapDeleteModalProps {
   isOpen: boolean;

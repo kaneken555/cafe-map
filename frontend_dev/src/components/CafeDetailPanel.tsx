@@ -2,8 +2,8 @@
 import React from "react";
 import CafeDetailCard from "./CafeDetailCard";
 import CloseButton from "./CloseButton";
-import { Cafe } from "../api/mockCafeData"; // 👈 Cafe 型を import
-import { MapItem } from "../types/map"; // ← 共通型をインポート
+import { MapItem } from "../types/map";
+import { Cafe } from "../types/cafe";
 
 
 interface CafeDetailPanelProps {

@@ -4,7 +4,8 @@ import MapCreateModal from "./MapCreateModal";
 import { mockMapData } from "../api/mockMapData"; 
 import MapListItem from "./MapListItem"; 
 import { Coffee, X } from "lucide-react";
-import { MapItem } from "../types/map"; // ← 共通型をインポート
+import { MapItem } from "../types/map";
+import { User as UserType } from "../types/user";
 
 
 interface MapListModalProps {
@@ -14,7 +15,7 @@ interface MapListModalProps {
   selectedMapId: number | null;
   mapList: MapItem[];
   setMapList: React.Dispatch<React.SetStateAction<MapItem[]>>; 
-  user: { id: number; name: string } | null; 
+  user: UserType | null; 
   setSelectedMap: (map: MapItem | null) => void;
 }
 

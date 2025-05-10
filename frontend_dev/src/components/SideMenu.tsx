@@ -2,6 +2,7 @@
 import React from "react";
 import { ChevronsLeft } from "lucide-react";
 
+
 interface SideMenuProps {
   isOpen: boolean;
   onClose: () => void;
