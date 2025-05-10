@@ -3,9 +3,11 @@ import React, { useState, useRef } from "react";
 import { GoogleMap, LoadScript } from "@react-google-maps/api";
 import MapButton from "./MapButton"; 
 import CafeOverlayIcon from "./CafeOverlayIcon"; // ✅ 切り出したカフェアイコン表示用コンポーネント
+import KeywordSearchModal from "./KeywordSearchModal"; // ✅ キーワード検索モーダルをインポート
 import { mockCafeData, Cafe } from "../api/mockCafeData"; // 👈 Cafe 型を import
 import LoadingOverlay from "./LoadingOverlay"; // ✅ ローディングオーバーレイコンポーネントをインポート
-import { searchCafe } from "../api/cafe"; // ✅ カフェ検索APIをインポート
+import { searchCafe, searchCafeByKeyword } from "../api/cafe"; // ✅ カフェ検索APIをインポート
+
 
 interface MapProps {
   cafes: Cafe[];
@@ -34,23 +36,48 @@ const Map: React.FC<MapProps> = ({ cafes, onCafeIconClick, setMapMode, selectedC
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   const [isMapLoading, setIsMapLoading] = useState(true);
   const mapRef = useRef<google.maps.Map | null>(null);
+  const [isKeywordSearchOpen, setIsKeywordSearchOpen] = useState(false); // モーダル開閉用
+
+  
+  // ✅ マップ中心の位置情報を取得する汎用関数
+  const getMapCenter = (): { lat: number; lng: number } | null => {
+    if (!mapRef.current) return null;
+    const center = mapRef.current.getCenter();
+    if (!center) return null;
+    return {
+      lat: center.lat(),
+      lng: center.lng(),
+    };
+  };
+
 
   const handleSearchClick = async () => {
-    if (!mapRef.current) return;
-
-    const center = mapRef.current.getCenter();
+    const center = getMapCenter();
     if (!center) return;
-
-    const lat = center.lat();
-    const lng = center.lng();
-    console.log("📡 検索実行: 中心座標 =", lat, lng);
+    console.log("📡 検索実行: 中心座標 =", center.lat, center.lng);
   
-    const cafeResults = await searchCafe(lat, lng);
+    const cafeResults = await searchCafe(center.lat, center.lng);
     console.log("📡 カフェ一覧取得結果:", cafeResults);
     setSearchResultCafes(cafeResults); // ✅ こちらを更新する
     setMapMode("search");
 
   };
+
+  const handleKeywordSearchClick = async (keyword: string) => {
+    // toast('キーワード検索は未実装です');
+    console.log("📡 キーワード検索実行:", keyword);
+
+    const center = getMapCenter();
+    if (!center) return;
+  
+    const results = await searchCafeByKeyword(keyword, center.lat, center.lng);
+    // const results = await searchCafe(center.lat, center.lng);
+    console.log("📡 カフェ一覧取得結果:", results);
+    setSearchResultCafes(results);
+    setMapMode("search");
+    setIsKeywordSearchOpen(false); // モーダル閉じる
+  };
+  
   
   const handleMapLoad = (map: google.maps.Map) => {
     mapRef.current = map;
@@ -71,7 +98,15 @@ const Map: React.FC<MapProps> = ({ cafes, onCafeIconClick, setMapMode, selectedC
       {/* ボタン表示 */}
       <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 flex space-x-4">
         <MapButton label="更新" onClick={handleSearchClick} />
+        <MapButton label="キーワード検索" onClick={() => setIsKeywordSearchOpen(true)} />
       </div>
+
+      {isKeywordSearchOpen && (
+        <KeywordSearchModal
+          onClose={() => setIsKeywordSearchOpen(false)}
+          onSearch={handleKeywordSearchClick}
+        />
+      )}
 
       <LoadScript 
         googleMapsApiKey={apiKey}

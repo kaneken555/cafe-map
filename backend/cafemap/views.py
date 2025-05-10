@@ -50,6 +50,44 @@ def get_cafes(request):
     return JsonResponse({"cafes": cafes})
 
 
+def search_cafes_by_keyword(request):
+    query = request.GET.get("q")
+    lat = request.GET.get("lat")
+    lng = request.GET.get("lng")
+
+    if not query or not lat or not lng:
+        return JsonResponse({"error": "Missing keyword or location"}, status=400)
+
+    url = "https://maps.googleapis.com/maps/api/place/textsearch/json"
+    params = {
+        "query": query,
+        "location": f"{lat},{lng}",
+        "radius": 1000,  # メートル単位
+        "type": "cafe",
+        "language": "ja",
+        "key": GOOGLE_MAPS_API_KEY,
+    }
+
+    response = requests.get(url, params=params)
+    if response.status_code != 200:
+        return JsonResponse({"error": "Google API error"}, status=500)
+
+    results = response.json().get("results", [])
+
+    cafes = [
+        {
+            "lat": place["geometry"]["location"]["lat"],
+            "lng": place["geometry"]["location"]["lng"],
+            "name": place["name"],
+            "place_id": place["place_id"],
+            "photo_reference": place.get("photos", [{}])[0].get("photo_reference", ""),
+        }
+        for place in results
+    ]
+
+    return JsonResponse({"cafes": cafes})
+
+
 @csrf_exempt
 def get_cafe_photo(request):
     photo_reference = request.GET.get("photo_reference")
