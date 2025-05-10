@@ -7,10 +7,12 @@ import CafeDetailInfoTable from "./CafeDetailInfoTable";
 import { Cafe } from "../api/mockCafeData";
 import { addCafeToMyCafe } from "../api/cafe"; 
 import { toast } from "react-hot-toast";
+import { MapItem } from "../types/map"; // ← 共通型をインポート
+
 
 interface CafeDetailCardProps {
   cafe: Cafe;
-  selectedMap: { id: number; name: string } | null; 
+  selectedMap: MapItem | null; 
   myCafeList?: Cafe[];
   setMyCafeList: React.Dispatch<React.SetStateAction<Cafe[]>>;
 }

@@ -3,12 +3,13 @@ import React from "react";
 import CafeDetailCard from "./CafeDetailCard";
 import CloseButton from "./CloseButton";
 import { Cafe } from "../api/mockCafeData"; // 👈 Cafe 型を import
+import { MapItem } from "../types/map"; // ← 共通型をインポート
 
 
 interface CafeDetailPanelProps {
   cafe: Cafe | null;
   onClose: () => void;
-  selectedMap: { id: number; name: string } | null;
+  selectedMap: MapItem | null;
   myCafeList: Cafe[];
   setMyCafeList: React.Dispatch<React.SetStateAction<Cafe[]>>; 
 }

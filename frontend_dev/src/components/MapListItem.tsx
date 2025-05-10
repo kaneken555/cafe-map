@@ -12,7 +12,7 @@ interface MapListItemProps {
   selectedMapId: number | null;
   onSelect: (map: MapItem) => void;
   onClose: () => void;
-  setMapList: React.Dispatch<React.SetStateAction<{ id: number; name: string }[]>>;   
+  setMapList: React.Dispatch<React.SetStateAction<MapItem[]>>;   
   setSelectedMap: (map: MapItem | null) => void;
 }
   
