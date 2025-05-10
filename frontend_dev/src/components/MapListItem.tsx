@@ -4,14 +4,16 @@ import { getMapList, deleteMap } from "../api/map";
 import MapDeleteModal from "./MapDeleteModal";
 import { toast } from "react-hot-toast";
 import { CheckCircle, Trash2, Share } from "lucide-react";
+import { MapItem } from "../types/map"; // ← 共通型をインポート
+
 
 interface MapListItemProps {
-  map: { id: number; name: string };
+  map: MapItem;
   selectedMapId: number | null;
-  onSelect: (map: { id: number; name: string }) => void;
+  onSelect: (map: MapItem) => void;
   onClose: () => void;
   setMapList: React.Dispatch<React.SetStateAction<{ id: number; name: string }[]>>;   
-  setSelectedMap: (map: { id: number; name: string } | null) => void;
+  setSelectedMap: (map: MapItem | null) => void;
 }
   
 const MapListItem: React.FC<MapListItemProps> = ({ map, selectedMapId, onSelect, onClose , setMapList, setSelectedMap }) => {

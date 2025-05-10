@@ -10,12 +10,14 @@ import { getMapList } from "../api/map";
 import HeaderButton from "./HeaderButton";
 import UserMenu from "./UserMenu";
 import { toast } from "react-hot-toast";
+import { MapItem } from "../types/map"; // ← 共通型をインポート
+
 
 interface HeaderProps {
   user: { id: number; name: string } | null;
   setUser: React.Dispatch<React.SetStateAction<{ id: number; name: string } | null>>;
-  selectedMap: { id: number; name: string } | null;
-  setSelectedMap: (map: { id: number; name: string } | null) => void;
+  selectedMap: MapItem | null;
+  setSelectedMap: (map: MapItem | null) => void;
   cafeList: Cafe[];
   setCafeList: (cafes: Cafe[]) => void;
   openCafeListPanel: () => void;
@@ -44,7 +46,7 @@ const Header: React.FC<HeaderProps> = ({
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const [isMapListOpen, setIsMapListOpen] = useState(false);
   const [isLoginMenuOpen, setIsLoginMenuOpen] = useState(false);
-  const [mapList, setMapList] = useState<{ id: number; name: string }[]>([]);
+  const [mapList, setMapList] = useState<MapItem[]>([]);
 
   
   const requireMapSelected = (action: () => void) => {
@@ -97,7 +99,7 @@ const Header: React.FC<HeaderProps> = ({
     // toast.success("ログアウトしました");
   }
 
-  const handleMapSelect = async (map: { id: number; name: string }) => {
+  const handleMapSelect = async (map: MapItem) => {
     setSelectedMap(map);
     setIsMapListOpen(false);
 

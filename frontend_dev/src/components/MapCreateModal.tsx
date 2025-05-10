@@ -4,11 +4,13 @@ import { createMap } from "../api/map";
 import { getMapList } from "../api/map";
 import { toast } from "react-hot-toast";
 import { X } from "lucide-react";
+import { MapItem } from "../types/map"; // ← 共通型をインポート
+
 
 interface MapCreateModalProps {
   isOpen: boolean;
   onClose: () => void;
-  setMapList: React.Dispatch<React.SetStateAction<{ id: number; name: string }[]>>; 
+  setMapList: React.Dispatch<React.SetStateAction<MapItem[]>>; 
 }
 
 const MapCreateModal: React.FC<MapCreateModalProps> = ({ isOpen, onClose, setMapList }) => {

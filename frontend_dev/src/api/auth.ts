@@ -1,6 +1,7 @@
 // src/api/auth.ts
 import toast from "react-hot-toast";
 
+
 export const getCsrfToken = async () => {
     const response = await fetch("http://localhost:8000/api/csrf/", {
       credentials: "include",
@@ -8,6 +9,7 @@ export const getCsrfToken = async () => {
     const data = await response.json();
     return data.csrfToken;
 };
+
 
 export const guestLogin = async () => {
     try {

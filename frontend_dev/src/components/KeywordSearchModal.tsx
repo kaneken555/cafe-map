@@ -16,12 +16,12 @@ const KeywordSearchModal: React.FC<Props> = ({ onClose, onSearch }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-lg w-[400px] shadow-md relative">
-        <button onClick={onClose} className="absolute top-2 right-3 text-gray-500 cursor-pointer">
+    <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
+      <div className="bg-[#fffaf0] p-6 rounded-lg w-[400px] shadow-md relative">
+        <button onClick={onClose} className="absolute top-2 right-3 text-[#6b4226] hover:text-black cursor-pointer">
           <X size={24} />
         </button>
-        <h2 className="text-xl font-bold mb-4">キーワード検索</h2>
+        <h2 className="text-xl font-bold mb-4 text-[#6b4226]">キーワード検索</h2>
         <input
           type="text"
           placeholder="カフェ名や地名など"
@@ -31,7 +31,7 @@ const KeywordSearchModal: React.FC<Props> = ({ onClose, onSearch }) => {
         />
         <button
           onClick={handleSearch}
-          className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 cursor-pointer"
+          className="w-full bg-[#FFC800] text-black py-2 rounded hover:bg-[#D8A900] cursor-pointer"
         >
           検索
         </button>

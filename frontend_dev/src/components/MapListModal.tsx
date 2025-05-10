@@ -1,20 +1,21 @@
 // components/MapListModal.tsx
 import React, { useState } from "react";
 import MapCreateModal from "./MapCreateModal"; 
-import { mockMapData, MapItem } from "../api/mockMapData"; 
+import { mockMapData } from "../api/mockMapData"; 
 import MapListItem from "./MapListItem"; 
 import { Coffee, X } from "lucide-react";
+import { MapItem } from "../types/map"; // ← 共通型をインポート
+
 
 interface MapListModalProps {
   isOpen: boolean;
   onClose: () => void;
-  // onSelectMap: (map: MapItem) => void;
-  onSelectMap: (map: { id: number; name: string }) => void;
-  selectedMapId: number | null; // 👈 追加
-  mapList: { id: number; name: string }[];
-  setMapList: React.Dispatch<React.SetStateAction<{ id: number; name: string }[]>>; 
+  onSelectMap: (map: MapItem) => void;
+  selectedMapId: number | null;
+  mapList: MapItem[];
+  setMapList: React.Dispatch<React.SetStateAction<MapItem[]>>; 
   user: { id: number; name: string } | null; 
-  setSelectedMap: (map: { id: number; name: string } | null) => void;
+  setSelectedMap: (map: MapItem | null) => void;
 }
 
 const MapListModal: React.FC<MapListModalProps> = ({ isOpen, onClose, onSelectMap, selectedMapId, mapList, setMapList, user, setSelectedMap }) => {

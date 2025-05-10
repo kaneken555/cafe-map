@@ -28,6 +28,7 @@ export const createMap = async (params: CreateMapRequest): Promise<void> => {
     } 
 }
 
+
 export const getMapList = async (): Promise<any> => {
     try {
         const response = await axios.get(`http://localhost:8000/api/maps/`, {
@@ -40,6 +41,7 @@ export const getMapList = async (): Promise<any> => {
         throw error;
     }
 };
+
 
 export const deleteMap = async (mapId: number): Promise<void> => {
     console.log("📡 マップ削除リクエスト:", mapId);

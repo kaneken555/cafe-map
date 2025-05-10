@@ -7,7 +7,7 @@ import { toast } from "react-hot-toast";
 
 // ✅ mockData を参照するだけのメソッド
 export const getCafeList = async (mapId: number): Promise<Cafe[]> => {
-  const csrfToken = await getCsrfToken(); // CSRF トークンを取得
+  const csrfToken = await getCsrfToken();
   try {
     const response = await axios.get(`http://localhost:8000/api/maps/${mapId}/`,
       { 
@@ -24,10 +24,10 @@ export const getCafeList = async (mapId: number): Promise<Cafe[]> => {
     const cafes = response.data.cafes.map((cafe: any) => ({
       id: cafe.id,
       name: cafe.name,
-      lat: cafe.latitude,        // latitude → lat
-      lng: cafe.longitude,       // longitude → lng
-      placeId: cafe.place_id,     // place_id → placeId
-      photoUrls: cafe.photo_urls, // photo_urls → photoUrls
+      lat: cafe.latitude,           // latitude → lat
+      lng: cafe.longitude,          // longitude → lng
+      placeId: cafe.place_id,       // place_id → placeId
+      photoUrls: cafe.photo_urls,   // photo_urls → photoUrls
       address: cafe.address,
       rating: cafe.rating,
       phoneNumber: cafe.phone_number, // phone_number → phoneNumber
@@ -50,11 +50,10 @@ export const getCafeList = async (mapId: number): Promise<Cafe[]> => {
 
 // POSTリクエスト関数
 export const addCafeToMyCafe = async (mapId: number ,cafe: Cafe): Promise<void> => {
-  // 本来は fetch/axios でPOSTする処理を書く
   console.log("📡 MyCafeに追加リクエスト:", cafe);
   toast.success("カフェがマイカフェに追加されました");
 
-  const csrfToken = await getCsrfToken(); // CSRF トークンを取得
+  const csrfToken = await getCsrfToken();
 
   try {
     console.log("addCafe", cafe);
@@ -77,7 +76,7 @@ export const addCafeToMyCafe = async (mapId: number ,cafe: Cafe): Promise<void> 
 
 // 🔍 緯度・経度から周辺のカフェplace_idを取得し、詳細情報を取得して返す
 export const searchCafe = async (lat: number, lng: number): Promise<Cafe[]> => {
-  const csrfToken = await getCsrfToken(); // CSRF トークンを取得
+  const csrfToken = await getCsrfToken();
 
   try {
     // 1. 検索APIからplace_id一覧を取得
