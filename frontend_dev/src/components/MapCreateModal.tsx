@@ -2,12 +2,15 @@
 import React, { useState } from "react";
 import { createMap } from "../api/map"; 
 import { getMapList } from "../api/map";
-import { toast } from "react-hot-toast"; // 追加！
+import { toast } from "react-hot-toast";
+import { X } from "lucide-react";
+import { MapItem } from "../types/map"; // ← 共通型をインポート
+
 
 interface MapCreateModalProps {
   isOpen: boolean;
   onClose: () => void;
-  setMapList: React.Dispatch<React.SetStateAction<{ id: number; name: string }[]>>; 
+  setMapList: React.Dispatch<React.SetStateAction<MapItem[]>>; 
 }
 
 const MapCreateModal: React.FC<MapCreateModalProps> = ({ isOpen, onClose, setMapList }) => {
@@ -49,16 +52,16 @@ const MapCreateModal: React.FC<MapCreateModalProps> = ({ isOpen, onClose, setMap
       onClick={handleClose}
     >
       <div
-        className="bg-white w-96 max-w-full rounded-lg p-6 shadow-xl relative"
+        className="bg-[#fffaf0] w-96 max-w-full rounded-lg p-6 shadow-xl relative"
         onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={handleClose}
-          className="absolute top-2 right-3 text-lg font-bold text-gray-600 hover:text-black"
+          className="absolute top-2 right-3 text-lg font-bold text-[#6b4226] hover:text-black cursor-pointer"
         >
-          ×
+          <X size={24} />
         </button>
-        <h2 className="text-xl font-bold mb-4">新規マップを作成</h2>
+        <h2 className="text-xl font-bold mb-4 text-[#6b4226]">新規マップを作成</h2>
 
         {/* 仮の入力フィールド */}
         <input
@@ -70,7 +73,7 @@ const MapCreateModal: React.FC<MapCreateModalProps> = ({ isOpen, onClose, setMap
         />
 
         <button 
-          className="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          className="w-full px-4 py-2 bg-[#FFC800] hover:bg-[#D8A900] cursor-pointer text-black rounded "
           onClick={handleCreateMap} // ✅ マップ作成関数を呼び出す
           >
           作成

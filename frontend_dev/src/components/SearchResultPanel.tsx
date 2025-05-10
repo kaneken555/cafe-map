@@ -1,10 +1,10 @@
-// components/MyCafeListPanel.tsx
+// components/SearchResultPanel.tsx
 import React from "react";
 import { Cafe } from "../api/mockCafeData";
 import CafeListItem from "./CafeListItem";
 import SidePanelLayout from "./SidePanelLayout";
 
-interface MyCafeListPanelProps {
+interface SearchResultPanelProps {
   isOpen: boolean;
   onClose: () => void;
   cafes: Cafe[];
@@ -12,14 +12,14 @@ interface MyCafeListPanelProps {
 }
 
 
-const MyCafeListPanel: React.FC<MyCafeListPanelProps> = ({ 
-  isOpen, 
-  onClose, 
-  cafes, 
-  onCafeClick, 
+const SearchResultPanel: React.FC<SearchResultPanelProps> = ({
+  isOpen,
+  onClose,
+  cafes,
+  onCafeClick,
 }) => {
   return (
-    <SidePanelLayout isOpen={isOpen} onClose={onClose} title="My Café List">
+    <SidePanelLayout isOpen={isOpen} onClose={onClose} title="検索結果">
       <input
         type="text"
         placeholder="キーワードを入力"
@@ -27,7 +27,7 @@ const MyCafeListPanel: React.FC<MyCafeListPanelProps> = ({
       />
       <div className="flex-1 overflow-y-auto pr-1">
         {cafes.length === 0 ? (
-          <p className="text-gray-500 text-sm">このマップにカフェは登録されていません。</p>
+          <p className="text-gray-500 text-sm">カフェが見つかりませんでした。</p>
         ) : (
           cafes.map((cafe, i) => <CafeListItem key={i} cafe={cafe} onClick={onCafeClick} />)
         )}
@@ -36,4 +36,6 @@ const MyCafeListPanel: React.FC<MyCafeListPanelProps> = ({
   );
 };
 
-export default MyCafeListPanel;
+export default SearchResultPanel;
+
+

@@ -6,7 +6,7 @@ interface HeaderButtonProps {
   disabled: boolean;
   icon: React.ReactNode;
   label: string;
-  active?: boolean; // ✅ 追加！
+  active?: boolean;
 }
 
 const HeaderButton: React.FC<HeaderButtonProps> = ({ onClick, disabled, icon, label, active }) => {

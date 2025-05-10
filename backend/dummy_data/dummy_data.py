@@ -2,8 +2,8 @@
 
 # --- mock_users ---
 mock_users = [
-    {"id": 1, "name": "ゲストユーザー"},
-    {"id": 2, "name": "テストユーザー"},
+    {"id": 1, "name": "guest"},
+    {"id": 2, "name": "test"},
     {"id": 3, "name": "admin"},
 ]
 

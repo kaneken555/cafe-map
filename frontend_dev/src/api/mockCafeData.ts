@@ -12,11 +12,13 @@ export interface Cafe {
     price_night?: string;
     photoUrls: string[];
     rating: number;
+    userRatingTotal?: number;
     priceLevel?: number;
     phoneNumber?: string;
     website?: string;
     lat: number;
     lng: number;
+    businessStatus?: string; // "OPERATIONAL" など
   }
 
 export const mockCafeData: { [key: number]: Cafe[] } = {

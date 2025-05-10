@@ -1,10 +1,13 @@
 // App.tsx
 import './App.css'
+import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from './pages/HomePage';
 import { Toaster } from "react-hot-toast";
 
+
 const App: React.FC = () => {
+  const [user, setUser] = useState<{ id: number; name: string } | null>(null);
 
   return (
     <Router>
@@ -15,7 +18,7 @@ const App: React.FC = () => {
         {/* メインコンテンツ */}
         <main className="flex-grow">
           <Routes>
-            <Route path="/" element={<HomePage />} />
+            <Route path="/" element={<HomePage user={user} setUser={setUser} />} />
           </Routes>
         </main>
       </div>

@@ -4,13 +4,13 @@ from .models import User, Cafe, Map, Tag, Memo, ShareMap,MapUserRelation, CafeMa
 
 class UserAdmin(BaseUserAdmin):
     model = User
-    list_display = ('id', 'name', 'is_staff', 'is_superuser', 'is_active')
+    list_display = ('id', 'name', 'email', 'is_staff', 'is_superuser', 'is_active')
     list_filter = ('is_staff', 'is_superuser', 'is_active')
     ordering = ('id',)
-    search_fields = ('name',)
+    search_fields = ('name', 'email')
 
     fieldsets = (
-        (None, {'fields': ('name', 'password')}),
+        (None, {'fields': ('name', 'email', 'password')}),
         ('権限', {'fields': ('is_staff', 'is_superuser', 'is_active')}),
         ('日付', {'fields': ('last_login',)}),
     )
@@ -18,7 +18,7 @@ class UserAdmin(BaseUserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('name', 'password1', 'password2', 'is_staff', 'is_superuser', 'is_active'),
+            'fields': ('name', 'email', 'password1', 'password2', 'is_staff', 'is_superuser', 'is_active'),
         }),
     )
 

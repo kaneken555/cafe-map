@@ -2,8 +2,7 @@ import os
 import requests
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.utils.crypto import get_random_string
-from django.contrib.auth import login
+from django.contrib.auth import login, logout 
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
@@ -51,6 +50,44 @@ def get_cafes(request):
     return JsonResponse({"cafes": cafes})
 
 
+def search_cafes_by_keyword(request):
+    query = request.GET.get("q")
+    lat = request.GET.get("lat")
+    lng = request.GET.get("lng")
+
+    if not query or not lat or not lng:
+        return JsonResponse({"error": "Missing keyword or location"}, status=400)
+
+    url = "https://maps.googleapis.com/maps/api/place/textsearch/json"
+    params = {
+        "query": query,
+        "location": f"{lat},{lng}",
+        "radius": 1000,  # メートル単位
+        "type": "cafe",
+        "language": "ja",
+        "key": GOOGLE_MAPS_API_KEY,
+    }
+
+    response = requests.get(url, params=params)
+    if response.status_code != 200:
+        return JsonResponse({"error": "Google API error"}, status=500)
+
+    results = response.json().get("results", [])
+
+    cafes = [
+        {
+            "lat": place["geometry"]["location"]["lat"],
+            "lng": place["geometry"]["location"]["lng"],
+            "name": place["name"],
+            "place_id": place["place_id"],
+            "photo_reference": place.get("photos", [{}])[0].get("photo_reference", ""),
+        }
+        for place in results
+    ]
+
+    return JsonResponse({"cafes": cafes})
+
+
 @csrf_exempt
 def get_cafe_photo(request):
     photo_reference = request.GET.get("photo_reference")
@@ -77,7 +114,19 @@ def get_cafe_detail(request):
     url = "https://maps.googleapis.com/maps/api/place/details/json"
     params = {
         "place_id": place_id,
-        "fields": "name,formatted_address,formatted_phone_number,opening_hours,photos,geometry,rating,user_ratings_total",
+        "fields": (
+            "name,"
+            "formatted_address,"
+            "formatted_phone_number,"
+            "website,"
+            "opening_hours,"
+            "photos,"
+            "geometry,"
+            "rating,"
+            "user_ratings_total,"
+            "business_status,"
+            "price_level"
+        ),
         "language": "ja",
         "key": GOOGLE_MAPS_API_KEY,
     }
@@ -88,20 +137,25 @@ def get_cafe_detail(request):
         data = response.json()
         if data.get("status") == "OK":
             result = data.get("result", {})
-            location = result.get("geometry", {}).get("location", {})  # 👈 追加
+            location = result.get("geometry", {}).get("location", {}) 
 
             return JsonResponse({
                 "name": result.get("name", ""),
                 "address": result.get("formatted_address", ""),
                 "place_id": place_id,
                 "rating": result.get("rating", ""),
+                "user_ratings_total": result.get("user_ratings_total", 0),
                 "opening_hours": result.get("opening_hours", {}).get("weekday_text", []),
                 "photos": [
                     f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference={photo['photo_reference']}&key={GOOGLE_MAPS_API_KEY}"
                     for photo in result.get("photos", [])[:5]
                 ],
-                "latitude": location.get("lat"),   # ✅ 緯度追加
-                "longitude": location.get("lng"),  # ✅ 経度追加
+                "latitude": location.get("lat"),   # ✅ 緯度
+                "longitude": location.get("lng"),  # ✅ 経度
+                "phone_number": result.get("formatted_phone_number", ""),  # ✅ 電話番号
+                "website": result.get("website", ""),                     # ✅ Webサイト
+                "business_status": result.get("business_status", ""),  # ✅ 営業状態
+                "price_level": result.get("price_level", None),        # ✅ 価格帯（0〜4、またはnull）
             })
     return JsonResponse({"error": "Failed to fetch cafe details"}, status=500)
 
@@ -110,32 +164,44 @@ def get_cafe_detail(request):
 @permission_classes([AllowAny])  # ✅ 認証なしでもアクセス可能にする
 @csrf_exempt  # CSRF チェックを無効化
 def guest_login(request):
-    print("✅ ゲストログイン API が呼ばれました")  # ✅ 追加
+    print("✅ ゲストログイン API が呼ばれました")
 
     try:
-        # # ゲストユーザーを作成
-        # guest_name = f"guest_{get_random_string(8)}"
-        # guest_user = User.objects.create(name=guest_name)
-
         # 「ゲストユーザー」を取得（なければ作成する）
         guest_user, created = User.objects.get_or_create(
-            name="ゲストユーザー",  # 固定の名前
-            defaults={}
+            name="guest",  # 固定の名前
+            defaults={"email": "guest@example.com"}
         )
-
+        
+        # 🔑 backend を明示的に指定（複数の認証バックエンドがあるため）
+        guest_user.backend = 'django.contrib.auth.backends.ModelBackend'
         # ログイン処理
         login(request, guest_user)
 
-        print(f"ゲストユーザー作成成功: {guest_user.name}")  # 追加
+        print(f"ゲストユーザー作成成功: {guest_user.name}")
         return Response({"id": guest_user.id, "name": guest_user.name}, status=status.HTTP_200_OK)
 
     except Exception as e:
-        print(f"ゲストログインエラー: {e}")  # 追加
+        print(f"ゲストログインエラー: {e}")
         return Response({"error": "Internal Server Error", "message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 def csrf_token_view(request):
     return JsonResponse({"csrfToken": get_token(request)})
+
+@api_view(['POST'])
+def logout_view(request):
+    logout(request)
+    return JsonResponse({"message": "ログアウトしました"})
+
+def login_success_view(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "未ログインです"}, status=401)
+
+    return JsonResponse({
+        "id": request.user.id,
+        "name": request.user.get_username()
+    })
 
 
 # マップ登録・一覧取得用のAPIViewを実装
@@ -279,12 +345,12 @@ class CafeAPIView(APIView):
             longitude = request.data.get("lng")
             rating = request.data.get("rating")
             user_ratings_total = request.data.get("user_ratings_total")
-            price_level = request.data.get("price_level")
+            price_level = request.data.get("priceLevel")
             photo_reference = request.data.get("photo_reference")
             photo_url = request.data.get("photo_url")
             photo_urls = request.data.get("photoUrls")
-            phone_number = request.data.get("phone_number")
-            opening_hours = request.data.get("opening_hours")
+            phone_number = request.data.get("phoneNumber")
+            opening_hours = request.data.get("openTime")
             website = request.data.get("website")
             
             # マップが存在するか確認
@@ -322,7 +388,7 @@ class CafeAPIView(APIView):
                 "id": cafe.id,
                 "name": cafe.name,
                 "already_existed": not created  # 👈 作ったかどうかをレスポンスで返してもいい
-            }, status=status.HTTP_200_OK)  # ←201(Created)じゃなくてもいい（正常終了）
+            }, status=status.HTTP_200_OK)
         
         except Map.DoesNotExist:
             return Response({"error": "Map not found"}, status=status.HTTP_404_NOT_FOUND)
