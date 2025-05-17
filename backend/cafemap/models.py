@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+import uuid
 
 
 class CustomUserManager(BaseUserManager):
@@ -111,3 +112,35 @@ class CafeShareMapRelation(models.Model):
     share_map = models.ForeignKey(ShareMap, on_delete=models.CASCADE)
     cafe = models.ForeignKey(Cafe, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+# Group モデル
+class Group(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    name = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+
+# ユーザーとグループの中間テーブル
+class UserGroupRelation(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'group')  # 重複参加を防止
+
+
+# グループとマップの中間テーブル
+class GroupMapRelation(models.Model):
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    map = models.ForeignKey(Map, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('group', 'map')  # 重複紐付けを防止

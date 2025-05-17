@@ -6,12 +6,15 @@ import { Coffee, Map as MapIcon, List as ListIcon, Layers, Menu } from "lucide-r
 import { getCafeList } from "../api/cafe";
 import { guestLogin, logout } from "../api/auth";
 import { getMapList } from "../api/map";
+import { fetchGroupList } from "../api/group";
 import HeaderButton from "./HeaderButton";
 import UserMenu from "./UserMenu";
+import GroupListModal from "./GroupListModal";
 import { toast } from "react-hot-toast";
 import { MapItem } from "../types/map";
 import { User as UserType } from "../types/user";
 import { Cafe } from "../types/cafe";
+import { Group } from "../types/group";
 
 
 interface HeaderProps {
@@ -48,6 +51,8 @@ const Header: React.FC<HeaderProps> = ({
   const [isMapListOpen, setIsMapListOpen] = useState(false);
   const [isLoginMenuOpen, setIsLoginMenuOpen] = useState(false);
   const [mapList, setMapList] = useState<MapItem[]>([]);
+  const [isGroupListOpen, setIsGroupListOpen] = useState(false); // 👈 グループ一覧モーダル
+  const [groupList, setGroupList] = useState<Group[]>([]);
 
   
   const requireMapSelected = (action: () => void) => {
@@ -78,11 +83,16 @@ const Header: React.FC<HeaderProps> = ({
     if (userData) {
       setUser({ id: userData.id, name: userData.name }); // 👈 サーバーが返してきた本物のゲストユーザー情報をセット
       toast.success("ゲストログインしました");
+      console.log("ゲストユーザー情報:", userData);
 
       // ログイン時にマップを取得する
       const maps = await getMapList();
       setMapList(maps);
       
+      // ✅ グループ一覧も取得
+      const groups = await fetchGroupList();
+      setGroupList(groups);
+
     } else {
       toast.error("ゲストログインに失敗しました");
     }
@@ -170,10 +180,27 @@ const Header: React.FC<HeaderProps> = ({
           <UserMenu
             user={user}
             setUser={setUser}
+            setMapList={setMapList}
+            setGroupList={setGroupList}
             isOpen={isLoginMenuOpen}
             onToggle={() => setIsLoginMenuOpen((prev) => !prev)}
             onGuestLogin={handleGuestLogin}
             onLogout={handleLogout}
+            onOpenGroupList={() => {
+              setIsGroupListOpen(true);
+              setIsLoginMenuOpen(false); // 👈 メニューを閉じてからモーダルを開く
+            }}
+          />
+
+          <GroupListModal
+            isOpen={isGroupListOpen}
+            onClose={() => setIsGroupListOpen(false)}
+            groupList={groupList}
+            setGroupList={setGroupList}
+            onSelectGroup={(group) => {
+              toast.success(`「${group.name}」を選択しました`);
+              setIsGroupListOpen(false);
+            }}
           />
         </div>
       </header>

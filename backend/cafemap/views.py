@@ -6,11 +6,13 @@ from django.contrib.auth import login, logout
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
-from .models import User, Map, Cafe, Tag, MapUserRelation, CafeMapRelation
+from .models import User, Map, Cafe, Tag, MapUserRelation, CafeMapRelation, Group, UserGroupRelation, GroupMapRelation
+from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.middleware.csrf import get_token
+from uuid import UUID
 
 
 GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
@@ -488,3 +490,51 @@ class CafeMemoDetailAPIView(APIView):
     def delete(self, request, *args, **kwargs):
         """ カフェのメモを削除 """
         return Response({"message": "DELETE request received"}, status=status.HTTP_204_NO_CONTENT)
+
+
+
+class GroupListCreateAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        """ログインユーザーが所属するグループ一覧を取得"""
+        groups = Group.objects.filter(usergrouprelation__user=request.user)
+        data = [{"id": g.id, "uuid": str(g.uuid), "name": g.name, "description": g.description} for g in groups]
+        return Response(data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        """新しいグループを作成し、作成者を所属させる"""
+        name = request.data.get("name")
+        description = request.data.get("description", "")
+
+        if not name:
+            return Response({"error": "name is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        group = Group.objects.create(name=name, description=description)
+        UserGroupRelation.objects.create(user=request.user, group=group)
+        return Response({"id": group.id, "name": group.name}, status=status.HTTP_201_CREATED)
+
+
+class GroupJoinAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, uuid: UUID):
+        """グループに参加（招待URLを経由して）"""
+        group = get_object_or_404(Group, uuid=uuid)
+        UserGroupRelation.objects.get_or_create(user=request.user, group=group)
+        return Response({"message": f"Joined group {group.name}"}, status=status.HTTP_200_OK)
+
+
+class GroupMapListAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, uuid: UUID):
+        """指定したグループに属するマップの一覧を取得"""
+        group = get_object_or_404(Group, uuid=uuid)
+        # グループに属していないユーザーがアクセスしないようチェック
+        if not UserGroupRelation.objects.filter(user=request.user, group=group).exists():
+            return Response({"error": "Access denied"}, status=status.HTTP_403_FORBIDDEN)
+
+        maps = Map.objects.filter(groupmaprelation__group=group)
+        data = [{"id": m.id, "name": m.name} for m in maps]
+        return Response(data, status=status.HTTP_200_OK)

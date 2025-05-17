@@ -3,7 +3,13 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.contrib.auth import logout
 from . import views
-from .views import MapAPIView, MapDetailAPIView, CafeAPIView, CafeDetailAPIView, TagAPIView, TagDetailAPIView, CafeTagAPIView, CafeTagDetailAPIView, CafeMemoAPIView
+from .views import (
+    MapAPIView, MapDetailAPIView, CafeAPIView, CafeDetailAPIView, TagAPIView, TagDetailAPIView, CafeTagAPIView, CafeTagDetailAPIView, CafeMemoAPIView,
+      # 👇 グループ関連のビューをインポート
+    GroupListCreateAPIView,
+    GroupJoinAPIView,
+    GroupMapListAPIView,
+)
 
 urlpatterns = [
     # TODO: エンドポイントを修正(RESTful APIの設計に従う)
@@ -33,4 +39,8 @@ urlpatterns = [
     path("api/auth/login/success-popup/", lambda request: render(request, "popup_login_success.html")),
     path("api/auth/", include("social_django.urls", namespace="social")),
 
+    # ✅ グループ関連のルーティング
+    path('api/groups/', GroupListCreateAPIView.as_view(), name='group-list-create'),
+    path('api/groups/<uuid:uuid>/join/', GroupJoinAPIView.as_view(), name='group-join'),
+    path('api/groups/<uuid:uuid>/maps/', GroupMapListAPIView.as_view(), name='group-map-list'),
 ]

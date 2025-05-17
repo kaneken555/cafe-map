@@ -1,0 +1,68 @@
+// components/GroupInvitationModal.tsx
+import React from "react";
+import { X, Copy } from "lucide-react";
+import toast from "react-hot-toast"; // ✅ トースト追加
+
+
+interface GroupInvitationModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  groupName: string;
+  inviteUrl: string;
+}
+
+const GroupInvitationModal: React.FC<GroupInvitationModalProps> = ({
+  isOpen,
+  onClose,
+  groupName,
+  inviteUrl,
+}) => {
+  if (!isOpen) return null;
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(inviteUrl);
+    // alert("URLをコピーしました！");
+    toast.success("URLをコピーしました");
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/30 flex justify-center items-center z-60">
+      <div
+        className="bg-[#fffaf0] w-[400px] p-6 rounded-lg shadow-xl relative"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* 閉じるボタン */}
+        <button 
+          onClick={onClose} 
+          className="absolute top-4 right-4 text-[#6b4226] hover:text-black cursor-pointer"
+        >
+          <X size={24} />
+        </button>
+
+        {/* タイトル */}
+        <h2 className="text-xl font-bold text-[#6b4226] mb-4">グループ招待</h2>
+
+        {/* グループ名 */}
+        <div className="text-md mb-2 font-semibold">{groupName}</div>
+
+        {/* URL入力とコピー */}
+        <div className="flex items-center border rounded px-3 py-2 bg-white">
+          <input
+            type="text"
+            value={inviteUrl}
+            readOnly
+            className="flex-1 bg-transparent focus:outline-none text-sm"
+          />
+          <button 
+            onClick={handleCopy} 
+            className="ml-2 text-gray-600 hover:text-black cursor-pointer"
+          >
+            <Copy size={18} />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default GroupInvitationModal;

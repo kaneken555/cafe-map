@@ -11,9 +11,10 @@ interface LoginMenuProps {
   onGuestLogin: () => void;
   onGoogleLogin: () => void;
   onLogout: () => void;
+  onOpenGroupList: () => void;
 }
 
-const LoginMenu: React.FC<LoginMenuProps> = ({ isOpen, user, onGuestLogin, onGoogleLogin, onLogout }) => {
+const LoginMenu: React.FC<LoginMenuProps> = ({ isOpen, user, onGuestLogin, onGoogleLogin, onLogout, onOpenGroupList }) => {
   if (!isOpen) return null;
 
   return (
@@ -40,9 +41,10 @@ const LoginMenu: React.FC<LoginMenuProps> = ({ isOpen, user, onGuestLogin, onGoo
           {/* ✅ ログイン中ならグループボタンを表示 */}
           <button
             className="w-full text-left px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-center space-x-2"
-            onClick={() => {
-              toast("グループ機能は未実装です");
-            }}
+            onClick={onOpenGroupList}
+            // onClick={() => {
+            //   toast("グループ機能は未実装です");
+            // }}
           >
             <Users size={16} />
             <span>グループ</span>

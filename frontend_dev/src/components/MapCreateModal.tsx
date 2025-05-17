@@ -4,7 +4,7 @@ import { createMap } from "../api/map";
 import { getMapList } from "../api/map";
 import { toast } from "react-hot-toast";
 import { X } from "lucide-react";
-import { MapItem } from "../types/map"; // ← 共通型をインポート
+import { MapItem } from "../types/map";
 
 
 interface MapCreateModalProps {
@@ -14,7 +14,7 @@ interface MapCreateModalProps {
 }
 
 const MapCreateModal: React.FC<MapCreateModalProps> = ({ isOpen, onClose, setMapList }) => {
-  const [mapName, setMapName] = useState(""); // ✅ 入力値を管理
+  const [mapName, setMapName] = useState("");
 
   // ✅ onCloseとmapNameリセットをまとめた関数
   const handleClose = () => {
@@ -63,7 +63,6 @@ const MapCreateModal: React.FC<MapCreateModalProps> = ({ isOpen, onClose, setMap
         </button>
         <h2 className="text-xl font-bold mb-4 text-[#6b4226]">新規マップを作成</h2>
 
-        {/* 仮の入力フィールド */}
         <input
           type="text"
           placeholder="マップ名を入力"
@@ -74,7 +73,7 @@ const MapCreateModal: React.FC<MapCreateModalProps> = ({ isOpen, onClose, setMap
 
         <button 
           className="w-full px-4 py-2 bg-[#FFC800] hover:bg-[#D8A900] cursor-pointer text-black rounded "
-          onClick={handleCreateMap} // ✅ マップ作成関数を呼び出す
+          onClick={handleCreateMap}
           >
           作成
         </button>
