@@ -3,10 +3,9 @@ import React, { useState } from "react";
 import GroupCreateModal from "./GroupCreateModal";
 import GroupInvitationModal from "./GroupInvitationModal";
 import GroupListItem from "./GroupListItem"; 
-import { X, Users, CheckCircle, Info, UserPlus } from "lucide-react";
+import { X, Users } from "lucide-react";
 import { Group } from "../types/group";
 import { fetchGroupList } from "../api/group";
-import toast from "react-hot-toast";
 
 
 
@@ -78,34 +77,6 @@ const GroupListModal: React.FC<GroupListModalProps> = ({
 
           <ul className="space-y-2 mb-4">
             {groupList.map((group) => (
-              // <li key={group.id} className="bg-white border rounded p-3 flex justify-between items-center">
-              //   <span>{group.name}</span>
-              //   <div className="flex space-x-2">
-              //     <button
-              //       onClick={() => onSelectGroup(group)}
-              //       className="flex flex-col items-center justify-center w-16 h-16 border rounded hover:bg-gray-100 cursor-pointer"
-              //     >
-              //       <CheckCircle className="w-5 h-5" />
-              //       <span className="text-xs mt-1">選択</span>
-              //     </button>
-              //     <button
-              //       className="flex flex-col items-center justify-center w-16 h-16 border rounded hover:bg-gray-100 cursor-pointer"
-              //       onClick={() => {
-              //         toast("グループ機能は未実装です");
-              //       }}
-              //     >
-              //       <Info className="w-5 h-5" />
-              //       <span className="text-xs mt-1">詳細</span>
-              //     </button>
-              //     <button
-              //       onClick={() => handleInviteClick(group)}
-              //       className="flex flex-col items-center justify-center w-16 h-16 border rounded hover:bg-gray-100 cursor-pointer"
-              //     >
-              //       <UserPlus className="w-5 h-5" />
-              //       <span className="text-xs mt-1">招待</span>
-              //     </button>
-              //   </div>
-              // </li>
               <GroupListItem
                 key={group.id}
                 group={group}

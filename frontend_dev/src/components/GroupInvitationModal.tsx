@@ -1,7 +1,7 @@
 // components/GroupInvitationModal.tsx
 import React from "react";
 import { X, Copy } from "lucide-react";
-import toast from "react-hot-toast"; // ✅ トースト追加
+import toast from "react-hot-toast";
 
 
 interface GroupInvitationModalProps {
@@ -21,7 +21,6 @@ const GroupInvitationModal: React.FC<GroupInvitationModalProps> = ({
 
   const handleCopy = () => {
     navigator.clipboard.writeText(inviteUrl);
-    // alert("URLをコピーしました！");
     toast.success("URLをコピーしました");
   };
 
