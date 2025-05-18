@@ -144,3 +144,33 @@ class GroupMapRelation(models.Model):
 
     class Meta:
         unique_together = ('group', 'map')  # 重複紐付けを防止
+
+# 共有マップモデル
+class SharedMap(models.Model):  # ← 旧ShareMapをこれに統一推奨
+    original_map = models.ForeignKey(Map, on_delete=models.CASCADE)
+    share_uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    creator = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    allow_sync = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField(blank=True, null=True)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.title or 'No Title'} ({self.share_uuid})"
+
+
+class CafeSharedMapRelation(models.Model):
+    shared_map = models.ForeignKey(SharedMap, on_delete=models.CASCADE)
+    cafe = models.ForeignKey(Cafe, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class UserSharedMapRelation(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    shared_map = models.ForeignKey(SharedMap, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'shared_map')  # 重複登録を防止

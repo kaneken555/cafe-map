@@ -1,7 +1,9 @@
 // components/MapListItem.tsx
 import React, { useState } from "react";
 import { getMapList, deleteMap } from "../api/map";
+import { checkSharedMap } from "../api/sharedMap";
 import MapDeleteModal from "./MapDeleteModal";
+import ShareMapModal from "./ShareMapModal";
 import { toast } from "react-hot-toast";
 import { CheckCircle, Trash2, Share as ShareIcon } from "lucide-react";
 import { MapItem } from "../types/map";
@@ -25,6 +27,9 @@ const MapListItem: React.FC<MapListItemProps> = ({
   setSelectedMap,
 }) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [shareUrl, setShareUrl] = useState("");
+
 
   const handleSelect = () => {
     onSelect(map);
@@ -46,9 +51,23 @@ const MapListItem: React.FC<MapListItemProps> = ({
     }
   };
 
-  const handleShare = () => {
-    toast("マップ共有機能は未実装です");
+  const handleShare = async () => {
+    try {
+      const result = await checkSharedMap(map.id);
+      if (result) {
+        const url = `https://your-domain.com/shared-map/${result.share_uuid}`;
+        setShareUrl(url);
+      } else {
+        setShareUrl(""); // 未作成 → モーダル側で作成可能
+      }
+      setIsShareModalOpen(true);
+    } catch (error) {
+      toast.error("シェア状態の確認に失敗しました");
+    }
+
   };
+
+
 
   return (
     <>
@@ -61,6 +80,16 @@ const MapListItem: React.FC<MapListItemProps> = ({
           setIsDeleteModalOpen(false);
         }}
         mapName={map.name}
+      />
+      <ShareMapModal
+        isOpen={isShareModalOpen}
+        onClose={() => {
+          setIsShareModalOpen(false);
+          setShareUrl(""); // ✅ モーダルを閉じるときにリセット！
+        }}
+        shareUrl={shareUrl}
+        setShareUrl={setShareUrl}
+        selectedMap={map} // ✅ 選択されたマップを渡す
       />
 
       <li className="flex justify-between items-center border px-4 py-2 rounded">

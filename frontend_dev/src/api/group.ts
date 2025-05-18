@@ -1,5 +1,4 @@
 // src/api/group.ts
-
 import axios from "axios";
 import { getCsrfToken } from "./auth";
 import { toast } from "react-hot-toast";

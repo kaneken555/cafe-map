@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
-from .models import User, Map, Cafe, Tag, MapUserRelation, CafeMapRelation, Group, UserGroupRelation, GroupMapRelation
+from .models import User, Map, Cafe, Tag, MapUserRelation, CafeMapRelation, Group, UserGroupRelation, GroupMapRelation, SharedMap, CafeSharedMapRelation
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.middleware.csrf import get_token
@@ -538,3 +538,89 @@ class GroupMapListAPIView(APIView):
         maps = Map.objects.filter(groupmaprelation__group=group)
         data = [{"id": m.id, "name": m.name} for m in maps]
         return Response(data, status=status.HTTP_200_OK)
+
+
+class SharedMapAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        """
+        既にシェア済みのマップがあるか確認する（作成はしない）
+        GET /api/shared-maps/check/?map_id=1
+        """
+        map_id = request.GET.get("map_id")
+        if not map_id:
+            return Response({"error": "map_id is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            shared_map = SharedMap.objects.filter(
+                original_map__id=map_id,
+                creator=request.user
+            ).first()
+
+            if shared_map:
+                return Response({
+                    "shared": True,
+                    "share_uuid": str(shared_map.share_uuid),
+                    "title": shared_map.title
+                }, status=status.HTTP_200_OK)
+            else:
+                return Response({"shared": False}, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({"error": "Internal Server Error", "message": str(e)},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+    def post(self, request):
+        """
+        シェアマップを作成し、関連するカフェも CafeSharedMapRelation に登録する。
+        既に同じユーザーが同じマップをシェアしていれば、それを再利用する。
+        """
+        map_id = request.data.get("map_id")
+        title = request.data.get("title", "")
+        description = request.data.get("description", "")
+
+        if not map_id:
+            return Response({"error": "map_id is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            original_map = get_object_or_404(Map, id=map_id)
+
+            # 既にシェア済みならそれを返す（任意仕様）
+            existing = SharedMap.objects.filter(
+                original_map=original_map,
+                creator=request.user
+            ).first()
+            if existing:
+                return Response({
+                    "share_uuid": str(existing.share_uuid),
+                    "title": existing.title,
+                }, status=status.HTTP_200_OK)
+
+            # SharedMap作成
+            shared_map = SharedMap.objects.create(
+                original_map=original_map,
+                creator=request.user,
+                title=title or original_map.name,
+                description=description,
+            )
+
+            # 関連するカフェをコピー（CafeMapRelation から取得）
+            cafes = Cafe.objects.filter(cafemaprelation__map=original_map).distinct()
+            for cafe in cafes:
+                CafeSharedMapRelation.objects.create(
+                    shared_map=shared_map,
+                    cafe=cafe
+                )
+
+            return Response({
+                "share_uuid": str(shared_map.share_uuid),
+                "title": shared_map.title,
+            }, status=status.HTTP_201_CREATED)
+
+        except Exception as e:
+            return Response(
+                {"error": "Internal Server Error", "message": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )

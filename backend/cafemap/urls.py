@@ -9,6 +9,7 @@ from .views import (
     GroupListCreateAPIView,
     GroupJoinAPIView,
     GroupMapListAPIView,
+    SharedMapAPIView,
 )
 
 urlpatterns = [
@@ -39,8 +40,13 @@ urlpatterns = [
     path("api/auth/login/success-popup/", lambda request: render(request, "popup_login_success.html")),
     path("api/auth/", include("social_django.urls", namespace="social")),
 
-    # ✅ グループ関連のルーティング
+    # グループ関連のルーティング
     path('api/groups/', GroupListCreateAPIView.as_view(), name='group-list-create'),
     path('api/groups/<uuid:uuid>/join/', GroupJoinAPIView.as_view(), name='group-join'),
     path('api/groups/<uuid:uuid>/maps/', GroupMapListAPIView.as_view(), name='group-map-list'),
+
+    # シェアマップ関連のルーティング
+    path("api/shared-maps/", SharedMapAPIView.as_view(), name="shared-map"),
+    path("api/shared-maps/check/", SharedMapAPIView.as_view(), name="shared-map-check"),
+
 ]
