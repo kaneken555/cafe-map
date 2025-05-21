@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import MapCreateModal from "./MapCreateModal"; 
 import { mockMapData } from "../api/mockMapData"; 
 import MapListItem from "./MapListItem"; 
+import ModalActionButton from "./ModalActionButton";
 import { Coffee, X } from "lucide-react";
 import { MapItem } from "../types/map";
 import { User as UserType } from "../types/user";
@@ -19,7 +20,16 @@ interface MapListModalProps {
   setSelectedMap: (map: MapItem | null) => void;
 }
 
-const MapListModal: React.FC<MapListModalProps> = ({ isOpen, onClose, onSelectMap, selectedMapId, mapList, setMapList, user, setSelectedMap }) => {
+const MapListModal: React.FC<MapListModalProps> = ({ 
+  isOpen, 
+  onClose, 
+  onSelectMap, 
+  selectedMapId, 
+  mapList, 
+  setMapList, 
+  user, 
+  setSelectedMap 
+}) => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false); 
   const filteredMaps = mapList;
   // const filteredMaps = user
@@ -27,7 +37,6 @@ const MapListModal: React.FC<MapListModalProps> = ({ isOpen, onClose, onSelectMa
   // : []; // 未ログインなら空配列
 
   if (!isOpen) return null;
-
 
   return (
     <>
@@ -74,12 +83,10 @@ const MapListModal: React.FC<MapListModalProps> = ({ isOpen, onClose, onSelectMa
             ))}
           </ul>
 
-          <button
-            className="w-full py-3 bg-[#FFC800] hover:bg-[#D8A900] cursor-pointer text-black text-lg rounded-xl"
-            onClick={() => setIsCreateModalOpen(true)} 
-          >
-            + 新しいカフェマップをつくる
-          </button>
+          <ModalActionButton
+            label="+ 新しいカフェマップをつくる"
+            onClick={() => setIsCreateModalOpen(true)}
+          />
         </div>
       </div>
     </>

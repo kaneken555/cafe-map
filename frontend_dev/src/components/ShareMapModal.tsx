@@ -1,9 +1,10 @@
 // components/ShareMapModal.tsx
 import React, { useRef } from "react";
-import { X, Copy } from "lucide-react";
+import { X } from "lucide-react";
 import toast from "react-hot-toast";
-import { QRCode } from "react-qrcode-logo";
 import { createSharedMap } from "../api/sharedMap";
+import ShareLinkSection from "./ShareLinkSection";
+import QRCodeSection from "./QRCodeSection";
 
 
 interface ShareMapModalProps {
@@ -25,11 +26,6 @@ const ShareMapModal: React.FC<ShareMapModalProps> = ({
   if (!isOpen) return null;
 
   const qrWrapperRef = useRef<HTMLDivElement>(null);
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(shareUrl);
-    toast.success("URLをコピーしました");
-  };
 
   const handleCreateLink = async () => {
     if (!selectedMap) {
@@ -53,21 +49,6 @@ const ShareMapModal: React.FC<ShareMapModalProps> = ({
 
   };
 
-  const handleSaveQrImage = () => {    
-    const canvas = qrWrapperRef.current?.querySelector("canvas");
-    if (!canvas) {
-      toast.error("QRコードが見つかりませんでした");
-      return;
-    }
-  
-    const image = canvas.toDataURL("image/png");
-    const a = document.createElement("a");
-    a.href = image;
-    a.download = "share_map_qr.png";
-    a.click();
-    toast.success("QRコードを保存しました");
-  };
-  
 
   return (
     <div className="fixed inset-0 bg-black/30 flex justify-center items-center z-50">
@@ -94,36 +75,8 @@ const ShareMapModal: React.FC<ShareMapModalProps> = ({
         {/* URL + QRコード 表示（リンク作成後のみ表示） */}
         {shareUrl && (
           <>
-            <div className="mb-4">
-              <label className="text-sm text-gray-700">URL</label>
-              <div className="flex mt-1">
-                <input
-                  type="text"
-                  value={shareUrl}
-                  readOnly
-                  className="flex-grow border px-2 py-1 rounded-l"
-                />
-                <button
-                  onClick={handleCopy}
-                  className="bg-gray-200 hover:bg-gray-300 px-2 rounded-r cursor-pointer"
-                >
-                  <Copy size={16} />
-                </button>
-              </div>
-            </div>
-
-            <div className="mt-4 text-sm text-gray-700">QR</div>
-            <div ref={qrWrapperRef} className="mt-1 p-4 bg-white rounded border flex justify-center">
-              <QRCode value={shareUrl} size={128} />
-            </div>
-            <div className="mt-3 flex justify-center">
-            <button
-              onClick={handleSaveQrImage}
-              className="px-4 py-1 bg-gray-200 hover:bg-gray-300 text-sm rounded cursor-pointer"
-            >
-              QRコードを保存
-            </button>
-          </div>
+            <ShareLinkSection shareUrl={shareUrl} />
+            <QRCodeSection qrWrapperRef={qrWrapperRef} shareUrl={shareUrl} />
           </>
         )}
       </div>

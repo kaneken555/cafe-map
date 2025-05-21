@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import GroupCreateModal from "./GroupCreateModal";
 import GroupInvitationModal from "./GroupInvitationModal";
 import GroupListItem from "./GroupListItem"; 
+import ModalActionButton from "./ModalActionButton";
 import { X, Users } from "lucide-react";
 import { Group } from "../types/group";
 import { fetchGroupList } from "../api/group";
@@ -90,12 +91,16 @@ const GroupListModal: React.FC<GroupListModalProps> = ({
             ))}
           </ul>
 
-          <button
+          {/* <button
             className="w-full py-3 bg-[#FFC800] hover:bg-[#D8A900] cursor-pointer text-black text-lg rounded-xl"
             onClick={() => setIsCreateModalOpen(true)}
           >
             ＋新しいグループを作る
-          </button>
+          </button> */}
+          <ModalActionButton
+            label="＋新しいグループを作る"
+            onClick={() => setIsCreateModalOpen(true)}
+          />
         </div>
       </div>
     </>

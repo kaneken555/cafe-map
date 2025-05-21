@@ -2,6 +2,7 @@
 import React from "react";
 import { X, Copy } from "lucide-react";
 import toast from "react-hot-toast";
+import ShareLinkSection from "./ShareLinkSection";
 
 
 interface GroupInvitationModalProps {
@@ -43,6 +44,9 @@ const GroupInvitationModal: React.FC<GroupInvitationModalProps> = ({
 
         {/* グループ名 */}
         <div className="text-md mb-2 font-semibold">{groupName}</div>
+
+        {/* 招待リンク（再利用セクション） */}
+        <ShareLinkSection shareUrl={inviteUrl} />
 
         {/* URL入力とコピー */}
         <div className="flex items-center border rounded px-3 py-2 bg-white">

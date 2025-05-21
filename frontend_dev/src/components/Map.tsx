@@ -9,6 +9,8 @@ import LoadingOverlay from "./LoadingOverlay"; // ✅ ローディングオー�
 import { searchCafe, searchCafeByKeyword } from "../api/cafe"; // ✅ カフェ検索APIをインポート
 import { Cafe } from "../types/cafe";
 
+import { DEFAULT_CENTER, MAP_CONTAINER_STYLE } from "../constants/map";
+
 
 interface MapProps {
   cafes: Cafe[];
@@ -19,15 +21,6 @@ interface MapProps {
   setSearchResultCafes: (cafes: Cafe[]) => void; // ✅ 検索結果をセットする関数
 }
 
-const containerStyle = {
-  width: "100%",
-  height: "100%",
-};
-
-const center = {
-  lat: 35.681236, // 東京駅の緯度
-  lng: 139.767125, // 東京駅の経度
-};
 
 // 一旦 mapId=1 固定でもOK。選択中マップに応じて動的に切り替えも可能
 // const mapId = 1;
@@ -113,8 +106,8 @@ const Map: React.FC<MapProps> = ({ cafes, onCafeIconClick, setMapMode, selectedC
         onError={() => setIsMapLoading(false)} // ✅ エラー時もローディング解除
       >
         <GoogleMap
-          mapContainerStyle={containerStyle}
-          center={center}
+          mapContainerStyle={MAP_CONTAINER_STYLE}
+          center={DEFAULT_CENTER}
           zoom={15}
           onLoad={handleMapLoad} // ✅ 時間調整含むロジック
           onUnmount={() => {
