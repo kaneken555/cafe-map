@@ -51,7 +51,7 @@ export const createGroup = async (name: string, description = ""): Promise<Group
 /**
  * 招待URL経由でグループに参加
  */
-export const joinGroup = async (groupUuid: number): Promise<void> => {
+export const joinGroup = async (groupUuid: string): Promise<void> => {
   const csrfToken = await getCsrfToken();
 
   try {

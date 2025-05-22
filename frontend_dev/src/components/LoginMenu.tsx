@@ -1,7 +1,6 @@
 // components/LoginMenu.tsx
 import React from "react";
 import { ArrowRightToLine, User as UserIcon, LogIn, Users } from "lucide-react";
-import toast from "react-hot-toast";
 import { User as UserType } from "../types/user";
 
 
@@ -42,9 +41,6 @@ const LoginMenu: React.FC<LoginMenuProps> = ({ isOpen, user, onGuestLogin, onGoo
           <button
             className="w-full text-left px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-center space-x-2"
             onClick={onOpenGroupList}
-            // onClick={() => {
-            //   toast("グループ機能は未実装です");
-            // }}
           >
             <Users size={16} />
             <span>グループ</span>

@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 interface GroupListItemProps {
   group: Group;
   selectedGroupId: number | null;
-  onSelect: (group: Group) => void;
+  onSelect: (group: Group) => Promise<void>;
   onInvite: (group: Group) => void;
 }
 
@@ -17,9 +17,9 @@ const GroupListItem: React.FC<GroupListItemProps> = ({
   onSelect,
   onInvite,
 }) => {
-  const handleSelect = () => {
-    onSelect(group);
-    toast.success(`グループ「${group.name}」を選択しました`);
+  const handleSelect = async () => {
+    await onSelect(group); // ✅ 親でAPI呼び出し含めて実行
+    toast.success(`${group.name}を選択しました`);
   };
 
   const handleInvite = () => {

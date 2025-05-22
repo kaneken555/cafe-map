@@ -1,12 +1,13 @@
 // components/MapListItem.tsx
 import React, { useState } from "react";
-import { getMapList, deleteMap } from "../api/map";
+import { getMapList, deleteMap, getGroupMapList } from "../api/map";
 import { checkSharedMap } from "../api/sharedMap";
 import MapDeleteModal from "./MapDeleteModal";
 import ShareMapModal from "./ShareMapModal";
 import { toast } from "react-hot-toast";
 import { CheckCircle, Trash2, Share as ShareIcon } from "lucide-react";
 import { MapItem } from "../types/map";
+import { Group } from "../types/group";
 
 
 interface MapListItemProps {
@@ -16,6 +17,7 @@ interface MapListItemProps {
   onClose: () => void;
   setMapList: React.Dispatch<React.SetStateAction<MapItem[]>>;   
   setSelectedMap: (map: MapItem | null) => void;
+  selectedGroup: Group | null;
 }
   
 const MapListItem: React.FC<MapListItemProps> = ({ 
@@ -25,6 +27,7 @@ const MapListItem: React.FC<MapListItemProps> = ({
   onClose , 
   setMapList, 
   setSelectedMap,
+  selectedGroup,
 }) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
@@ -40,7 +43,10 @@ const MapListItem: React.FC<MapListItemProps> = ({
   const handleDelete = async () => {
     try {
       await deleteMap(map.id);
-      const maps = await getMapList();
+      const maps = selectedGroup
+      ? await getGroupMapList(selectedGroup.uuid)
+      : await getMapList();
+
       setMapList(maps);
       setSelectedMap(null); // マップ削除後に選択マップをリセット
       console.log("取得したマップ一覧:", maps); // 開発用ログ
@@ -64,7 +70,6 @@ const MapListItem: React.FC<MapListItemProps> = ({
     } catch (error) {
       toast.error("シェア状態の確認に失敗しました");
     }
-
   };
 
 

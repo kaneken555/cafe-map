@@ -2,14 +2,14 @@
 import React, { useState } from "react";
 import SideMenu from "./SideMenu";
 import MapListModal from "./MapListModal";
+import HeaderButton from "./HeaderButton";
+import UserMenu from "./UserMenu";
+import GroupListModal from "./GroupListModal";
 import { Coffee, Map as MapIcon, List as ListIcon, Layers, Menu } from "lucide-react";
 import { getCafeList } from "../api/cafe";
 import { guestLogin, logout } from "../api/auth";
 import { getMapList } from "../api/map";
 import { fetchGroupList } from "../api/group";
-import HeaderButton from "./HeaderButton";
-import UserMenu from "./UserMenu";
-import GroupListModal from "./GroupListModal";
 import { toast } from "react-hot-toast";
 import { MapItem } from "../types/map";
 import { User as UserType } from "../types/user";
@@ -53,6 +53,8 @@ const Header: React.FC<HeaderProps> = ({
   const [mapList, setMapList] = useState<MapItem[]>([]);
   const [isGroupListOpen, setIsGroupListOpen] = useState(false); // 👈 グループ一覧モーダル
   const [groupList, setGroupList] = useState<Group[]>([]);
+  const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
+  const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
 
   
   const requireMapSelected = (action: () => void) => {
@@ -103,6 +105,8 @@ const Header: React.FC<HeaderProps> = ({
     await logout();
     setUser(null);              // ✅ ログアウト（ユーザー消す）
     setSelectedMap(null);       // ✅ 選択中マップもリセット
+    setSelectedGroup(null);     // ✅ 選択中グループもリセット
+    setSelectedGroupId(null);   // ✅ 選択中グループIDもリセット
     closeCafeListPanel();       // カフェ一覧パネルを閉じる
     setCafeList([]);            // ✅ カフェリストもリセット（オプション）
     setMapMode("search");       // ✅ マップモードもリセット（オプション）
@@ -135,6 +139,7 @@ const Header: React.FC<HeaderProps> = ({
           setMapList={setMapList}
           user={user} 
           setSelectedMap={setSelectedMap}
+          selectedGroup={selectedGroup}
         />
         
       <header className="w-full h-16 px-4 flex justify-between items-center bg-gradient-to-r from-yellow-300 to-yellow-500 shadow-md">
@@ -198,9 +203,13 @@ const Header: React.FC<HeaderProps> = ({
             groupList={groupList}
             setGroupList={setGroupList}
             onSelectGroup={(group) => {
-              toast.success(`「${group.name}」を選択しました`);
+              setSelectedGroup(group);
+              setSelectedGroupId(group?.id ?? null); // ✅ IDも更新
               setIsGroupListOpen(false);
             }}
+            setMapList={setMapList}
+            selectedGroupId={selectedGroupId} // ✅ 追加
+            setSelectedGroupId={setSelectedGroupId} // ✅ 追加
           />
         </div>
       </header>

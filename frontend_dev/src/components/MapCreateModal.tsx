@@ -5,15 +5,22 @@ import { getMapList } from "../api/map";
 import { toast } from "react-hot-toast";
 import { X } from "lucide-react";
 import { MapItem } from "../types/map";
-
+import { getGroupMapList, createGroupMap } from "../api/map"; // グループマップ取得API
+import { Group } from "../types/group";
 
 interface MapCreateModalProps {
   isOpen: boolean;
   onClose: () => void;
   setMapList: React.Dispatch<React.SetStateAction<MapItem[]>>; 
+  selectedGroup: Group | null;
 }
 
-const MapCreateModal: React.FC<MapCreateModalProps> = ({ isOpen, onClose, setMapList }) => {
+const MapCreateModal: React.FC<MapCreateModalProps> = ({ 
+  isOpen,
+  onClose,
+  setMapList,
+  selectedGroup, // グループ情報を受け取る
+}) => {
   const [mapName, setMapName] = useState("");
 
   // ✅ onCloseとmapNameリセットをまとめた関数
@@ -29,12 +36,23 @@ const MapCreateModal: React.FC<MapCreateModalProps> = ({ isOpen, onClose, setMap
         return;
       }
   
-      await createMap({ name: mapName }); // ✅ マップ作成
-      toast.success("マップが作成されました");
-
-      const maps = await getMapList(); // ✅ 最新のマップリスト取得
-      setMapList(maps); // ✅ 親コンポーネントにマップリストを渡す
-      console.log("取得したマップ一覧:", maps);
+      if (selectedGroup) {
+        // ✅ グループマップ作成APIを呼び出す
+        await createGroupMap({ name: mapName, groupUuid: selectedGroup.uuid });
+        toast.success("グループマップが作成されました");
+  
+        const maps = await getGroupMapList(selectedGroup.uuid); // グループに紐づくマップ一覧を取得
+        setMapList(maps);
+        console.log("取得したマップ一覧:", maps);
+      } else {
+        // ✅ 通常のマップ作成
+        await createMap({ name: mapName });
+        toast.success("マップが作成されました");
+  
+        const maps = await getMapList();
+        setMapList(maps);
+        console.log("取得したマップ一覧:", maps);
+      }
   
       handleClose(); // ✅ モーダル閉じる
     } catch (error) {

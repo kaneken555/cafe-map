@@ -7,6 +7,7 @@ import ModalActionButton from "./ModalActionButton";
 import { Coffee, X } from "lucide-react";
 import { MapItem } from "../types/map";
 import { User as UserType } from "../types/user";
+import { Group } from "../types/group";
 
 
 interface MapListModalProps {
@@ -18,6 +19,7 @@ interface MapListModalProps {
   setMapList: React.Dispatch<React.SetStateAction<MapItem[]>>; 
   user: UserType | null; 
   setSelectedMap: (map: MapItem | null) => void;
+  selectedGroup: Group | null;
 }
 
 const MapListModal: React.FC<MapListModalProps> = ({ 
@@ -28,7 +30,8 @@ const MapListModal: React.FC<MapListModalProps> = ({
   mapList, 
   setMapList, 
   user, 
-  setSelectedMap 
+  setSelectedMap,
+  selectedGroup,
 }) => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false); 
   const filteredMaps = mapList;
@@ -45,6 +48,7 @@ const MapListModal: React.FC<MapListModalProps> = ({
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         setMapList={setMapList} 
+        selectedGroup={selectedGroup} // グループ情報を渡す
       />
 
       {/* マップ一覧モーダル */}
@@ -66,7 +70,9 @@ const MapListModal: React.FC<MapListModalProps> = ({
           {/* タイトル + アイコン */}
           <div className="flex items-center mb-6">
             <Coffee className="w-6 h-6 text-[#6b4226] mr-2" />
-            <h2 className="text-xl font-bold text-[#6b4226]">マイカフェマップ一覧</h2>
+            <h2 className="text-xl font-bold text-[#6b4226]">
+              {selectedGroup ? "グループマップ一覧" : "マイカフェマップ一覧"}
+            </h2>
           </div>
 
           <ul className="space-y-2 mb-4">
@@ -79,12 +85,13 @@ const MapListModal: React.FC<MapListModalProps> = ({
                 onClose={onClose}
                 setMapList={setMapList} 
                 setSelectedMap={setSelectedMap}
+                selectedGroup={selectedGroup} // ✅ 追加
               />
             ))}
           </ul>
 
           <ModalActionButton
-            label="+ 新しいカフェマップをつくる"
+            label={selectedGroup ? "+ 新しいグループマップをつくる" : "+ 新しいカフェマップをつくる"}
             onClick={() => setIsCreateModalOpen(true)}
           />
         </div>

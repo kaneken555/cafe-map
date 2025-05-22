@@ -540,6 +540,25 @@ class GroupMapListAPIView(APIView):
         return Response(data, status=status.HTTP_200_OK)
 
 
+    def post(self, request, uuid: UUID):
+        """指定グループにマップを作成して紐付け"""
+        group = get_object_or_404(Group, uuid=uuid)
+
+        if not UserGroupRelation.objects.filter(user=request.user, group=group).exists():
+            return Response({"error": "Access denied"}, status=status.HTTP_403_FORBIDDEN)
+
+        name = request.data.get("name")
+        if not name:
+            return Response({"error": "name is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # マップ作成
+        map_obj = Map.objects.create(name=name)
+        # 中間テーブル登録
+        GroupMapRelation.objects.create(group=group, map=map_obj)
+
+        return Response({"id": map_obj.id, "name": map_obj.name}, status=status.HTTP_201_CREATED)
+
+
 class SharedMapAPIView(APIView):
     permission_classes = [IsAuthenticated]
 

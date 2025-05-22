@@ -1,20 +1,16 @@
 // components/GroupJoinModal.tsx
-import React from "react";
+import React, { useState } from "react";
 import { X } from "lucide-react";
 
-interface GroupJoinModalProps {
+interface GroupSearchModalProps {
   isOpen: boolean;
   onClose: () => void;
-  groupName: string;
-  onJoin: () => void;
+  onSearch: (input: string) => void;
 }
 
-const GroupJoinModal: React.FC<GroupJoinModalProps> = ({
-  isOpen,
-  onClose,
-  groupName,
-  onJoin,
-}) => {
+const GroupSearchModal: React.FC<GroupSearchModalProps> = ({ isOpen, onClose, onSearch }) => {
+  const [input, setInput] = useState("");
+
   if (!isOpen) return null;
 
   return (
@@ -27,16 +23,24 @@ const GroupJoinModal: React.FC<GroupJoinModalProps> = ({
           <X size={24} />
         </button>
         <h2 className="text-lg font-bold text-[#6b4226] mb-4">グループ参加</h2>
-        <p className="text-center text-lg mb-6">{groupName}</p>
+        <p className="text-sm text-gray-700 mb-2">参加コードまたはURLを入力してください</p>
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          className="w-full border px-2 py-1 rounded mb-4"
+          placeholder="https://example.com/invite/xxxxx"
+        />
         <button
-          onClick={onJoin}
+          onClick={() => onSearch(input)}
           className="w-full py-2 bg-[#FFC800] hover:bg-[#D8A900] text-black rounded font-medium"
         >
-          参加
+          検索
         </button>
       </div>
     </div>
   );
 };
 
-export default GroupJoinModal;
+export default GroupSearchModal;
+

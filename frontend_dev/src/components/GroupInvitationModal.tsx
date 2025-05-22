@@ -1,7 +1,6 @@
 // components/GroupInvitationModal.tsx
 import React from "react";
-import { X, Copy } from "lucide-react";
-import toast from "react-hot-toast";
+import { X } from "lucide-react";
 import ShareLinkSection from "./ShareLinkSection";
 
 
@@ -20,10 +19,6 @@ const GroupInvitationModal: React.FC<GroupInvitationModalProps> = ({
 }) => {
   if (!isOpen) return null;
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(inviteUrl);
-    toast.success("URLをコピーしました");
-  };
 
   return (
     <div className="fixed inset-0 bg-black/30 flex justify-center items-center z-60">
@@ -48,21 +43,6 @@ const GroupInvitationModal: React.FC<GroupInvitationModalProps> = ({
         {/* 招待リンク（再利用セクション） */}
         <ShareLinkSection shareUrl={inviteUrl} />
 
-        {/* URL入力とコピー */}
-        <div className="flex items-center border rounded px-3 py-2 bg-white">
-          <input
-            type="text"
-            value={inviteUrl}
-            readOnly
-            className="flex-1 bg-transparent focus:outline-none text-sm"
-          />
-          <button 
-            onClick={handleCopy} 
-            className="ml-2 text-gray-600 hover:text-black cursor-pointer"
-          >
-            <Copy size={18} />
-          </button>
-        </div>
       </div>
     </div>
   );

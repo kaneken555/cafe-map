@@ -3,10 +3,16 @@ import React, { useState } from "react";
 import GroupCreateModal from "./GroupCreateModal";
 import GroupInvitationModal from "./GroupInvitationModal";
 import GroupListItem from "./GroupListItem"; 
+import GroupSearchModal from "./GroupSearchModal";
+import GroupJoinModal from "./GroupJoinModal";
 import ModalActionButton from "./ModalActionButton";
 import { X, Users } from "lucide-react";
 import { Group } from "../types/group";
-import { fetchGroupList } from "../api/group";
+import { MapItem } from "../types/map";
+import { fetchGroupList, joinGroup } from "../api/group";
+import { getMapList, getGroupMapList } from "../api/map";
+import { toast } from "react-hot-toast";
+import { extractUuidFromUrl } from "../utils/extractUuid";
 
 
 
@@ -15,7 +21,10 @@ interface GroupListModalProps {
   onClose: () => void;
   groupList: Group[];
   setGroupList: React.Dispatch<React.SetStateAction<Group[]>>;
-  onSelectGroup: (group: Group) => void;
+  onSelectGroup: (group: Group | null) => void;
+  setMapList: React.Dispatch<React.SetStateAction<MapItem[]>>; 
+  selectedGroupId: number | null;
+  setSelectedGroupId: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
 const GroupListModal: React.FC<GroupListModalProps> = ({
@@ -24,11 +33,17 @@ const GroupListModal: React.FC<GroupListModalProps> = ({
   groupList,
   setGroupList,
   onSelectGroup,
+  setMapList,
+  selectedGroupId,
+  setSelectedGroupId,
 }) => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false); // ✅ 招待モーダル状態
-  const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null); // ✅ 選択中のグループID
   const [inviteTargetGroup, setInviteTargetGroup] = useState<Group | null>(null); // ✅ 招待対象
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false); // グループ検索モーダル
+  const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);     // グループ参加モーダル
+  const [joiningGroupName, setJoiningGroupName] = useState("");      // 参加対象グループ名
+  const [joiningGroupUuid, setJoiningGroupUuid] = useState<string>("");
 
 
   if (!isOpen) return null;
@@ -37,6 +52,60 @@ const GroupListModal: React.FC<GroupListModalProps> = ({
     setInviteTargetGroup(group);
     setIsInviteModalOpen(true);
   };
+
+  const handleGroupSearch = (input: string) => {
+
+    const uuid = extractUuidFromUrl(input);
+    if (!uuid) {
+      toast.error("有効な招待URLを入力してください");
+      return;
+    }
+    setJoiningGroupUuid(uuid);         // ✅ 後で参加用に保持
+    setJoiningGroupName("グループ名取得予定"); // 任意（APIで取得するならここで）
+
+    console.log("UUID:", uuid); // デバッグ用
+
+    // 本来はAPIでグループ情報を取得する
+    setIsSearchModalOpen(false);
+    setIsJoinModalOpen(true);
+  };
+  
+  const handleGroupJoin = async () => {
+    try {
+      await joinGroup(joiningGroupUuid); // ✅ ここで参加API実行
+      const updatedGroups = await fetchGroupList();
+      setGroupList(updatedGroups);
+      toast.success("グループに参加しました");
+      setIsJoinModalOpen(false);
+    } catch (error) {
+      toast.error("グループ参加に失敗しました");
+    }
+  };
+  
+  
+  const handleGroupSelect = async (group: Group) => {
+    try {
+      setSelectedGroupId(group.id);
+      onSelectGroup(group); // 他の親コンポーネントにも通知
+  
+      const maps = await getGroupMapList(group.uuid); // グループマップ取得API（未実装ならダミー）
+      setMapList(maps);
+      toast.success(`グループ「${group.name}」を選択しました`);
+    } catch (error) {
+      toast.error("グループのマップ取得に失敗しました");
+    }
+  };
+  
+  const handleGroupClear = async () => {
+    setSelectedGroupId(null);
+    onSelectGroup(null);
+    try {
+      const userMaps = await getMapList();
+      setMapList(userMaps); // ✅ ユーザーのマップ一覧に切り替え
+      toast.success("グループ選択を解除しました");
+    } catch (error) {
+      toast.error("マップ一覧の取得に失敗しました");
+    }  };
 
   return (
     <>
@@ -54,6 +123,19 @@ const GroupListModal: React.FC<GroupListModalProps> = ({
         onClose={() => setIsInviteModalOpen(false)}
         groupName={inviteTargetGroup?.name ?? ""}
         inviteUrl={`https://example.com/invite/${inviteTargetGroup?.uuid ?? ""}`}
+      />
+
+      <GroupSearchModal
+        isOpen={isSearchModalOpen}
+        onClose={() => setIsSearchModalOpen(false)}
+        onSearch={handleGroupSearch}
+      />
+
+      <GroupJoinModal
+        isOpen={isJoinModalOpen}
+        onClose={() => setIsJoinModalOpen(false)}
+        groupName={joiningGroupName}
+        onJoin={handleGroupJoin}
       />
 
       <div 
@@ -82,25 +164,32 @@ const GroupListModal: React.FC<GroupListModalProps> = ({
                 key={group.id}
                 group={group}
                 selectedGroupId={selectedGroupId}
-                onSelect={(g) => {
-                  setSelectedGroupId(g.id);
-                  onSelectGroup(g);
-                }}
+                onSelect={handleGroupSelect} // ✅ 非同期対応
                 onInvite={handleInviteClick}
               />
             ))}
           </ul>
 
-          {/* <button
-            className="w-full py-3 bg-[#FFC800] hover:bg-[#D8A900] cursor-pointer text-black text-lg rounded-xl"
-            onClick={() => setIsCreateModalOpen(true)}
-          >
-            ＋新しいグループを作る
-          </button> */}
-          <ModalActionButton
-            label="＋新しいグループを作る"
-            onClick={() => setIsCreateModalOpen(true)}
-          />
+          <div className="grid grid-cols-2 gap-2 mt-6">
+            <ModalActionButton
+              label="＋新しいグループを作る"
+              onClick={() => setIsCreateModalOpen(true)}
+            />
+            <ModalActionButton
+              label="🔍 グループに参加する"
+              onClick={() => setIsSearchModalOpen(true)}
+            />
+          </div>
+
+          {selectedGroupId !== null && (
+            <div className="mt-4">
+              <ModalActionButton
+                label="🚫 グループ選択を解除"
+                onClick={handleGroupClear}
+              />
+            </div>
+          )}
+
         </div>
       </div>
     </>
