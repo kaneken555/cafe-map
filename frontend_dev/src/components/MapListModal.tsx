@@ -2,11 +2,12 @@
 import React, { useState } from "react";
 import MapCreateModal from "./MapCreateModal"; 
 import { mockMapData } from "../api/mockMapData"; 
+import CloseModalButton from "./CloseModalButton";
 import MapListItem from "./MapListItem"; 
 import ModalActionButton from "./ModalActionButton";
 import SharedMapListItem from "./SharedMapListItem"; 
 import SharedMapSearchModal from "./SharedMapSearchModal";
-import { Coffee, X } from "lucide-react";
+import { Coffee } from "lucide-react";
 import { MapItem, SharedMapItem, MapMode } from "../types/map";
 import { User as UserType } from "../types/user";
 import { Cafe } from "../types/cafe";
@@ -14,7 +15,6 @@ import { Group } from "../types/group";
 import { toast } from "react-hot-toast";
 import { extractUuidFromUrl } from "../utils/extractUuid";
 import { searchSharedMap } from "../api/cafe";
-import { ICON_SIZES } from "../constants/ui";
 
 
 interface MapListModalProps {
@@ -117,12 +117,8 @@ const MapListModal: React.FC<MapListModalProps> = ({
           className="bg-[#fffaf0] w-[700px] max-w-full rounded-lg p-6 shadow-xl relative"
           onClick={(e) => e.stopPropagation()}
         >
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 text-lg font-bold text-[#6b4226] hover:text-black cursor-pointer"
-          >
-            <X size={ICON_SIZES.MEDIUM} />
-          </button>
+
+          <CloseModalButton onClose={onClose} /> {/* ここで共通閉じるボタンを使う */}
 
           {/* タイトル + アイコン */}
           <div className="flex items-center mb-6">

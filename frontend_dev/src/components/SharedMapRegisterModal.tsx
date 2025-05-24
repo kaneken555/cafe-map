@@ -1,10 +1,9 @@
 // components/SharedMapRegisterModal.tsx
 import React, { useState } from "react";
-import { X } from "lucide-react";
+import CloseModalButton from "./CloseModalButton";
 import { MapItem, SharedMapItem } from "../types/map";
 import { getMapList, copySharedMap } from "../api/map";
 import toast from "react-hot-toast";
-import { ICON_SIZES } from "../constants/ui";
 
 
 interface SharedMapRegisterModalProps {
@@ -60,12 +59,8 @@ const SharedMapRegisterModal: React.FC<SharedMapRegisterModalProps> = ({
         className="bg-[#fffaf0] w-[400px] p-6 rounded-lg shadow-md relative"
         onClick={(e) => e.stopPropagation()}
       >
-        <button
-          onClick={handleClose}
-          className="absolute top-3 right-3 text-[#6b4226] hover:text-black"
-        >
-          <X size={ICON_SIZES.MEDIUM} />
-        </button>
+
+        <CloseModalButton onClose={handleClose} /> {/* ここで共通閉じるボタンを使う */}
 
         <h2 className="text-lg font-bold text-[#6b4226] mb-4">マイマップ登録</h2>
 

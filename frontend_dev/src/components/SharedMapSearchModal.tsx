@@ -1,8 +1,6 @@
 // components/SharedMapSearchModal.tsx
 import React, { useState } from "react";
-import { X } from "lucide-react";
-import { ICON_SIZES } from "../constants/ui";
-
+import CloseModalButton from "./CloseModalButton"; // 共通の閉じるボタンコンポーネント
 
 interface SharedMapSearchModalProps {
   isOpen: boolean;
@@ -22,12 +20,9 @@ const SharedMapSearchModal: React.FC<SharedMapSearchModalProps> = ({
   return (
     <div className="fixed inset-0 bg-black/30 flex justify-center items-center z-60">
       <div className="bg-[#fffaf0] w-[400px] p-6 rounded-lg shadow-md relative">
-        <button
-          onClick={onClose}
-          className="absolute top-3 right-3 text-[#6b4226] hover:text-black cursor-pointer"
-        >
-          <X size={ICON_SIZES.MEDIUM} />
-        </button>
+
+        <CloseModalButton onClose={onClose} /> {/* ここで共通閉じるボタンを使う */}
+
         <h2 className="text-lg font-bold text-[#6b4226] mb-4">シェアマップを開く</h2>
         <p className="text-sm text-gray-700 mb-2">シェアマップのURLまたはIDを入力してください</p>
         <input

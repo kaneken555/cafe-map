@@ -9,6 +9,7 @@ import { toast } from "react-hot-toast";
 import { User as UserType } from "../types/user";
 import { MapItem } from "../types/map";
 import { Group } from "../types/group";
+import { ICON_SIZES } from "../constants/ui";
 
 
 interface Props {
@@ -60,7 +61,7 @@ const UserMenu: React.FC<Props> = ({
         onClick={onToggle}
         title={user ? user.name : "ログイン"}
       >
-        {user ? <UserIcon size={24} /> : <LogIn size={24} />}
+        {user ? <UserIcon size={ICON_SIZES.MEDIUM} /> : <LogIn size={ICON_SIZES.MEDIUM} />}
         <span className="text-[10px] mt-1">{user ? user.name : "ログイン"}</span>
       </button>
 

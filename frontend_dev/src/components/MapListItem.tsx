@@ -8,6 +8,7 @@ import { toast } from "react-hot-toast";
 import { CheckCircle, Trash2, Share as ShareIcon } from "lucide-react";
 import { MapItem } from "../types/map";
 import { Group } from "../types/group";
+import { ICON_SIZES } from "../constants/ui";
 
 
 interface MapListItemProps {
@@ -102,7 +103,7 @@ const MapListItem: React.FC<MapListItemProps> = ({
         <div className="flex space-x-2">
         {map.id === selectedMapId ? (
           <div className="w-12 flex flex-col items-center text-green-600">
-            <CheckCircle size={24} />
+            <CheckCircle size={ICON_SIZES.MEDIUM} />
             <span className="text-sm">選択中</span>
           </div>
         ) : (
@@ -110,7 +111,7 @@ const MapListItem: React.FC<MapListItemProps> = ({
             onClick={handleSelect}
             className="w-12 flex flex-col items-center text-gray-700 hover:text-blue-500 cursor-pointer"
           >
-            <CheckCircle size={24} />
+            <CheckCircle size={ICON_SIZES.MEDIUM} />
             <span className="text-sm">選択</span>
           </button>
         )}
@@ -118,14 +119,14 @@ const MapListItem: React.FC<MapListItemProps> = ({
             onClick={() => setIsDeleteModalOpen(true)}
             className="w-12 flex flex-col items-center text-gray-700 hover:text-red-500 cursor-pointer"
           >
-            <Trash2 size={24} />  {/* ゴミ箱アイコン */}
+            <Trash2 size={ICON_SIZES.MEDIUM} />  {/* ゴミ箱アイコン */}
             <span className="text-sm">Delete</span>
           </button>
           <button
             onClick={handleShare}
             className="w-12 flex flex-col items-center text-gray-700 hover:text-blue-500 cursor-pointer"
           >
-            <ShareIcon size={24} /> {/* シェアアイコン */}
+            <ShareIcon size={ICON_SIZES.MEDIUM} /> {/* シェアアイコン */}
             <span className="text-sm">Share</span>
           </button>
         </div>

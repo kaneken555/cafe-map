@@ -1,12 +1,13 @@
 // components/GroupListModal.tsx
 import React, { useState } from "react";
+import CloseModalButton from "./CloseModalButton";
 import GroupCreateModal from "./GroupCreateModal";
 import GroupInvitationModal from "./GroupInvitationModal";
 import GroupListItem from "./GroupListItem"; 
 import GroupSearchModal from "./GroupSearchModal";
 import GroupJoinModal from "./GroupJoinModal";
 import ModalActionButton from "./ModalActionButton";
-import { X, Users } from "lucide-react";
+import { Users } from "lucide-react";
 import { Group } from "../types/group";
 import { MapItem } from "../types/map";
 import { fetchGroupList, joinGroup } from "../api/group";
@@ -146,12 +147,8 @@ const GroupListModal: React.FC<GroupListModalProps> = ({
           className="bg-[#fffaf0] w-[700px] max-w-full rounded-lg p-6 shadow-xl relative"
           onClick={(e) => e.stopPropagation()}
         >
-          <button 
-            onClick={onClose} 
-            className="absolute top-4 right-4 text-lg font-bold text-[#6b4226] hover:text-black cursor-pointer"
-          >
-            <X size={24} />
-          </button>
+
+          <CloseModalButton onClose={onClose} /> {/* ここで共通閉じるボタンを使う */}
 
           <div className="flex items-center mb-6">
             <Users className="w-6 h-6 text-[#6b4226] mr-2" />

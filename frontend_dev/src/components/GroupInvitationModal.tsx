@@ -1,8 +1,8 @@
 // components/GroupInvitationModal.tsx
 import React from "react";
-import { X } from "lucide-react";
+import CloseModalButton from "./CloseModalButton";
 import ShareLinkSection from "./ShareLinkSection";
-
+import { MODAL_STYLES } from "../constants/ui";
 
 interface GroupInvitationModalProps {
   isOpen: boolean;
@@ -26,16 +26,11 @@ const GroupInvitationModal: React.FC<GroupInvitationModalProps> = ({
         className="bg-[#fffaf0] w-[400px] p-6 rounded-lg shadow-xl relative"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* 閉じるボタン */}
-        <button 
-          onClick={onClose} 
-          className="absolute top-4 right-4 text-[#6b4226] hover:text-black cursor-pointer"
-        >
-          <X size={24} />
-        </button>
+
+        <CloseModalButton onClose={onClose} /> {/* ここで共通閉じるボタンを使う */}
 
         {/* タイトル */}
-        <h2 className="text-xl font-bold text-[#6b4226] mb-4">グループ招待</h2>
+        <h2 className={MODAL_STYLES.TITLE}>グループ招待</h2>
 
         {/* グループ名 */}
         <div className="text-md mb-2 font-semibold">{groupName}</div>

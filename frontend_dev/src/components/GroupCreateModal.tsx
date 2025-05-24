@@ -1,8 +1,8 @@
 // components/GroupCreateModal.tsx
 import React, { useState } from "react";
-import { X } from "lucide-react";
 import { createGroup } from "../api/group";
-
+import { MODAL_STYLES } from "../constants/ui";  // スタイルをインポート
+import CloseModalButton from "./CloseModalButton"; // 共通の閉じるボタンコンポーネント
 
 interface GroupCreateModalProps {
   isOpen: boolean;
@@ -40,21 +40,17 @@ const GroupCreateModal: React.FC<GroupCreateModalProps> = ({ isOpen, onClose, on
         className="bg-[#fffaf0] w-96 max-w-full rounded-lg p-6 shadow-xl relative"
         onClick={(e) => e.stopPropagation()}
       >
-        <button 
-          onClick={handleClose} 
-          className="absolute top-4 right-4 text-[#6b4226] hover:text-black cursor-pointer"
-        >
-          <X size={24} />
-        </button>
 
-        <h2 className="text-xl font-bold text-[#6b4226] mb-4">新規グループを作成</h2>
+        <CloseModalButton onClose={handleClose} /> {/* ここで共通閉じるボタンを使う */}
+
+        <h2 className={MODAL_STYLES.TITLE}>新規グループを作成</h2>
 
         <input
           type="text"
           value={groupName}
           onChange={(e) => setGroupName(e.target.value)}
           placeholder="グループ名を入力"
-          className="w-full px-4 py-2 border rounded mb-4"
+          className={MODAL_STYLES.INPUT}
         />
 
         <button

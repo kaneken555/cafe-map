@@ -3,6 +3,8 @@ import React from "react";
 import { CheckCircle, Info, UserPlus } from "lucide-react";
 import { Group } from "../types/group";
 import toast from "react-hot-toast";
+import { ICON_SIZES } from "../constants/ui";
+
 
 interface GroupListItemProps {
   group: Group;
@@ -36,7 +38,7 @@ const GroupListItem: React.FC<GroupListItemProps> = ({
       <div className="flex space-x-2">
         {group.id === selectedGroupId ? (
           <div className="w-12 flex flex-col items-center text-green-600">
-            <CheckCircle size={24} />
+            <CheckCircle size={ICON_SIZES.MEDIUM} />
             <span className="text-sm">選択中</span>
           </div>
         ) : (
@@ -44,7 +46,7 @@ const GroupListItem: React.FC<GroupListItemProps> = ({
             onClick={handleSelect}
             className="w-12 flex flex-col items-center text-gray-700 hover:text-blue-500 cursor-pointer"
           >
-            <CheckCircle size={24} />
+            <CheckCircle size={ICON_SIZES.MEDIUM} />
             <span className="text-sm">選択</span>
           </button>
         )}
@@ -53,7 +55,7 @@ const GroupListItem: React.FC<GroupListItemProps> = ({
           onClick={handleInfo}
           className="w-12 flex flex-col items-center text-gray-700 hover:text-blue-500 cursor-pointer"
           >
-          <Info size={24} />
+          <Info size={ICON_SIZES.MEDIUM} />
           <span className="text-sm">詳細</span>
         </button>
 
@@ -61,7 +63,7 @@ const GroupListItem: React.FC<GroupListItemProps> = ({
           onClick={handleInvite}
           className="w-12 flex flex-col items-center text-gray-700 hover:text-blue-500 cursor-pointer"
           >
-          <UserPlus size={24} />
+          <UserPlus size={ICON_SIZES.MEDIUM} />
           <span className="text-sm">招待</span>
         </button>
       </div>

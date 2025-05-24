@@ -3,10 +3,12 @@ import React, { useState } from "react";
 import { createMap } from "../api/map"; 
 import { getMapList } from "../api/map";
 import { toast } from "react-hot-toast";
-import { X } from "lucide-react";
 import { MapItem } from "../types/map";
 import { getGroupMapList, createGroupMap } from "../api/map"; // グループマップ取得API
 import { Group } from "../types/group";
+import CloseModalButton from "./CloseModalButton";
+import { MODAL_STYLES } from "../constants/ui";  // スタイルをインポート
+
 
 interface MapCreateModalProps {
   isOpen: boolean;
@@ -73,18 +75,14 @@ const MapCreateModal: React.FC<MapCreateModalProps> = ({
         className="bg-[#fffaf0] w-96 max-w-full rounded-lg p-6 shadow-xl relative"
         onClick={(e) => e.stopPropagation()}
       >
-        <button
-          onClick={handleClose}
-          className="absolute top-2 right-3 text-lg font-bold text-[#6b4226] hover:text-black cursor-pointer"
-        >
-          <X size={24} />
-        </button>
-        <h2 className="text-xl font-bold mb-4 text-[#6b4226]">新規マップを作成</h2>
+        <CloseModalButton onClose={handleClose} /> {/* ここで共通閉じるボタンを使う */}
+
+        <h2 className={MODAL_STYLES.TITLE}>新規マップを作成</h2>
 
         <input
           type="text"
           placeholder="マップ名を入力"
-          className="w-full px-4 py-2 border rounded mb-4"
+          className={MODAL_STYLES.INPUT}
           value={mapName}
           onChange={(e) => setMapName(e.target.value)}
         />
