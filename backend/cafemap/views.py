@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
-from .models import User, Map, Cafe, Tag, MapUserRelation, CafeMapRelation, Group, UserGroupRelation, GroupMapRelation, SharedMap, CafeSharedMapRelation
+from .models import User, Map, Cafe, Tag, MapUserRelation, CafeMapRelation, Group, UserGroupRelation, GroupMapRelation, SharedMap, CafeSharedMapRelation, UserSharedMapRelation
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.middleware.csrf import get_token
@@ -643,3 +643,107 @@ class SharedMapAPIView(APIView):
                 {"error": "Internal Server Error", "message": str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+        
+
+class UserSharedMapListAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        """ログインユーザーが登録したシェアマップの一覧を取得"""
+        maps = SharedMap.objects.filter(usersharedmaprelation__user=request.user).distinct()
+        data = [{"id": m.id, "name": m.title, "uuid": m.share_uuid} for m in maps]
+
+        return Response(data, status=status.HTTP_200_OK)
+    
+
+class SharedMapDetailAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, uuid: UUID):
+        """指定したUUIDのシェアマップを取得"""
+        try:
+            shared_map = SharedMap.objects.get(share_uuid=uuid)
+            cafe_list = Cafe.objects.filter(cafesharedmaprelation__shared_map=shared_map)
+            data = {
+                "id": shared_map.id,
+                "name": shared_map.title,
+                "cafes": [
+                    {"id": cafe.id, 
+                        "place_id": cafe.place_id, 
+                        "name": cafe.name, 
+                        "photo_urls": cafe.photo_urls,
+                        "rating": cafe.rating,
+                        "phone_number": cafe.phone_number,
+                        "address": cafe.address,
+                        "opening_hours": cafe.opening_hours,
+                        "website": cafe.website,
+                        "latitude": cafe.latitude, 
+                        "longitude": cafe.longitude,
+                        "price_level": cafe.price_level,
+                    } 
+                        for cafe in cafe_list
+                ]
+            }
+            return Response(data, status=status.HTTP_200_OK)
+        except SharedMap.DoesNotExist:
+            return Response({"error": "Shared Map not found"}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"error": "Internal Server Error", "message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+
+
+class RegisterSharedMapAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, uuid: UUID):
+        """シェアマップをマイマップとして登録（UserSharedMapRelation に保存）"""
+        try:
+            shared_map = get_object_or_404(SharedMap, share_uuid=uuid)
+
+            # すでに登録済みかチェック
+            relation, created = UserSharedMapRelation.objects.get_or_create(
+                user=request.user,
+                shared_map=shared_map
+            )
+
+            if created:
+                return Response({
+                    "message": "シェアマップをマイマップとして登録しました"
+                }, status=status.HTTP_201_CREATED)
+            else:
+                return Response({
+                    "message": "すでに登録済みのシェアマップです"
+                }, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({
+                "error": "Internal Server Error",
+                "message": str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class CopySharedMapAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, uuid: UUID):
+        try:
+            shared_map = SharedMap.objects.get(share_uuid=uuid)
+            new_name = request.data.get("name", shared_map.title or "シェアマップのコピー")
+
+            # 1. 新しいマップを作成
+            new_map = Map.objects.create(name=new_name)
+
+            # 2. ユーザーとマップの関係を作成
+            MapUserRelation.objects.create(user=request.user, map=new_map)
+
+            # 3. カフェをコピーして紐づける
+            cafes = Cafe.objects.filter(cafesharedmaprelation__shared_map=shared_map)
+            for cafe in cafes:
+                CafeMapRelation.objects.create(map=new_map, cafe=cafe)
+
+            return Response({"id": new_map.id, "name": new_map.name}, status=201)
+
+        except SharedMap.DoesNotExist:
+            return Response({"error": "Shared Map not found"}, status=404)
+        except Exception as e:
+            return Response({"error": str(e)}, status=500)

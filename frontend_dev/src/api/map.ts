@@ -86,6 +86,18 @@ export const getGroupMapList = async (groupUuid: string): Promise<any> => {
     }
 };
 
+export const getSharedMapList = async (): Promise<any> => {
+    try {
+        const response = await axios.get(`http://localhost:8000/api/shared_maps/`, {
+            withCredentials: true,
+        });
+        console.log("📡 シェアマップ一覧取得リクエスト:", response.data);
+        return response.data;
+    } catch (error) {
+        console.error("getSharedMapList エラー:", error);
+        throw error;
+    }
+}
 
 export const deleteMap = async (mapId: number): Promise<void> => {
     console.log("📡 マップ削除リクエスト:", mapId);
@@ -107,3 +119,47 @@ export const deleteMap = async (mapId: number): Promise<void> => {
         throw error;
     } 
 }
+
+export const registerSharedMap = async (uuid: string): Promise<void> => {
+    console.log("📡 シェアマップ登録リクエスト:", uuid);
+
+    const csrfToken = await getCsrfToken(); // CSRF トークンを取得
+
+    try {
+      const response = await axios.post(
+        `http://localhost:8000/api/shared-maps/${uuid}/register/`,
+        {}, // ボディは空で送信
+        {
+          headers: { "X-CSRFToken": csrfToken },
+          withCredentials: true,
+        }
+      );
+        return response.data;
+    } catch (error) {
+        console.error("registerSharedMap エラー:", error);
+        throw error;
+    } 
+}
+
+export const copySharedMap = async (uuid: string, name: string): Promise<void> => {
+  console.log("📡 シェアマップ複製リクエスト:", uuid, name);
+
+  const csrfToken = await getCsrfToken();
+
+  try {
+    const response = await axios.post(
+      `http://localhost:8000/api/shared-maps/${uuid}/copy/`,
+      { name },
+      {
+        headers: {
+          "X-CSRFToken": csrfToken,
+        },
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("copySharedMap エラー:", error);
+    throw error;
+  }
+};

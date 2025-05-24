@@ -6,7 +6,8 @@ import Map from "../components/Map";
 import MyCafeListPanel from "../components/MyCafeListPanel"; // ✅ カフェ一覧パネル
 import SearchResultPanel from "../components/SearchResultPanel";
 import { Cafe, mockSearchResults } from "../api/mockCafeData"; // ✅ Cafe型をインポート
-
+import { MapMode } from "../types/map";
+import { MAP_MODES } from "../constants/map";
 
 interface Props {
   user: { id: number; name: string } | null;
@@ -21,8 +22,10 @@ const HomePage: React.FC<Props> = ({ user, setUser }) => {
   const [searchResultCafes, setSearchResultCafes] = useState<Cafe[]>(mockSearchResults); // 検索結果
   const [isSearchResultOpen, setIsSearchResultOpen] = useState(false); // ✅ 検索パネル表示用
   const [myCafeList, setMyCafeList] = useState<Cafe[]>([]); // マイマップのカフェ
-  const [mapMode, setMapMode] = useState<"search" | "mycafe">("search"); // 表示切替モード
+  const [sharedMapCafeList, setSharedMapCafeList] = useState<Cafe[]>([]); // シェアマップのカフェ
+  const [mapMode, setMapMode] = useState<MapMode>("search"); // 表示切替モード
   const [selectedCafeId, setSelectedCafeId] = useState<number | null>(null);
+  const [shareUuid, setShareUuid] = useState<string | null>(null);
 
   
 
@@ -41,6 +44,9 @@ const HomePage: React.FC<Props> = ({ user, setUser }) => {
         setMapMode={setMapMode}        
         mapMode={mapMode}
         isMyCafeListOpen={isMyCafeListOpen}
+        sharedMapCafeList={sharedMapCafeList} // ✅ シェアマップのカフェリスト
+        setSharedMapCafeList={setSharedMapCafeList} // ✅ シェアマップのカフェリストをセットする関数
+        setShareUuid={setShareUuid} // ✅ シェアマップのUUIDをセットする関数
       />
       {/* マイカフェ一覧パネル */}
       <MyCafeListPanel
@@ -79,15 +85,23 @@ const HomePage: React.FC<Props> = ({ user, setUser }) => {
       {/* Map */}
       <div className="flex-grow">
         <Map 
-          cafes={mapMode === "mycafe" ? myCafeList : searchResultCafes}
+          cafes={
+            mapMode === MAP_MODES.mycafe
+              ? myCafeList
+              : mapMode === MAP_MODES.share
+              ? sharedMapCafeList
+              : searchResultCafes
+          }          
           onCafeIconClick={(cafe) => setSelectedCafe(cafe)} 
           selectedCafeId={selectedCafeId}
+          mapMode={mapMode}
           setMapMode={setMapMode}
           setSelectedCafeId={setSelectedCafeId}
           setSearchResultCafes={(cafes) => {
             setSearchResultCafes(cafes);
             setIsSearchResultOpen(true); // ✅ 検索結果パネル表示
           }}
+          shareUuid={shareUuid} // ✅ シェアマップのUUIDを渡す
         />
       </div>
 

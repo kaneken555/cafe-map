@@ -170,3 +170,41 @@ export const fetchCafeDetailsByPlaceIds = async (placeIds: string[]): Promise<Ca
 
   return await Promise.all(detailPromises);
 };
+
+
+export const searchSharedMap = async (groupUuid: string): Promise<Cafe[]> => {
+  console.log("📡 グループマップ検索リクエスト(UUID):", groupUuid);
+
+  const csrfToken = await getCsrfToken(); // CSRF トークンを取得
+  try {
+    const response = await axios.get(`http://localhost:8000/api/shared_maps/${groupUuid}/`, 
+      { 
+        headers: {
+          "X-CSRFToken": csrfToken,
+        },
+        withCredentials: true ,
+      }, // クッキーを送信する
+    );
+    console.log("📡 グループマップ検索リクエスト:", response.data);
+
+    // ✅ cafesだけを取り出して、さらにフィールド名を変換して返す
+    const cafes = response.data.cafes.map((cafe: any) => ({
+      id: cafe.id,
+      name: cafe.name,
+      lat: cafe.latitude,           // latitude → lat
+      lng: cafe.longitude,          // longitude → lng
+      placeId: cafe.place_id,       // place_id → placeId
+      photoUrls: cafe.photo_urls,   // photo_urls → photoUrls
+      address: cafe.address,
+      rating: cafe.rating,
+      phoneNumber: cafe.phone_number, // phone_number → phoneNumber
+      openTime: cafe.opening_hours,
+      website: cafe.website,
+      priceLevel: cafe.price_level,
+    }));
+    return cafes;
+  } catch (error) {
+    console.error("searchSharedMap エラー:", error);
+    throw error;
+  }
+}

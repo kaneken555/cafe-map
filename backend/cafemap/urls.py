@@ -10,6 +10,10 @@ from .views import (
     GroupJoinAPIView,
     GroupMapListAPIView,
     SharedMapAPIView,
+    UserSharedMapListAPIView,
+    SharedMapDetailAPIView,
+    RegisterSharedMapAPIView,
+    CopySharedMapAPIView,
 )
 
 urlpatterns = [
@@ -48,5 +52,10 @@ urlpatterns = [
     # シェアマップ関連のルーティング
     path("api/shared-maps/", SharedMapAPIView.as_view(), name="shared-map"),
     path("api/shared-maps/check/", SharedMapAPIView.as_view(), name="shared-map-check"),
+    path('api/shared_maps/', UserSharedMapListAPIView.as_view(), name='user-shared-map-list'),
+    path('api/shared_maps/<uuid:uuid>/', SharedMapDetailAPIView.as_view(), name='shared_map_detail'),
+    path('api/shared-maps/<uuid:uuid>/register/', RegisterSharedMapAPIView.as_view(), name='register_shared_map'),
+    path("api/shared-maps/<uuid:uuid>/copy/", CopySharedMapAPIView.as_view(), name="copy_shared_map"),
+
 
 ]
