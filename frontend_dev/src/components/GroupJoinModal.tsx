@@ -19,12 +19,12 @@ const GroupJoinModal: React.FC<GroupJoinModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/30 flex justify-center items-center z-60">
+    <div className={MODAL_STYLES.SUB_MODAL.CONTAINER}>
       <div className="bg-[#fffaf0] w-[400px] p-6 rounded-lg shadow-md relative">
 
         <CloseModalButton onClose={onClose} /> {/* ここで共通閉じるボタンを使う */}
 
-        <h2 className={MODAL_STYLES.TITLE}>グループ参加</h2>
+        <h2 className={MODAL_STYLES.SUB_MODAL.TITLE}>グループ参加</h2>
         <p className="text-center text-lg mb-6">{groupName}</p>
         <button
           onClick={onJoin}

@@ -4,6 +4,7 @@ import CloseModalButton from "./CloseModalButton";
 import { MapItem, SharedMapItem } from "../types/map";
 import { getMapList, copySharedMap } from "../api/map";
 import toast from "react-hot-toast";
+import { MODAL_STYLES } from "../constants/ui";
 
 
 interface SharedMapRegisterModalProps {
@@ -52,7 +53,7 @@ const SharedMapRegisterModal: React.FC<SharedMapRegisterModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 bg-black/30 flex justify-center items-center z-60"
+      className={MODAL_STYLES.SUB_MODAL.CONTAINER}
       onClick={handleClose}
     >
       <div
@@ -62,7 +63,7 @@ const SharedMapRegisterModal: React.FC<SharedMapRegisterModalProps> = ({
 
         <CloseModalButton onClose={handleClose} /> {/* ここで共通閉じるボタンを使う */}
 
-        <h2 className="text-lg font-bold text-[#6b4226] mb-4">マイマップ登録</h2>
+        <h2 className={MODAL_STYLES.SUB_MODAL.TITLE}>マイマップ登録</h2>
 
         <input
           type="text"

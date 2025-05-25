@@ -21,7 +21,7 @@ const GroupInvitationModal: React.FC<GroupInvitationModalProps> = ({
 
 
   return (
-    <div className="fixed inset-0 bg-black/30 flex justify-center items-center z-60">
+    <div className={MODAL_STYLES.SUB_MODAL.CONTAINER}>
       <div
         className="bg-[#fffaf0] w-[400px] p-6 rounded-lg shadow-xl relative"
         onClick={(e) => e.stopPropagation()}
@@ -30,7 +30,7 @@ const GroupInvitationModal: React.FC<GroupInvitationModalProps> = ({
         <CloseModalButton onClose={onClose} /> {/* ここで共通閉じるボタンを使う */}
 
         {/* タイトル */}
-        <h2 className={MODAL_STYLES.TITLE}>グループ招待</h2>
+        <h2 className={MODAL_STYLES.SUB_MODAL.TITLE}>グループ招待</h2>
 
         {/* グループ名 */}
         <div className="text-md mb-2 font-semibold">{groupName}</div>

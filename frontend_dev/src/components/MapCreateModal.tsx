@@ -68,7 +68,7 @@ const MapCreateModal: React.FC<MapCreateModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 bg-black/30 flex justify-center items-center z-60"
+      className={MODAL_STYLES.SUB_MODAL.CONTAINER}
       onClick={handleClose}
     >
       <div
@@ -77,12 +77,12 @@ const MapCreateModal: React.FC<MapCreateModalProps> = ({
       >
         <CloseModalButton onClose={handleClose} /> {/* ここで共通閉じるボタンを使う */}
 
-        <h2 className={MODAL_STYLES.TITLE}>新規マップを作成</h2>
+        <h2 className={MODAL_STYLES.SUB_MODAL.TITLE}>新規マップを作成</h2>
 
         <input
           type="text"
           placeholder="マップ名を入力"
-          className={MODAL_STYLES.INPUT}
+          className={MODAL_STYLES.SUB_MODAL.INPUT}
           value={mapName}
           onChange={(e) => setMapName(e.target.value)}
         />

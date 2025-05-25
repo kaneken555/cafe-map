@@ -7,6 +7,7 @@ import ShareLinkSection from "./ShareLinkSection";
 import QRCodeSection from "./QRCodeSection";
 import { MODAL_STYLES } from "../constants/ui";
 
+
 interface ShareMapModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -46,17 +47,16 @@ const ShareMapModal: React.FC<ShareMapModalProps> = ({
     } catch (error) {
       toast.error("シェアリンクの作成に失敗しました");
     }
-
   };
 
 
   return (
-    <div className="fixed inset-0 bg-black/30 flex justify-center items-center z-50">
+    <div className={MODAL_STYLES.SUB_MODAL.CONTAINER}>
       <div className="bg-[#fef7ec] p-6 rounded-lg w-[360px] relative shadow-md">
 
         <CloseModalButton onClose={onClose} /> {/* ここで共通閉じるボタンを使う */}
 
-        <h2 className={MODAL_STYLES.TITLE}>シェアマップ</h2>
+        <h2 className={MODAL_STYLES.SUB_MODAL.TITLE}>シェアマップ</h2>
 
         {/* シェアリンクを作成するボタン */}
         {!shareUrl && (

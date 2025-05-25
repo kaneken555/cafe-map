@@ -17,12 +17,12 @@ const KeywordSearchModal: React.FC<Props> = ({ onClose, onSearch }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
+    <div className={MODAL_STYLES.MAIN_MODAL.CONTAINER}>
       <div className="bg-[#fffaf0] p-6 rounded-lg w-[400px] shadow-md relative">
 
         <CloseModalButton onClose={onClose} /> {/* ここで共通閉じるボタンを使う */}
 
-        <h2 className={MODAL_STYLES.TITLE}>キーワード検索</h2>
+        <h2 className={MODAL_STYLES.MAIN_MODAL.TITLE}>キーワード検索</h2>
         <input
           type="text"
           placeholder="カフェ名や地名など"

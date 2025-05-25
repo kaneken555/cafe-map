@@ -14,7 +14,7 @@ import { fetchGroupList, joinGroup } from "../api/group";
 import { getMapList, getGroupMapList } from "../api/map";
 import { toast } from "react-hot-toast";
 import { extractUuidFromUrl } from "../utils/extractUuid";
-
+import { MODAL_STYLES } from "../constants/ui";
 
 
 interface GroupListModalProps {
@@ -140,7 +140,7 @@ const GroupListModal: React.FC<GroupListModalProps> = ({
       />
 
       <div 
-        className="fixed inset-0 bg-black/30 flex justify-center items-center z-50"
+        className={MODAL_STYLES.MAIN_MODAL.CONTAINER}
         onClick={onClose}
       >
         <div

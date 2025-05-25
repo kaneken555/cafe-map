@@ -15,7 +15,7 @@ import { Group } from "../types/group";
 import { toast } from "react-hot-toast";
 import { extractUuidFromUrl } from "../utils/extractUuid";
 import { searchSharedMap } from "../api/cafe";
-
+import { MODAL_STYLES } from "../constants/ui";
 
 interface MapListModalProps {
   isOpen: boolean;
@@ -110,7 +110,7 @@ const MapListModal: React.FC<MapListModalProps> = ({
 
       {/* マップ一覧モーダル */}
       <div
-        className="fixed inset-0 bg-black/30 flex justify-center items-center z-50"
+        className={MODAL_STYLES.MAIN_MODAL.CONTAINER}
         onClick={onClose}
       >
         <div
