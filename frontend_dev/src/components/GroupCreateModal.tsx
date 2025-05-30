@@ -10,7 +10,11 @@ interface GroupCreateModalProps {
   onCreated?: () => void; // 新規作成後のコールバック
 }
 
-const GroupCreateModal: React.FC<GroupCreateModalProps> = ({ isOpen, onClose, onCreated }) => {
+const GroupCreateModal: React.FC<GroupCreateModalProps> = ({ 
+  isOpen, 
+  onClose, 
+  onCreated 
+}) => {
   const [groupName, setGroupName] = useState("");
 
   if (!isOpen) return null;

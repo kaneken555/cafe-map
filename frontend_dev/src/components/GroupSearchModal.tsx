@@ -10,7 +10,11 @@ interface GroupSearchModalProps {
   onSearch: (input: string) => void;
 }
 
-const GroupSearchModal: React.FC<GroupSearchModalProps> = ({ isOpen, onClose, onSearch }) => {
+const GroupSearchModal: React.FC<GroupSearchModalProps> = ({ 
+  isOpen, 
+  onClose, 
+  onSearch 
+}) => {
   const [input, setInput] = useState("");
 
   if (!isOpen) return null;

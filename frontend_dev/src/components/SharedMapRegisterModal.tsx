@@ -1,18 +1,18 @@
 // components/SharedMapRegisterModal.tsx
 import React, { useState } from "react";
 import CloseModalButton from "./CloseModalButton";
-import { MapItem, SharedMapItem } from "../types/map";
+import { SharedMapItem } from "../types/map";
 import { getMapList, copySharedMap } from "../api/map";
 import toast from "react-hot-toast";
 import { MODAL_STYLES } from "../constants/ui";
 
+import { useMap } from "../contexts/MapContext"; // マップコンテキストをインポート
 
 interface SharedMapRegisterModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialMapName: string;
   map: SharedMapItem,
-  setMapList: React.Dispatch<React.SetStateAction<MapItem[]>>;
 }
 
 const SharedMapRegisterModal: React.FC<SharedMapRegisterModalProps> = ({
@@ -20,8 +20,9 @@ const SharedMapRegisterModal: React.FC<SharedMapRegisterModalProps> = ({
   onClose,
   initialMapName,
   map,
-  setMapList,
 }) => {
+  const { setMapList } = useMap(); // マップリストのセット関数をコンテキストから取得
+
   const [mapName, setMapName] = useState(initialMapName);
 
   if (!isOpen) return null;
@@ -36,14 +37,13 @@ const SharedMapRegisterModal: React.FC<SharedMapRegisterModalProps> = ({
     if (!mapName.trim()) return;
   
     try {
-      // setMapName(initialMapName);
       console.log("マップ名:", mapName);
       console.log("マップ情報:", map);
       await copySharedMap(map.uuid, mapName.trim());
       toast.success(`マップ「${mapName}」をマイマップとして登録しました`);
 
-      const maps = await getMapList();              // ✅ マップ一覧を再取得
-      setMapList(maps);                            // ✅ マップ一覧を更新
+      const maps = await getMapList();
+      setMapList(maps);
 
       onClose();
     } catch (error) {

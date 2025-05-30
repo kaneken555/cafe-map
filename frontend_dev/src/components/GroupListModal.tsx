@@ -9,21 +9,19 @@ import GroupJoinModal from "./GroupJoinModal";
 import ModalActionButton from "./ModalActionButton";
 import { Users } from "lucide-react";
 import { Group } from "../types/group";
-import { MapItem } from "../types/map";
 import { fetchGroupList, joinGroup } from "../api/group";
 import { getMapList, getGroupMapList } from "../api/map";
 import { toast } from "react-hot-toast";
 import { extractUuidFromUrl } from "../utils/extractUuid";
 import { MODAL_STYLES } from "../constants/ui";
 
+import { useMap } from "../contexts/MapContext";
+import { useGroup } from "../contexts/GroupContext";
 
 interface GroupListModalProps {
   isOpen: boolean;
   onClose: () => void;
-  groupList: Group[];
-  setGroupList: React.Dispatch<React.SetStateAction<Group[]>>;
   onSelectGroup: (group: Group | null) => void;
-  setMapList: React.Dispatch<React.SetStateAction<MapItem[]>>; 
   selectedGroupId: number | null;
   setSelectedGroupId: React.Dispatch<React.SetStateAction<number | null>>;
 }
@@ -31,13 +29,13 @@ interface GroupListModalProps {
 const GroupListModal: React.FC<GroupListModalProps> = ({
   isOpen,
   onClose,
-  groupList,
-  setGroupList,
   onSelectGroup,
-  setMapList,
   selectedGroupId,
   setSelectedGroupId,
 }) => {
+  const { setMapList, setSelectedMap } = useMap(); // マップリストのセット関数をコンテキストから取得
+  const { groupList, setGroupList } = useGroup(); // グループリストのセット関数をコンテキストから取得
+
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false); // ✅ 招待モーダル状態
   const [inviteTargetGroup, setInviteTargetGroup] = useState<Group | null>(null); // ✅ 招待対象
@@ -92,6 +90,9 @@ const GroupListModal: React.FC<GroupListModalProps> = ({
       const maps = await getGroupMapList(group.uuid); // グループマップ取得API（未実装ならダミー）
       setMapList(maps);
       toast.success(`グループ「${group.name}」を選択しました`);
+
+      setSelectedMap(null); // 選択中のマップもリセット
+
     } catch (error) {
       toast.error("グループのマップ取得に失敗しました");
     }
@@ -100,6 +101,7 @@ const GroupListModal: React.FC<GroupListModalProps> = ({
   const handleGroupClear = async () => {
     setSelectedGroupId(null);
     onSelectGroup(null);
+    setSelectedMap(null); // 選択中のマップもリセット
     try {
       const userMaps = await getMapList();
       setMapList(userMaps); // ✅ ユーザーのマップ一覧に切り替え

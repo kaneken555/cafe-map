@@ -1,7 +1,7 @@
 // components/MapListModal.tsx
 import React, { useState } from "react";
 import MapCreateModal from "./MapCreateModal"; 
-import { mockMapData } from "../api/mockMapData"; 
+// import { mockMapData } from "../api/mockMapData"; 
 import CloseModalButton from "./CloseModalButton";
 import MapListItem from "./MapListItem"; 
 import ModalActionButton from "./ModalActionButton";
@@ -9,27 +9,23 @@ import SharedMapListItem from "./SharedMapListItem";
 import SharedMapSearchModal from "./SharedMapSearchModal";
 import { Coffee } from "lucide-react";
 import { MapItem, SharedMapItem, MapMode } from "../types/map";
-import { User as UserType } from "../types/user";
-import { Cafe } from "../types/cafe";
 import { Group } from "../types/group";
 import { toast } from "react-hot-toast";
 import { extractUuidFromUrl } from "../utils/extractUuid";
 import { searchSharedMap } from "../api/cafe";
 import { MODAL_STYLES } from "../constants/ui";
 
+// import { useAuth } from "../contexts/AuthContext";
+import { useMap } from "../contexts/MapContext";
+import { useCafe } from "../contexts/CafeContext"; // ✅ カフェコンテキストをインポート
+
+
 interface MapListModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSelectMap: (map: MapItem) => void;
   selectedMapId: number | null;
-  mapList: MapItem[];
-  setMapList: React.Dispatch<React.SetStateAction<MapItem[]>>; 
-  sharedMapList: SharedMapItem[];
-  user: UserType | null; 
-  setSelectedMap: (map: MapItem | null) => void;
   selectedGroup: Group | null;
-  sharedMapCafeList: Cafe[]; // ✅ シェアマップのカフェリスト
-  setSharedMapCafeList: React.Dispatch<React.SetStateAction<Cafe[]>>; // ✅ シェアマップのカフェリストをセットする関数
   setMapMode: (mode: MapMode) => void; // ✅ マップモードをセットする関数
   setShareUuid: React.Dispatch<React.SetStateAction<string | null>>; // ✅ シェアマップのUUIDをセットする関数
 }
@@ -39,17 +35,14 @@ const MapListModal: React.FC<MapListModalProps> = ({
   onClose, 
   onSelectMap, 
   selectedMapId, 
-  mapList, 
-  setMapList, 
-  sharedMapList,
-  user, 
-  setSelectedMap,
   selectedGroup,
-  sharedMapCafeList, // ✅ シェアマップのカフェリスト
-  setSharedMapCafeList, // ✅ シェアマップのカフェリストをセットする関数
   setMapMode, // ✅ マップモードをセットする関数
   setShareUuid, // ✅ シェアマップのUUIDをセットする関数
 }) => {
+  // const { user } = useAuth();
+  const { mapList, sharedMapList } = useMap(); // ✅ コンテキストからマップリストとセット関数を取得
+  const { setSharedMapCafeList} = useCafe(); // ✅ シェアマップのカフェリストとセット関数を取得
+
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false); 
   const [isSharedMapSearchOpen, setIsSharedMapSearchOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'my' | 'shared'>('my');
@@ -97,7 +90,7 @@ const MapListModal: React.FC<MapListModalProps> = ({
       <MapCreateModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
-        setMapList={setMapList} 
+        // setMapList={setMapList} 
         selectedGroup={selectedGroup} // グループ情報を渡す
       />
 
@@ -153,8 +146,6 @@ const MapListModal: React.FC<MapListModalProps> = ({
                   selectedMapId={selectedMapId}
                   onSelect={onSelectMap}
                   onClose={onClose}
-                  setMapList={setMapList} 
-                  setSelectedMap={setSelectedMap}
                   selectedGroup={selectedGroup}
                 />
               ))}
@@ -166,9 +157,6 @@ const MapListModal: React.FC<MapListModalProps> = ({
                     selectedMapId={selectedMapId}
                     onSelect={onSelectMap}
                     onClose={onClose}
-                    setMapList={setMapList} 
-                    setSelectedMap={setSelectedMap}
-                    selectedGroup={selectedGroup}
                   />
                 ))}
           </ul>

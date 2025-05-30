@@ -9,20 +9,18 @@ import { Cafe, mockSearchResults } from "../api/mockCafeData"; // ✅ Cafe型を
 import { MapMode } from "../types/map";
 import { MAP_MODES } from "../constants/map";
 
-interface Props {
-  user: { id: number; name: string } | null;
-  setUser: React.Dispatch<React.SetStateAction<{ id: number; name: string } | null>>;
-}
+// import { useMap } from "../contexts/MapContext";
+import { useCafe } from "../contexts/CafeContext";
 
-const HomePage: React.FC<Props> = ({ user, setUser }) => {
-  const [selectedMap, setSelectedMap] = useState<{ id: number; name: string } | null>(null); // ✅ マップ選択
-  const [cafeList, setCafeList] = useState<Cafe[]>([]); // ✅ 表示カフェリスト
+
+const HomePage: React.FC = () => {
+  // const { selectedMap, setSelectedMap } = useMap(); // マップコンテキストからselectedMapとsetSelectedMapを取得
+  const { cafeList, myCafeList, sharedMapCafeList } = useCafe(); // カフェコンテキストからcafeListとsetCafeListを取得
+
   const [selectedCafe, setSelectedCafe] = useState<Cafe | null>(null); // ✅ カフェ詳細
   const [isMyCafeListOpen, setIsMyCafeListOpen] = useState(false); // ✅ カフェ一覧パネルの表示
   const [searchResultCafes, setSearchResultCafes] = useState<Cafe[]>(mockSearchResults); // 検索結果
   const [isSearchResultOpen, setIsSearchResultOpen] = useState(false); // ✅ 検索パネル表示用
-  const [myCafeList, setMyCafeList] = useState<Cafe[]>([]); // マイマップのカフェ
-  const [sharedMapCafeList, setSharedMapCafeList] = useState<Cafe[]>([]); // シェアマップのカフェ
   const [mapMode, setMapMode] = useState<MapMode>("search"); // 表示切替モード
   const [selectedCafeId, setSelectedCafeId] = useState<number | null>(null);
   const [shareUuid, setShareUuid] = useState<string | null>(null);
@@ -32,20 +30,11 @@ const HomePage: React.FC<Props> = ({ user, setUser }) => {
   return (
     <div className="flex flex-col h-screen w-full">
       <Header
-        user={user}
-        setUser={setUser}
-        selectedMap={selectedMap}
-        setSelectedMap={setSelectedMap}
-        cafeList={cafeList}
-        setCafeList={setCafeList}
         openCafeListPanel={() => setIsMyCafeListOpen(true)}
         closeCafeListPanel={() => setIsMyCafeListOpen(false)}
-        setMyCafeList={setMyCafeList}     
         setMapMode={setMapMode}        
         mapMode={mapMode}
         isMyCafeListOpen={isMyCafeListOpen}
-        sharedMapCafeList={sharedMapCafeList} // ✅ シェアマップのカフェリスト
-        setSharedMapCafeList={setSharedMapCafeList} // ✅ シェアマップのカフェリストをセットする関数
         setShareUuid={setShareUuid} // ✅ シェアマップのUUIDをセットする関数
       />
       {/* マイカフェ一覧パネル */}
@@ -77,9 +66,6 @@ const HomePage: React.FC<Props> = ({ user, setUser }) => {
           setSelectedCafe(null);
           setSelectedCafeId(null);
         }}
-        selectedMap={selectedMap}
-        myCafeList={myCafeList}
-        setMyCafeList={setMyCafeList}
       />
 
       {/* Map */}

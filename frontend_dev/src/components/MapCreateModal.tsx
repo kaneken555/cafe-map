@@ -3,26 +3,26 @@ import React, { useState } from "react";
 import { createMap } from "../api/map"; 
 import { getMapList } from "../api/map";
 import { toast } from "react-hot-toast";
-import { MapItem } from "../types/map";
 import { getGroupMapList, createGroupMap } from "../api/map"; // グループマップ取得API
 import { Group } from "../types/group";
 import CloseModalButton from "./CloseModalButton";
 import { MODAL_STYLES } from "../constants/ui";  // スタイルをインポート
 
+import { useMap } from "../contexts/MapContext"; // マップコンテキストをインポート
 
 interface MapCreateModalProps {
   isOpen: boolean;
   onClose: () => void;
-  setMapList: React.Dispatch<React.SetStateAction<MapItem[]>>; 
   selectedGroup: Group | null;
 }
 
 const MapCreateModal: React.FC<MapCreateModalProps> = ({ 
   isOpen,
   onClose,
-  setMapList,
   selectedGroup, // グループ情報を受け取る
 }) => {
+  const { setMapList } = useMap(); // マップリストのセット関数をコンテキストから取得
+
   const [mapName, setMapName] = useState("");
 
   // ✅ onCloseとmapNameリセットをまとめた関数

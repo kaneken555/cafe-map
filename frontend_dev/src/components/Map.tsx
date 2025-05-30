@@ -4,7 +4,7 @@ import { GoogleMap, LoadScript } from "@react-google-maps/api";
 import MapButton from "./MapButton"; 
 import CafeOverlayIcon from "./CafeOverlayIcon"; // ✅ 切り出したカフェアイコン表示用コンポーネント
 import KeywordSearchModal from "./KeywordSearchModal"; // ✅ キーワード検索モーダルをインポート
-import { mockCafeData } from "../api/mockCafeData";
+// import { mockCafeData } from "../api/mockCafeData";
 import LoadingOverlay from "./LoadingOverlay"; // ✅ ローディングオーバーレイコンポーネントをインポート
 import { searchCafe, searchCafeByKeyword } from "../api/cafe"; // ✅ カフェ検索APIをインポート
 import { registerSharedMap } from "../api/map"; // ✅ シェアマップ登録APIをインポート
@@ -25,7 +25,6 @@ interface MapProps {
   setSearchResultCafes: (cafes: Cafe[]) => void; // ✅ 検索結果をセットする関数
   shareUuid: string | null; // ✅ シェアマップのUUIDをセットする関数
 }
-
 
 // 一旦 mapId=1 固定でもOK。選択中マップに応じて動的に切り替えも可能
 // const mapId = 1;
@@ -98,6 +97,7 @@ const Map: React.FC<MapProps> = ({
     }
     try {
       registerSharedMap(shareUuid);
+      console.log("シェアマップ登録成功");
       toast.success("シェアマップが登録されました");
     } catch (error) {
       console.error("シェアマップ登録エラー:", error);

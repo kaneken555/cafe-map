@@ -6,17 +6,14 @@ import { googleLoginWithPopup } from "../api/auth";
 import { getMapList } from "../api/map";
 import { fetchGroupList } from "../api/group";
 import { toast } from "react-hot-toast";
-import { User as UserType } from "../types/user";
-import { MapItem } from "../types/map";
-import { Group } from "../types/group";
 import { ICON_SIZES } from "../constants/ui";
 
+// Contexts
+import { useAuth } from "../contexts/AuthContext";
+import { useMap } from "../contexts/MapContext";
+import { useGroup } from "../contexts/GroupContext";
 
 interface Props {
-  user: UserType | null;
-  setUser: React.Dispatch<React.SetStateAction<UserType | null>>;
-  setMapList: React.Dispatch<React.SetStateAction<MapItem[]>>;
-  setGroupList: React.Dispatch<React.SetStateAction<Group[]>>;
   isOpen: boolean;
   onToggle: () => void;
   onGuestLogin: () => void;
@@ -25,16 +22,16 @@ interface Props {
 }
 
 const UserMenu: React.FC<Props> = ({
-  user,
-  setUser,
-  setMapList,
-  setGroupList,
   isOpen,
   onToggle,
   onGuestLogin,
   onLogout,
   onOpenGroupList,
 }) => {
+  const { user, setUser } = useAuth();
+  const { setMapList } = useMap(); // マップリストのセット関数をコンテキストから取得
+  const { setGroupList } = useGroup(); // グループリストのセット関数をコンテキストから取得
+
   const handleGoogleLogin = async () => {
     toast("Googleログインを開始します（90秒以内に完了してください）", { duration: 5000 });
     const user = await googleLoginWithPopup();
@@ -68,7 +65,6 @@ const UserMenu: React.FC<Props> = ({
       {/* ▼ ドロップダウンメニュー */}
       <LoginMenu
         isOpen={isOpen}
-        user={user}
         onGuestLogin={onGuestLogin}
         onGoogleLogin={handleGoogleLogin}
         onLogout={onLogout}

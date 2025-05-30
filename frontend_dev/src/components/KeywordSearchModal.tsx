@@ -8,7 +8,10 @@ interface Props {
   onSearch: (keyword: string) => void;
 }
 
-const KeywordSearchModal: React.FC<Props> = ({ onClose, onSearch }) => {
+const KeywordSearchModal: React.FC<Props> = ({ 
+  onClose, 
+  onSearch,
+}) => {
   const [keyword, setKeyword] = useState("");
 
   const handleSearch = () => {

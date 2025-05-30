@@ -11,56 +11,43 @@ import { guestLogin, logout } from "../api/auth";
 import { getMapList, getSharedMapList } from "../api/map";
 import { fetchGroupList } from "../api/group";
 import { toast } from "react-hot-toast";
-import { MapItem, SharedMapItem, MapMode } from "../types/map";
-import { User as UserType } from "../types/user";
-import { Cafe } from "../types/cafe";
+import { MapItem, MapMode } from "../types/map";
 import { Group } from "../types/group";
 import { ICON_SIZES } from "../constants/ui";
 
+// Contexts
+import { useAuth } from "../contexts/AuthContext";
+import { useMap } from "../contexts/MapContext";
+import { useCafe } from "../contexts/CafeContext";
+import { useGroup } from "../contexts/GroupContext";
 
 interface HeaderProps {
-  user: UserType | null;
-  setUser: React.Dispatch<React.SetStateAction<UserType | null>>;
-  selectedMap: MapItem | null;
-  setSelectedMap: (map: MapItem | null) => void;
-  cafeList: Cafe[];
-  setCafeList: (cafes: Cafe[]) => void;
   openCafeListPanel: () => void;
   closeCafeListPanel: () => void;
-  setMyCafeList: (cafes: Cafe[]) => void;   
   mapMode: MapMode;
   setMapMode: (mode: MapMode) => void; 
   isMyCafeListOpen: boolean;
-  sharedMapCafeList: Cafe[]; // ✅ シェアマップのカフェリスト
-  setSharedMapCafeList: React.Dispatch<React.SetStateAction<Cafe[]>>; // ✅ シェアマップのカフェリストをセットする関数
   setShareUuid: React.Dispatch<React.SetStateAction<string | null>>; // ✅ シェアマップのUUIDをセットする関数
 }
 
 const Header: React.FC<HeaderProps> = ({
-  user,
-  setUser,
-  selectedMap,
-  setSelectedMap,
-  cafeList,
-  setCafeList,
   openCafeListPanel,
   closeCafeListPanel,
-  setMyCafeList,
   mapMode,
   setMapMode, 
   isMyCafeListOpen,
-  sharedMapCafeList, // ✅ シェアマップのカフェリスト
-  setSharedMapCafeList, // ✅ シェアマップのカフェリストをセットする関数
   setShareUuid, // ✅ シェアマップのUUIDをセットする関数
 
 }) => {    
+  const { user, setUser, resetAuthContext } = useAuth();
+  const { setMapList, selectedMap, setSelectedMap, setSharedMapList } = useMap(); // マップリストとセット関数をコンテキストから取得
+  const { setCafeList, setMyCafeList } = useCafe(); // カフェリストとセット関数をコンテキストから取得
+  const { setGroupList } = useGroup(); // グループリストのセット関数をコンテキストから取得
+
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const [isMapListOpen, setIsMapListOpen] = useState(false);
   const [isLoginMenuOpen, setIsLoginMenuOpen] = useState(false);
-  const [mapList, setMapList] = useState<MapItem[]>([]);
-  const [sharedMapList, setSharedMapList] = useState<SharedMapItem[]>([]);
   const [isGroupListOpen, setIsGroupListOpen] = useState(false); // 👈 グループ一覧モーダル
-  const [groupList, setGroupList] = useState<Group[]>([]);
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
   const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
 
@@ -114,7 +101,7 @@ const Header: React.FC<HeaderProps> = ({
 
   const handleLogout = async () => {
     await logout();
-    setUser(null);              // ✅ ログアウト（ユーザー消す）
+    resetAuthContext();         // ✅ ログアウト（ユーザー消す）
     setSelectedMap(null);       // ✅ 選択中マップもリセット
     setSelectedGroup(null);     // ✅ 選択中グループもリセット
     setSelectedGroupId(null);   // ✅ 選択中グループIDもリセット
@@ -122,7 +109,6 @@ const Header: React.FC<HeaderProps> = ({
     setCafeList([]);            // ✅ カフェリストもリセット（オプション）
     setMapMode("search");       // ✅ マップモードもリセット（オプション）
     setIsLoginMenuOpen(false);  // メニューを閉じる
-    // toast.success("ログアウトしました");
   }
 
   const handleMapSelect = async (map: MapItem) => {
@@ -146,14 +132,7 @@ const Header: React.FC<HeaderProps> = ({
           onClose={() => setIsMapListOpen(false)}
           onSelectMap={handleMapSelect}
           selectedMapId={selectedMap?.id ?? null} 
-          mapList={mapList} 
-          sharedMapList={sharedMapList}
-          setMapList={setMapList}
-          user={user} 
-          setSelectedMap={setSelectedMap}
           selectedGroup={selectedGroup}
-          sharedMapCafeList={sharedMapCafeList} // ✅ シェアマップのカフェリスト
-          setSharedMapCafeList={setSharedMapCafeList} // ✅ シェアマップのカフェリストをセットする関数
           setMapMode={setMapMode} // ✅ マップモードをセットする関数
           setShareUuid={setShareUuid} // ✅ シェアマップのUUIDをセットする関数
         />
@@ -199,10 +178,6 @@ const Header: React.FC<HeaderProps> = ({
           />
 
           <UserMenu
-            user={user}
-            setUser={setUser}
-            setMapList={setMapList}
-            setGroupList={setGroupList}
             isOpen={isLoginMenuOpen}
             onToggle={() => setIsLoginMenuOpen((prev) => !prev)}
             onGuestLogin={handleGuestLogin}
@@ -216,14 +191,11 @@ const Header: React.FC<HeaderProps> = ({
           <GroupListModal
             isOpen={isGroupListOpen}
             onClose={() => setIsGroupListOpen(false)}
-            groupList={groupList}
-            setGroupList={setGroupList}
             onSelectGroup={(group) => {
               setSelectedGroup(group);
-              setSelectedGroupId(group?.id ?? null); // ✅ IDも更新
+              setSelectedGroupId(group?.id ?? null);
               setIsGroupListOpen(false);
             }}
-            setMapList={setMapList}
             selectedGroupId={selectedGroupId}
             setSelectedGroupId={setSelectedGroupId}
           />

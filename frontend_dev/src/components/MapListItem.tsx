@@ -10,14 +10,13 @@ import { MapItem } from "../types/map";
 import { Group } from "../types/group";
 import { ICON_SIZES } from "../constants/ui";
 
+import { useMap } from "../contexts/MapContext";
 
 interface MapListItemProps {
   map: MapItem;
   selectedMapId: number | null;
   onSelect: (map: MapItem) => void;
   onClose: () => void;
-  setMapList: React.Dispatch<React.SetStateAction<MapItem[]>>;   
-  setSelectedMap: (map: MapItem | null) => void;
   selectedGroup: Group | null;
 }
   
@@ -26,10 +25,10 @@ const MapListItem: React.FC<MapListItemProps> = ({
   selectedMapId, 
   onSelect, 
   onClose , 
-  setMapList, 
-  setSelectedMap,
   selectedGroup,
 }) => {
+  const { setMapList, setSelectedMap } = useMap(); // コンテキストからマップリストのセット関数を取得
+
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [shareUrl, setShareUrl] = useState("");
@@ -72,7 +71,6 @@ const MapListItem: React.FC<MapListItemProps> = ({
       toast.error("シェア状態の確認に失敗しました");
     }
   };
-
 
 
   return (

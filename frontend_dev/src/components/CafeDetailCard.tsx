@@ -18,7 +18,12 @@ interface CafeDetailCardProps {
 }
 
 
-const CafeDetailCard: React.FC<CafeDetailCardProps> = ({ cafe, selectedMap, myCafeList, setMyCafeList }) => {
+const CafeDetailCard: React.FC<CafeDetailCardProps> = ({ 
+  cafe, 
+  selectedMap, 
+  myCafeList, 
+  setMyCafeList 
+}) => {
   // ✅ このカフェが登録済みか？
   const isRegistered = myCafeList?.some((myCafe) => myCafe.placeId === cafe.placeId) ?? false;
 

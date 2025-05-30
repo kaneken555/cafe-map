@@ -1,19 +1,26 @@
 // components/LoginMenu.tsx
 import React from "react";
 import { ArrowRightToLine, User as UserIcon, LogIn, Users } from "lucide-react";
-import { User as UserType } from "../types/user";
 
+import { useAuth } from "../contexts/AuthContext";
 
 interface LoginMenuProps {
   isOpen: boolean;
-  user: UserType | null;
   onGuestLogin: () => void;
   onGoogleLogin: () => void;
   onLogout: () => void;
   onOpenGroupList: () => void;
 }
 
-const LoginMenu: React.FC<LoginMenuProps> = ({ isOpen, user, onGuestLogin, onGoogleLogin, onLogout, onOpenGroupList }) => {
+const LoginMenu: React.FC<LoginMenuProps> = ({ 
+  isOpen,
+  onGuestLogin, 
+  onGoogleLogin, 
+  onLogout, 
+  onOpenGroupList,
+}) => {
+  const { user } = useAuth();
+
   if (!isOpen) return null;
 
   return (

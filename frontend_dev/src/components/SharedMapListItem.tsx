@@ -1,26 +1,20 @@
 // components/SharedMapListItem.tsx
 import React, { useState } from "react";
-import { getMapList, deleteMap, getGroupMapList } from "../api/map";
-import { checkSharedMap } from "../api/sharedMap";
 import MapDeleteModal from "./MapDeleteModal";
 import ShareMapModal from "./ShareMapModal";
 import SharedMapRegisterModal from "./SharedMapRegisterModal";
 import { toast } from "react-hot-toast";
 import { CheckCircle, Trash2, Share as ShareIcon } from "lucide-react";
 import { MapItem, SharedMapItem } from "../types/map";
-import { Group } from "../types/group";
 import { ICON_SIZES } from "../constants/ui";
 
-
+// import { useMap } from "../contexts/MapContext";
 
 interface SharedMapListItemProps {
   map: SharedMapItem;
   selectedMapId: number | null;
   onSelect: (map: MapItem) => void;
   onClose: () => void;
-  setMapList: React.Dispatch<React.SetStateAction<MapItem[]>>;   
-  setSelectedMap: (map: MapItem | null) => void;
-  selectedGroup: Group | null;
 }
   
 const SharedMapListItem: React.FC<SharedMapListItemProps> = ({ 
@@ -28,10 +22,9 @@ const SharedMapListItem: React.FC<SharedMapListItemProps> = ({
   selectedMapId, 
   onSelect, 
   onClose , 
-  setMapList, 
-  setSelectedMap,
-  selectedGroup,
 }) => {
+  // const { setMapList, setSelectedMap } = useMap(); // コンテキストからマップリストのセット関数を取得
+
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [shareUrl, setShareUrl] = useState("");
@@ -107,7 +100,7 @@ const SharedMapListItem: React.FC<SharedMapListItemProps> = ({
         onClose={() => setIsRegisterModalOpen(false)}
         initialMapName={map.name}
         map={map}
-        setMapList={setMapList} // マップリストを更新する関数
+        // setMapList={setMapList} // マップリストを更新する関数
       />
 
       <li className="flex justify-between items-center border px-4 py-2 rounded">
