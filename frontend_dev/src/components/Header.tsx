@@ -11,7 +11,7 @@ import { guestLogin, logout } from "../api/auth";
 import { getMapList, getSharedMapList } from "../api/map";
 import { fetchGroupList } from "../api/group";
 import { toast } from "react-hot-toast";
-import { MapItem, MapMode } from "../types/map";
+import { MapItem } from "../types/map";
 import { ICON_SIZES } from "../constants/ui";
 
 // Contexts
@@ -23,8 +23,6 @@ import { useGroup } from "../contexts/GroupContext";
 interface HeaderProps {
   openCafeListPanel: () => void;
   closeCafeListPanel: () => void;
-  mapMode: MapMode;
-  setMapMode: (mode: MapMode) => void; 
   isMyCafeListOpen: boolean;
   setShareUuid: React.Dispatch<React.SetStateAction<string | null>>; // ✅ シェアマップのUUIDをセットする関数
 }
@@ -32,14 +30,12 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({
   openCafeListPanel,
   closeCafeListPanel,
-  mapMode,
-  setMapMode, 
   isMyCafeListOpen,
   setShareUuid, // ✅ シェアマップのUUIDをセットする関数
 
 }) => {    
   const { user, setUser, resetAuthContext } = useAuth();
-  const { setMapList, selectedMap, setSelectedMap, setSharedMapList } = useMap(); // マップリストとセット関数をコンテキストから取得
+  const { setMapList, selectedMap, setSelectedMap, setSharedMapList, mapMode, setMapMode } = useMap(); // マップリストとセット関数をコンテキストから取得
   const { setCafeList, setMyCafeList } = useCafe(); // カフェリストとセット関数をコンテキストから取得
   const { setGroupList, setSelectedGroup, setSelectedGroupId, resetGroupContext } = useGroup(); // グループリストのセット関数をコンテキストから取得
 
@@ -68,11 +64,6 @@ const Header: React.FC<HeaderProps> = ({
   }
 
   const handleGuestLogin = async () => {
-    // フロントエンドのみの仮実装
-    //   setUser({ id: 1, name: "ゲストユーザー" });
-    //   setIsLoginMenuOpen(false);
-    //   guestLogin();
-
     const userData = await guestLogin();
     if (userData) {
       setUser({ id: userData.id, name: userData.name }); // 👈 サーバーが返してきた本物のゲストユーザー情報をセット
@@ -128,7 +119,6 @@ const Header: React.FC<HeaderProps> = ({
           onClose={() => setIsMapListOpen(false)}
           onSelectMap={handleMapSelect}
           selectedMapId={selectedMap?.id ?? null} 
-          setMapMode={setMapMode} // ✅ マップモードをセットする関数
           setShareUuid={setShareUuid} // ✅ シェアマップのUUIDをセットする関数
         />
         

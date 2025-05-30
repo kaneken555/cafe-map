@@ -6,22 +6,20 @@ import Map from "../components/Map";
 import MyCafeListPanel from "../components/MyCafeListPanel"; // ✅ カフェ一覧パネル
 import SearchResultPanel from "../components/SearchResultPanel";
 import { Cafe, mockSearchResults } from "../api/mockCafeData"; // ✅ Cafe型をインポート
-import { MapMode } from "../types/map";
 import { MAP_MODES } from "../constants/map";
 
-// import { useMap } from "../contexts/MapContext";
 import { useCafe } from "../contexts/CafeContext";
+import { useMap } from "../contexts/MapContext";
 
 
 const HomePage: React.FC = () => {
-  // const { selectedMap, setSelectedMap } = useMap(); // マップコンテキストからselectedMapとsetSelectedMapを取得
   const { cafeList, myCafeList, sharedMapCafeList } = useCafe(); // カフェコンテキストからcafeListとsetCafeListを取得
+  const { mapMode } = useMap(); // マップコンテキストからmapModeとsetMapModeを取得
 
   const [selectedCafe, setSelectedCafe] = useState<Cafe | null>(null); // ✅ カフェ詳細
   const [isMyCafeListOpen, setIsMyCafeListOpen] = useState(false); // ✅ カフェ一覧パネルの表示
   const [searchResultCafes, setSearchResultCafes] = useState<Cafe[]>(mockSearchResults); // 検索結果
   const [isSearchResultOpen, setIsSearchResultOpen] = useState(false); // ✅ 検索パネル表示用
-  const [mapMode, setMapMode] = useState<MapMode>("search"); // 表示切替モード
   const [selectedCafeId, setSelectedCafeId] = useState<number | null>(null);
   const [shareUuid, setShareUuid] = useState<string | null>(null);
 
@@ -32,8 +30,6 @@ const HomePage: React.FC = () => {
       <Header
         openCafeListPanel={() => setIsMyCafeListOpen(true)}
         closeCafeListPanel={() => setIsMyCafeListOpen(false)}
-        setMapMode={setMapMode}        
-        mapMode={mapMode}
         isMyCafeListOpen={isMyCafeListOpen}
         setShareUuid={setShareUuid} // ✅ シェアマップのUUIDをセットする関数
       />
@@ -80,8 +76,6 @@ const HomePage: React.FC = () => {
           }          
           onCafeIconClick={(cafe) => setSelectedCafe(cafe)} 
           selectedCafeId={selectedCafeId}
-          mapMode={mapMode}
-          setMapMode={setMapMode}
           setSelectedCafeId={setSelectedCafeId}
           setSearchResultCafes={(cafes) => {
             setSearchResultCafes(cafes);

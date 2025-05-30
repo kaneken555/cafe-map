@@ -9,17 +9,15 @@ import LoadingOverlay from "./LoadingOverlay"; // ✅ ローディングオー�
 import { searchCafe, searchCafeByKeyword } from "../api/cafe"; // ✅ カフェ検索APIをインポート
 import { registerSharedMap } from "../api/map"; // ✅ シェアマップ登録APIをインポート
 import { Cafe } from "../types/cafe";
-import { MapMode } from "../types/map";
 
 import { DEFAULT_CENTER, MAP_CONTAINER_STYLE, MAP_MODES } from "../constants/map";
 import toast from "react-hot-toast";
 
+import { useMap } from "../contexts/MapContext";
 
 interface MapProps {
   cafes: Cafe[];
   onCafeIconClick: (cafe: Cafe) => void;
-  mapMode: MapMode; // ✅ マップモードを追加
-  setMapMode: (mode: MapMode) => void; 
   selectedCafeId: number | null; 
   setSelectedCafeId: (id: number | null) => void; 
   setSearchResultCafes: (cafes: Cafe[]) => void; // ✅ 検索結果をセットする関数
@@ -33,13 +31,13 @@ interface MapProps {
 const Map: React.FC<MapProps> = ({ 
   cafes, 
   onCafeIconClick, 
-  mapMode, 
-  setMapMode, 
   selectedCafeId,
   setSelectedCafeId, 
   setSearchResultCafes, 
   shareUuid 
 }) => {
+  const { mapMode, setMapMode } = useMap(); // マップリストのセット関数をコンテキストから取得
+
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   const [isMapLoading, setIsMapLoading] = useState(true);
   const mapRef = useRef<google.maps.Map | null>(null);
