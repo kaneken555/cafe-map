@@ -4,35 +4,42 @@ import { GoogleMap, LoadScript } from "@react-google-maps/api";
 import MapButton from "./MapButton"; 
 import CafeOverlayIcon from "./CafeOverlayIcon"; // ✅ 切り出したカフェアイコン表示用コンポーネント
 import KeywordSearchModal from "./KeywordSearchModal"; // ✅ キーワード検索モーダルをインポート
-import { mockCafeData, Cafe } from "../api/mockCafeData"; // 👈 Cafe 型を import
+// import { mockCafeData } from "../api/mockCafeData";
 import LoadingOverlay from "./LoadingOverlay"; // ✅ ローディングオーバーレイコンポーネントをインポート
 import { searchCafe, searchCafeByKeyword } from "../api/cafe"; // ✅ カフェ検索APIをインポート
+import { registerSharedMap } from "../api/map"; // ✅ シェアマップ登録APIをインポート
+import { Cafe } from "../types/cafe";
+import { MapMode } from "../types/map";
+
+import { DEFAULT_CENTER, MAP_CONTAINER_STYLE, MAP_MODES } from "../constants/map";
+import toast from "react-hot-toast";
 
 
 interface MapProps {
   cafes: Cafe[];
   onCafeIconClick: (cafe: Cafe) => void;
-  setMapMode: (mode: "search" | "mycafe") => void; 
+  mapMode: MapMode; // ✅ マップモードを追加
+  setMapMode: (mode: MapMode) => void; 
   selectedCafeId: number | null; 
   setSelectedCafeId: (id: number | null) => void; 
   setSearchResultCafes: (cafes: Cafe[]) => void; // ✅ 検索結果をセットする関数
+  shareUuid: string | null; // ✅ シェアマップのUUIDをセットする関数
 }
-
-const containerStyle = {
-  width: "100%",
-  height: "100%",
-};
-
-const center = {
-  lat: 35.681236, // 東京駅の緯度
-  lng: 139.767125, // 東京駅の経度
-};
 
 // 一旦 mapId=1 固定でもOK。選択中マップに応じて動的に切り替えも可能
 // const mapId = 1;
 // const cafes = mockCafeData[mapId] || [];
 
-const Map: React.FC<MapProps> = ({ cafes, onCafeIconClick, setMapMode, selectedCafeId ,setSelectedCafeId, setSearchResultCafes }) => {
+const Map: React.FC<MapProps> = ({ 
+  cafes, 
+  onCafeIconClick, 
+  mapMode, 
+  setMapMode, 
+  selectedCafeId,
+  setSelectedCafeId, 
+  setSearchResultCafes, 
+  shareUuid 
+}) => {
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   const [isMapLoading, setIsMapLoading] = useState(true);
   const mapRef = useRef<google.maps.Map | null>(null);
@@ -50,38 +57,52 @@ const Map: React.FC<MapProps> = ({ cafes, onCafeIconClick, setMapMode, selectedC
     };
   };
 
+  // 共通の検索処理をまとめる
+  const searchCafes = async (center: { lat: number; lng: number }, keyword?: string) => {
+    try {
+      const cafes = keyword 
+        ? await searchCafeByKeyword(keyword, center.lat, center.lng)
+        : await searchCafe(center.lat, center.lng);
+      setSearchResultCafes(cafes);
+      setMapMode(MAP_MODES.search); // ✅ 検索モードに切り替え
+    } catch (error) {
+      console.error("検索エラー:", error);
+      toast.error("カフェの検索に失敗しました");
+    }
+  };
 
   const handleSearchClick = async () => {
     const center = getMapCenter();
     if (!center) return;
     console.log("📡 検索実行: 中心座標 =", center.lat, center.lng);
-  
-    const cafeResults = await searchCafe(center.lat, center.lng);
-    console.log("📡 カフェ一覧取得結果:", cafeResults);
-    setSearchResultCafes(cafeResults); // ✅ こちらを更新する
-    setMapMode("search");
-
+    await searchCafes(center);
   };
 
   const handleKeywordSearchClick = async (keyword: string) => {
-    // toast('キーワード検索は未実装です');
     console.log("📡 キーワード検索実行:", keyword);
-
     const center = getMapCenter();
     if (!center) return;
-  
-    const results = await searchCafeByKeyword(keyword, center.lat, center.lng);
-    // const results = await searchCafe(center.lat, center.lng);
-    console.log("📡 カフェ一覧取得結果:", results);
-    setSearchResultCafes(results);
-    setMapMode("search");
-    setIsKeywordSearchOpen(false); // モーダル閉じる
+    await searchCafes(center, keyword);
+    setIsKeywordSearchOpen(false); 
   };
-  
   
   const handleMapLoad = (map: google.maps.Map) => {
     mapRef.current = map;
   };
+
+  const handleRegisterSharedMap = async () => {
+    if (!shareUuid) {
+      toast.error("シェアマップのUUIDがありません");
+      return;
+    }
+    try {
+      registerSharedMap(shareUuid);
+      console.log("シェアマップ登録成功");
+      toast.success("シェアマップが登録されました");
+    } catch (error) {
+      console.error("シェアマップ登録エラー:", error);
+    }
+  }
 
   return (
     <div className="relative h-full w-full">
@@ -101,6 +122,16 @@ const Map: React.FC<MapProps> = ({ cafes, onCafeIconClick, setMapMode, selectedC
         <MapButton label="キーワード検索" onClick={() => setIsKeywordSearchOpen(true)} />
       </div>
 
+      {mapMode === MAP_MODES.share && (
+        <div className="absolute top-20 left-1/2 -translate-x-1/2 z-10 flex space-x-4">
+          <MapButton 
+            label="シェアマップとして保存" 
+            onClick={handleRegisterSharedMap}
+            />
+          <MapButton label="マイマップとして登録" onClick={() => alert("登録処理未実装")}/>
+        </div>
+      )}
+
       {isKeywordSearchOpen && (
         <KeywordSearchModal
           onClose={() => setIsKeywordSearchOpen(false)}
@@ -113,8 +144,8 @@ const Map: React.FC<MapProps> = ({ cafes, onCafeIconClick, setMapMode, selectedC
         onError={() => setIsMapLoading(false)} // ✅ エラー時もローディング解除
       >
         <GoogleMap
-          mapContainerStyle={containerStyle}
-          center={center}
+          mapContainerStyle={MAP_CONTAINER_STYLE}
+          center={DEFAULT_CENTER}
           zoom={15}
           onLoad={handleMapLoad} // ✅ 時間調整含むロジック
           onUnmount={() => {

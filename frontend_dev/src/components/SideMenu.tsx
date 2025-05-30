@@ -1,6 +1,8 @@
 // components/SideMenu.tsx
 import React from "react";
 import { ChevronsLeft } from "lucide-react";
+import { ICON_SIZES } from "../constants/ui";
+
 
 interface SideMenuProps {
   isOpen: boolean;
@@ -19,7 +21,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
           onClick={onClose} 
           className="text-xl font-bold cursor-pointer"
         >
-          <ChevronsLeft size={24} />
+          <ChevronsLeft size={ICON_SIZES.MEDIUM} />
         </button>
       </div>
       <nav className="flex flex-col items-center space-y-6 mt-10 text-md font-medium">

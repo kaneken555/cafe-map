@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User, Cafe, Map, Tag, Memo, ShareMap,MapUserRelation, CafeMapRelation, CafeTagRelation, CafeMemoRelation, CafeShareMapRelation
+from .models import User, Cafe, Map, Tag, Memo, ShareMap,MapUserRelation, CafeMapRelation, CafeTagRelation, CafeMemoRelation, CafeShareMapRelation, Group, UserGroupRelation, GroupMapRelation
 
 class UserAdmin(BaseUserAdmin):
     model = User
@@ -73,3 +73,26 @@ class CafeMemoRelationAdmin(admin.ModelAdmin):
 @admin.register(CafeShareMapRelation)
 class CafeShareMapRelationAdmin(admin.ModelAdmin):
     list_display = ('id', 'cafe', 'share_map', 'created_at')
+
+# Groupモデルの表示設定
+@admin.register(Group)
+class GroupAdmin(admin.ModelAdmin):
+    list_display = ("id", "name", "description", "created_at", "updated_at")
+    search_fields = ("name",)
+    ordering = ("-created_at",)
+
+# ユーザーとグループの関係モデル
+@admin.register(UserGroupRelation)
+class UserGroupRelationAdmin(admin.ModelAdmin):
+    list_display = ("id", "user", "group", "created_at")
+    search_fields = ("user__name", "group__name")
+    list_filter = ("group",)
+    ordering = ("-created_at",)
+
+# グループとマップの関係モデル
+@admin.register(GroupMapRelation)
+class GroupMapRelationAdmin(admin.ModelAdmin):
+    list_display = ("id", "group", "map", "created_at")
+    search_fields = ("group__name", "map__name")
+    list_filter = ("group",)
+    ordering = ("-created_at",)

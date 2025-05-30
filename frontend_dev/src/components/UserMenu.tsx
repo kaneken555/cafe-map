@@ -1,35 +1,53 @@
 // components/UserMenu.tsx
 import React from "react";
-import { LogIn, User } from "lucide-react";
+import { LogIn, User as UserIcon } from "lucide-react";
 import LoginMenu from "./LoginMenu";
 import { googleLoginWithPopup } from "../api/auth";
+import { getMapList } from "../api/map";
+import { fetchGroupList } from "../api/group";
 import { toast } from "react-hot-toast";
+import { ICON_SIZES } from "../constants/ui";
+
+// Contexts
+import { useAuth } from "../contexts/AuthContext";
+import { useMap } from "../contexts/MapContext";
+import { useGroup } from "../contexts/GroupContext";
 
 interface Props {
-  user: { id: number; name: string } | null;
-  setUser: React.Dispatch<React.SetStateAction<{ id: number; name: string } | null>>;
   isOpen: boolean;
   onToggle: () => void;
   onGuestLogin: () => void;
   onLogout: () => void;
+  onOpenGroupList: () => void;
 }
 
 const UserMenu: React.FC<Props> = ({
-  user,
-  setUser,
   isOpen,
   onToggle,
   onGuestLogin,
   onLogout,
+  onOpenGroupList,
 }) => {
+  const { user, setUser } = useAuth();
+  const { setMapList } = useMap(); // マップリストのセット関数をコンテキストから取得
+  const { setGroupList } = useGroup(); // グループリストのセット関数をコンテキストから取得
+
   const handleGoogleLogin = async () => {
     toast("Googleログインを開始します（90秒以内に完了してください）", { duration: 5000 });
     const user = await googleLoginWithPopup();
     if (user) {
       setUser(user);
+      // ログイン時にマップを取得する
+      const maps = await getMapList();
+      setMapList(maps);
+      
+      // ✅ グループ一覧も取得
+      const groups = await fetchGroupList();
+      setGroupList(groups);
     } else {
       toast.error("ログインが確認できませんでした。ログイン画面を閉じて再度お試しください。");
-    }    console.log("ユーザー情報:", user);
+    }    
+    console.log("ユーザー情報:", user);
     onToggle(); // メニューを閉じる
   };
 
@@ -40,17 +58,17 @@ const UserMenu: React.FC<Props> = ({
         onClick={onToggle}
         title={user ? user.name : "ログイン"}
       >
-        {user ? <User size={24} /> : <LogIn size={24} />}
+        {user ? <UserIcon size={ICON_SIZES.MEDIUM} /> : <LogIn size={ICON_SIZES.MEDIUM} />}
         <span className="text-[10px] mt-1">{user ? user.name : "ログイン"}</span>
       </button>
 
       {/* ▼ ドロップダウンメニュー */}
       <LoginMenu
         isOpen={isOpen}
-        user={user}
         onGuestLogin={onGuestLogin}
         onGoogleLogin={handleGoogleLogin}
         onLogout={onLogout}
+        onOpenGroupList={onOpenGroupList}
       />
     </div>
   );

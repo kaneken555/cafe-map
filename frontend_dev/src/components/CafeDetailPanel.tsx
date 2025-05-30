@@ -2,19 +2,23 @@
 import React from "react";
 import CafeDetailCard from "./CafeDetailCard";
 import CloseButton from "./CloseButton";
-import { Cafe } from "../api/mockCafeData"; // 👈 Cafe 型を import
-import { MapItem } from "../types/map"; // ← 共通型をインポート
+import { Cafe } from "../types/cafe";
 
+import { useMap } from "../contexts/MapContext";
+import { useCafe } from "../contexts/CafeContext";
 
 interface CafeDetailPanelProps {
   cafe: Cafe | null;
   onClose: () => void;
-  selectedMap: MapItem | null;
-  myCafeList: Cafe[];
-  setMyCafeList: React.Dispatch<React.SetStateAction<Cafe[]>>; 
 }
 
-const CafeDetailPanel: React.FC<CafeDetailPanelProps> = ({ cafe, onClose, selectedMap, myCafeList, setMyCafeList }) => {
+const CafeDetailPanel: React.FC<CafeDetailPanelProps> = ({ 
+  cafe, 
+  onClose, 
+}) => {
+  const { selectedMap } = useMap(); // マップコンテキストからselectedMapを取得
+  const { myCafeList, setMyCafeList } = useCafe();
+
   const renderCafeDetailCard = () => {
     if (!cafe) return null;
     return (

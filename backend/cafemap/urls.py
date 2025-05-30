@@ -3,7 +3,18 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.contrib.auth import logout
 from . import views
-from .views import MapAPIView, MapDetailAPIView, CafeAPIView, CafeDetailAPIView, TagAPIView, TagDetailAPIView, CafeTagAPIView, CafeTagDetailAPIView, CafeMemoAPIView
+from .views import (
+    MapAPIView, MapDetailAPIView, CafeAPIView, CafeDetailAPIView, TagAPIView, TagDetailAPIView, CafeTagAPIView, CafeTagDetailAPIView, CafeMemoAPIView,
+      # 👇 グループ関連のビューをインポート
+    GroupListCreateAPIView,
+    GroupJoinAPIView,
+    GroupMapListAPIView,
+    SharedMapAPIView,
+    UserSharedMapListAPIView,
+    SharedMapDetailAPIView,
+    RegisterSharedMapAPIView,
+    CopySharedMapAPIView,
+)
 
 urlpatterns = [
     # TODO: エンドポイントを修正(RESTful APIの設計に従う)
@@ -32,5 +43,19 @@ urlpatterns = [
     path("api/auth/logout/", views.logout_view, name="logout"),
     path("api/auth/login/success-popup/", lambda request: render(request, "popup_login_success.html")),
     path("api/auth/", include("social_django.urls", namespace="social")),
+
+    # グループ関連のルーティング
+    path('api/groups/', GroupListCreateAPIView.as_view(), name='group-list-create'),
+    path('api/groups/<uuid:uuid>/join/', GroupJoinAPIView.as_view(), name='group-join'),
+    path('api/groups/<uuid:uuid>/maps/', GroupMapListAPIView.as_view(), name='group-map-list'),
+
+    # シェアマップ関連のルーティング
+    path("api/shared-maps/", SharedMapAPIView.as_view(), name="shared-map"),
+    path("api/shared-maps/check/", SharedMapAPIView.as_view(), name="shared-map-check"),
+    path('api/shared_maps/', UserSharedMapListAPIView.as_view(), name='user-shared-map-list'),
+    path('api/shared_maps/<uuid:uuid>/', SharedMapDetailAPIView.as_view(), name='shared_map_detail'),
+    path('api/shared-maps/<uuid:uuid>/register/', RegisterSharedMapAPIView.as_view(), name='register_shared_map'),
+    path("api/shared-maps/<uuid:uuid>/copy/", CopySharedMapAPIView.as_view(), name="copy_shared_map"),
+
 
 ]

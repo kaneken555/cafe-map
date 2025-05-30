@@ -1,11 +1,11 @@
 // src/api/cafe.ts
-import { Cafe, mockCafeData } from "./mockCafeData";
+import { Cafe } from "./mockCafeData";
 import axios from "axios";
 import { getCsrfToken } from "./auth";
 import { toast } from "react-hot-toast";
 
 
-// ✅ mockData を参照するだけのメソッド
+// マップに登録されているカフェの情報を取得する
 export const getCafeList = async (mapId: number): Promise<Cafe[]> => {
   const csrfToken = await getCsrfToken();
   try {
@@ -40,18 +40,12 @@ export const getCafeList = async (mapId: number): Promise<Cafe[]> => {
     console.error("addCafe エラー:", error);
     throw error;
   } 
-
-  // フロントエンドのみの仮実装
-  // return new Promise((resolve) => {
-  //     setTimeout(() => resolve(mockCafeData[mapId] || []), 200);
-  // });
 };
 
 
 // POSTリクエスト関数
 export const addCafeToMyCafe = async (mapId: number ,cafe: Cafe): Promise<void> => {
   console.log("📡 MyCafeに追加リクエスト:", cafe);
-  toast.success("カフェがマイカフェに追加されました");
 
   const csrfToken = await getCsrfToken();
 
@@ -59,13 +53,14 @@ export const addCafeToMyCafe = async (mapId: number ,cafe: Cafe): Promise<void> 
     console.log("addCafe", cafe);
     const response = await axios.post(`http://localhost:8000/api/maps/${mapId}/cafes/`, cafe,
     { 
-        headers: {
-          "X-CSRFToken": csrfToken,
-        },
-        withCredentials: true 
-      } // クッキーを送信する
+      headers: {
+        "X-CSRFToken": csrfToken,
+      },
+      withCredentials: true 
+    } // クッキーを送信する
 
     );
+    toast.success("カフェがマイカフェに追加されました");
     return response.data;
   } catch (error) {
     console.error("addCafe エラー:", error);
@@ -80,10 +75,12 @@ export const searchCafe = async (lat: number, lng: number): Promise<Cafe[]> => {
 
   try {
     // 1. 検索APIからplace_id一覧を取得
-    const baseRes = await axios.get(`http://localhost:8000/api/fetch-cafes/?lat=${lat}&lng=${lng}`, {
-      headers: { "X-CSRFToken": csrfToken },
-      withCredentials: true,
-    });
+    const baseRes = await axios.get(`http://localhost:8000/api/fetch-cafes/?lat=${lat}&lng=${lng}`,
+      {
+        headers: { "X-CSRFToken": csrfToken },
+        withCredentials: true,
+      }
+    );
 
     const baseCafes = baseRes.data.cafes;
     console.log("📡 カフェ一覧取得リクエスト:", baseCafes);
@@ -173,3 +170,41 @@ export const fetchCafeDetailsByPlaceIds = async (placeIds: string[]): Promise<Ca
 
   return await Promise.all(detailPromises);
 };
+
+
+export const searchSharedMap = async (groupUuid: string): Promise<Cafe[]> => {
+  console.log("📡 グループマップ検索リクエスト(UUID):", groupUuid);
+
+  const csrfToken = await getCsrfToken(); // CSRF トークンを取得
+  try {
+    const response = await axios.get(`http://localhost:8000/api/shared_maps/${groupUuid}/`, 
+      { 
+        headers: {
+          "X-CSRFToken": csrfToken,
+        },
+        withCredentials: true ,
+      }, // クッキーを送信する
+    );
+    console.log("📡 グループマップ検索リクエスト:", response.data);
+
+    // ✅ cafesだけを取り出して、さらにフィールド名を変換して返す
+    const cafes = response.data.cafes.map((cafe: any) => ({
+      id: cafe.id,
+      name: cafe.name,
+      lat: cafe.latitude,           // latitude → lat
+      lng: cafe.longitude,          // longitude → lng
+      placeId: cafe.place_id,       // place_id → placeId
+      photoUrls: cafe.photo_urls,   // photo_urls → photoUrls
+      address: cafe.address,
+      rating: cafe.rating,
+      phoneNumber: cafe.phone_number, // phone_number → phoneNumber
+      openTime: cafe.opening_hours,
+      website: cafe.website,
+      priceLevel: cafe.price_level,
+    }));
+    return cafes;
+  } catch (error) {
+    console.error("searchSharedMap エラー:", error);
+    throw error;
+  }
+}

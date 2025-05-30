@@ -2,51 +2,51 @@
 import React, { useState } from "react";
 import SideMenu from "./SideMenu";
 import MapListModal from "./MapListModal";
-import { Coffee, Map as MapIcon, List, Layers, Menu } from "lucide-react";
-import { getCafeList } from "../api/cafe";
-import { Cafe } from "../api/mockCafeData";
-import { guestLogin, logout } from "../api/auth";
-import { getMapList } from "../api/map";
 import HeaderButton from "./HeaderButton";
 import UserMenu from "./UserMenu";
+import GroupListModal from "./GroupListModal";
+import { Coffee, Map as MapIcon, List as ListIcon, Layers, Menu } from "lucide-react";
+import { getCafeList } from "../api/cafe";
+import { guestLogin, logout } from "../api/auth";
+import { getMapList, getSharedMapList } from "../api/map";
+import { fetchGroupList } from "../api/group";
 import { toast } from "react-hot-toast";
-import { MapItem } from "../types/map"; // ← 共通型をインポート
+import { MapItem, MapMode } from "../types/map";
+import { ICON_SIZES } from "../constants/ui";
 
+// Contexts
+import { useAuth } from "../contexts/AuthContext";
+import { useMap } from "../contexts/MapContext";
+import { useCafe } from "../contexts/CafeContext";
+import { useGroup } from "../contexts/GroupContext";
 
 interface HeaderProps {
-  user: { id: number; name: string } | null;
-  setUser: React.Dispatch<React.SetStateAction<{ id: number; name: string } | null>>;
-  selectedMap: MapItem | null;
-  setSelectedMap: (map: MapItem | null) => void;
-  cafeList: Cafe[];
-  setCafeList: (cafes: Cafe[]) => void;
   openCafeListPanel: () => void;
   closeCafeListPanel: () => void;
-  setMyCafeList: (cafes: Cafe[]) => void;   
-  mapMode: "search" | "mycafe";
-  setMapMode: (mode: "search" | "mycafe") => void; 
+  mapMode: MapMode;
+  setMapMode: (mode: MapMode) => void; 
   isMyCafeListOpen: boolean;
+  setShareUuid: React.Dispatch<React.SetStateAction<string | null>>; // ✅ シェアマップのUUIDをセットする関数
 }
 
 const Header: React.FC<HeaderProps> = ({
-  user,
-  setUser,
-  selectedMap,
-  setSelectedMap,
-  cafeList,
-  setCafeList,
   openCafeListPanel,
   closeCafeListPanel,
-  setMyCafeList,
   mapMode,
   setMapMode, 
   isMyCafeListOpen,
+  setShareUuid, // ✅ シェアマップのUUIDをセットする関数
 
 }) => {    
+  const { user, setUser, resetAuthContext } = useAuth();
+  const { setMapList, selectedMap, setSelectedMap, setSharedMapList } = useMap(); // マップリストとセット関数をコンテキストから取得
+  const { setCafeList, setMyCafeList } = useCafe(); // カフェリストとセット関数をコンテキストから取得
+  const { setGroupList, setSelectedGroup, setSelectedGroupId, resetGroupContext } = useGroup(); // グループリストのセット関数をコンテキストから取得
+
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const [isMapListOpen, setIsMapListOpen] = useState(false);
   const [isLoginMenuOpen, setIsLoginMenuOpen] = useState(false);
-  const [mapList, setMapList] = useState<MapItem[]>([]);
+  const [isGroupListOpen, setIsGroupListOpen] = useState(false); // 👈 グループ一覧モーダル
 
   
   const requireMapSelected = (action: () => void) => {
@@ -77,11 +77,19 @@ const Header: React.FC<HeaderProps> = ({
     if (userData) {
       setUser({ id: userData.id, name: userData.name }); // 👈 サーバーが返してきた本物のゲストユーザー情報をセット
       toast.success("ゲストログインしました");
+      console.log("ゲストユーザー情報:", userData);
 
       // ログイン時にマップを取得する
       const maps = await getMapList();
       setMapList(maps);
-      
+      // 共有マップ一覧も取得
+      const sharedMaps = await getSharedMapList()
+      setSharedMapList(sharedMaps);
+
+      // ✅ グループ一覧も取得
+      const groups = await fetchGroupList();
+      setGroupList(groups);
+
     } else {
       toast.error("ゲストログインに失敗しました");
     }
@@ -90,13 +98,13 @@ const Header: React.FC<HeaderProps> = ({
 
   const handleLogout = async () => {
     await logout();
-    setUser(null);              // ✅ ログアウト（ユーザー消す）
+    resetAuthContext();         // ✅ ログアウト（ユーザー消す）
     setSelectedMap(null);       // ✅ 選択中マップもリセット
+    resetGroupContext(); // ✅ グループコンテキストもリセット
     closeCafeListPanel();       // カフェ一覧パネルを閉じる
     setCafeList([]);            // ✅ カフェリストもリセット（オプション）
     setMapMode("search");       // ✅ マップモードもリセット（オプション）
     setIsLoginMenuOpen(false);  // メニューを閉じる
-    // toast.success("ログアウトしました");
   }
 
   const handleMapSelect = async (map: MapItem) => {
@@ -120,23 +128,21 @@ const Header: React.FC<HeaderProps> = ({
           onClose={() => setIsMapListOpen(false)}
           onSelectMap={handleMapSelect}
           selectedMapId={selectedMap?.id ?? null} 
-          mapList={mapList} 
-          setMapList={setMapList}
-          user={user} 
-          setSelectedMap={setSelectedMap}
+          setMapMode={setMapMode} // ✅ マップモードをセットする関数
+          setShareUuid={setShareUuid} // ✅ シェアマップのUUIDをセットする関数
         />
         
       <header className="w-full h-16 px-4 flex justify-between items-center bg-gradient-to-r from-yellow-300 to-yellow-500 shadow-md">
         {/* 左：サイドメニュー */}
         <div className="flex items-center">
           <button onClick={() => setIsSideMenuOpen(true)} className="text-2xl cursor-pointer">
-            <Menu size={24} />
+            <Menu size={ICON_SIZES.MEDIUM} />
           </button>
         </div>
 
         {/* 中央：タイトル */}
         <div className="flex-grow flex justify-center items-center space-x-2">
-          <Coffee size={24} />
+          <Coffee size={ICON_SIZES.MEDIUM} />
           <h1 className="text-2xl font-bold text-black">Café Map</h1>
         </div>
 
@@ -145,7 +151,7 @@ const Header: React.FC<HeaderProps> = ({
           <HeaderButton
             onClick={handleOpenCafeList}
             disabled={!user}
-            icon={<List size={24} />}
+            icon={<ListIcon size={ICON_SIZES.MEDIUM} />}
             label="My Café List"
             active={isMyCafeListOpen}
           />
@@ -153,7 +159,7 @@ const Header: React.FC<HeaderProps> = ({
           <HeaderButton
             onClick={handleShowMyCafeMap}
             disabled={!user}
-            icon={<MapIcon size={24} />}
+            icon={<MapIcon size={ICON_SIZES.MEDIUM} />}
             label="My Café Map"
             active={mapMode === "mycafe"} // ✅ 現在のモードによって強調
           />
@@ -161,18 +167,30 @@ const Header: React.FC<HeaderProps> = ({
           <HeaderButton
             onClick={handleOpenMapList}
             disabled={!user}
-            icon={<Layers size={24} />}
+            icon={<Layers size={ICON_SIZES.MEDIUM} />}
             label={selectedMap?.name || "My Map List"}
             active={!!selectedMap} // ✅ 現在のマップによって強調
           />
 
           <UserMenu
-            user={user}
-            setUser={setUser}
             isOpen={isLoginMenuOpen}
             onToggle={() => setIsLoginMenuOpen((prev) => !prev)}
             onGuestLogin={handleGuestLogin}
             onLogout={handleLogout}
+            onOpenGroupList={() => {
+              setIsGroupListOpen(true);
+              setIsLoginMenuOpen(false); // 👈 メニューを閉じてからモーダルを開く
+            }}
+          />
+
+          <GroupListModal
+            isOpen={isGroupListOpen}
+            onClose={() => setIsGroupListOpen(false)}
+            onSelectGroup={(group) => {
+              setSelectedGroup(group);
+              setSelectedGroupId(group?.id ?? null);
+              setIsGroupListOpen(false);
+            }}
           />
         </div>
       </header>

@@ -1,6 +1,7 @@
 // components/CafeListItem.tsx
 import React from "react";
-import { Cafe } from "../api/mockCafeData";
+import { Cafe } from "../types/cafe";
+
 
 interface CafeListItemProps {
   cafe: Cafe;

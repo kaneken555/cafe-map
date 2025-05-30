@@ -1,18 +1,26 @@
 // components/LoginMenu.tsx
 import React from "react";
-import { ArrowRightToLine, User, LogIn, Users } from "lucide-react";
-import toast from "react-hot-toast";
+import { ArrowRightToLine, User as UserIcon, LogIn, Users } from "lucide-react";
 
+import { useAuth } from "../contexts/AuthContext";
 
 interface LoginMenuProps {
   isOpen: boolean;
-  user: { id: number; name: string } | null;
   onGuestLogin: () => void;
   onGoogleLogin: () => void;
   onLogout: () => void;
+  onOpenGroupList: () => void;
 }
 
-const LoginMenu: React.FC<LoginMenuProps> = ({ isOpen, user, onGuestLogin, onGoogleLogin, onLogout }) => {
+const LoginMenu: React.FC<LoginMenuProps> = ({ 
+  isOpen,
+  onGuestLogin, 
+  onGoogleLogin, 
+  onLogout, 
+  onOpenGroupList,
+}) => {
+  const { user } = useAuth();
+
   if (!isOpen) return null;
 
   return (
@@ -23,7 +31,7 @@ const LoginMenu: React.FC<LoginMenuProps> = ({ isOpen, user, onGuestLogin, onGoo
             className="w-full text-left px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-center space-x-2"
             onClick={onGuestLogin}
           >
-            <User size={16} />
+            <UserIcon size={16} />
             <span>ゲストユーザーとしてログイン</span>
           </button>
           <button
@@ -39,9 +47,7 @@ const LoginMenu: React.FC<LoginMenuProps> = ({ isOpen, user, onGuestLogin, onGoo
           {/* ✅ ログイン中ならグループボタンを表示 */}
           <button
             className="w-full text-left px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-center space-x-2"
-            onClick={() => {
-              toast("グループ機能は未実装です");
-            }}
+            onClick={onOpenGroupList}
           >
             <Users size={16} />
             <span>グループ</span>

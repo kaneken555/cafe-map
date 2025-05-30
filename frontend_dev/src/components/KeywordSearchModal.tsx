@@ -1,13 +1,17 @@
 // components/KeywordSearchModal.tsx
 import React, { useState } from "react";
-import { X } from "lucide-react";
+import CloseModalButton from "./CloseModalButton"; // 共通の閉じるボタンコンポーネント
+import { MODAL_STYLES } from "../constants/ui";
 
 interface Props {
   onClose: () => void;
   onSearch: (keyword: string) => void;
 }
 
-const KeywordSearchModal: React.FC<Props> = ({ onClose, onSearch }) => {
+const KeywordSearchModal: React.FC<Props> = ({ 
+  onClose, 
+  onSearch,
+}) => {
   const [keyword, setKeyword] = useState("");
 
   const handleSearch = () => {
@@ -16,12 +20,12 @@ const KeywordSearchModal: React.FC<Props> = ({ onClose, onSearch }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
+    <div className={MODAL_STYLES.MAIN_MODAL.CONTAINER}>
       <div className="bg-[#fffaf0] p-6 rounded-lg w-[400px] shadow-md relative">
-        <button onClick={onClose} className="absolute top-2 right-3 text-[#6b4226] hover:text-black cursor-pointer">
-          <X size={24} />
-        </button>
-        <h2 className="text-xl font-bold mb-4 text-[#6b4226]">キーワード検索</h2>
+
+        <CloseModalButton onClose={onClose} /> {/* ここで共通閉じるボタンを使う */}
+
+        <h2 className={MODAL_STYLES.MAIN_MODAL.TITLE}>キーワード検索</h2>
         <input
           type="text"
           placeholder="カフェ名や地名など"

@@ -2,6 +2,7 @@
 import React from "react";
 import CloseButton from "./CloseButton";
 
+
 interface SidePanelLayoutProps {
   isOpen: boolean;
   onClose: () => void;

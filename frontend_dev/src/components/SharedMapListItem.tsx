@@ -1,36 +1,34 @@
-// components/MapListItem.tsx
+// components/SharedMapListItem.tsx
 import React, { useState } from "react";
-import { getMapList, deleteMap, getGroupMapList } from "../api/map";
-import { checkSharedMap } from "../api/sharedMap";
 import MapDeleteModal from "./MapDeleteModal";
 import ShareMapModal from "./ShareMapModal";
+import SharedMapRegisterModal from "./SharedMapRegisterModal";
 import { toast } from "react-hot-toast";
 import { CheckCircle, Trash2, Share as ShareIcon } from "lucide-react";
-import { MapItem } from "../types/map";
+import { MapItem, SharedMapItem } from "../types/map";
 import { ICON_SIZES } from "../constants/ui";
 
-import { useMap } from "../contexts/MapContext";
-import { useGroup } from "../contexts/GroupContext";
+// import { useMap } from "../contexts/MapContext";
 
-interface MapListItemProps {
-  map: MapItem;
+interface SharedMapListItemProps {
+  map: SharedMapItem;
   selectedMapId: number | null;
   onSelect: (map: MapItem) => void;
   onClose: () => void;
 }
   
-const MapListItem: React.FC<MapListItemProps> = ({ 
+const SharedMapListItem: React.FC<SharedMapListItemProps> = ({ 
   map, 
   selectedMapId, 
   onSelect, 
   onClose , 
 }) => {
-  const { setMapList, setSelectedMap } = useMap(); // コンテキストからマップリストのセット関数を取得
-  const { selectedGroup } = useGroup(); // コンテキストから選択中のグループIDを取得
+  // const { setMapList, setSelectedMap } = useMap(); // コンテキストからマップリストのセット関数を取得
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [shareUrl, setShareUrl] = useState("");
+  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false); // 追加
 
 
   const handleSelect = () => {
@@ -40,36 +38,37 @@ const MapListItem: React.FC<MapListItemProps> = ({
   };
 
   const handleDelete = async () => {
-    try {
-      await deleteMap(map.id);
-      const maps = selectedGroup
-      ? await getGroupMapList(selectedGroup.uuid)
-      : await getMapList();
-
-      setMapList(maps);
-      setSelectedMap(null); // マップ削除後に選択マップをリセット
-      console.log("取得したマップ一覧:", maps); // 開発用ログ
-      toast.success(`マップ「${map.name}」を削除しました`);
-    } catch (error) {
-      console.error("マップ削除エラー:", error);
-      toast.error("マップの削除に失敗しました");
+    toast('シェアマップ機能は実装中です');
+    if (!map.uuid) {
+      toast.error("UUID が見つかりません");
+      return;
     }
+    console.log("map.uuid:", map.uuid);
+    // try {
+    //   await deleteMap(map.id);
+    //   const maps = selectedGroup
+    //   ? await getGroupMapList(selectedGroup.uuid)
+    //   : await getMapList();
+
+    //   setMapList(maps);
+    //   setSelectedMap(null); // マップ削除後に選択マップをリセット
+    //   console.log("取得したマップ一覧:", maps); // 開発用ログ
+    //   toast.success(`マップ「${map.name}」を削除しました`);
+    // } catch (error) {
+    //   console.error("マップ削除エラー:", error);
+    //   toast.error("マップの削除に失敗しました");
+    // }
   };
 
   const handleShare = async () => {
-    try {
-      const result = await checkSharedMap(map.id);
-      if (result) {
-        const url = `https://your-domain.com/shared-map/${result.share_uuid}`;
-        setShareUrl(url);
-      } else {
-        setShareUrl(""); // 未作成 → モーダル側で作成可能
-      }
-      setIsShareModalOpen(true);
-    } catch (error) {
-      toast.error("シェア状態の確認に失敗しました");
+    if (!map.uuid) {
+      toast.error("UUID が見つかりません");
+      return;
     }
+    console.log("map.uuid:", map.uuid);
+    setIsRegisterModalOpen(true); // モーダルを開く
   };
+
 
 
   return (
@@ -95,6 +94,15 @@ const MapListItem: React.FC<MapListItemProps> = ({
         selectedMap={map} // ✅ 選択されたマップを渡す
       />
 
+      {/* 新規モーダル（追加） */}
+      <SharedMapRegisterModal
+        isOpen={isRegisterModalOpen}
+        onClose={() => setIsRegisterModalOpen(false)}
+        initialMapName={map.name}
+        map={map}
+        // setMapList={setMapList} // マップリストを更新する関数
+      />
+
       <li className="flex justify-between items-center border px-4 py-2 rounded">
         <span className="truncate">{map.name}</span>
         <div className="flex space-x-2">
@@ -117,14 +125,14 @@ const MapListItem: React.FC<MapListItemProps> = ({
             className="w-12 flex flex-col items-center text-gray-700 hover:text-red-500 cursor-pointer"
           >
             <Trash2 size={ICON_SIZES.MEDIUM} />  {/* ゴミ箱アイコン */}
-            <span className="text-sm">Delete</span>
+            <span className="text-sm">解除</span>
           </button>
           <button
             onClick={handleShare}
             className="w-12 flex flex-col items-center text-gray-700 hover:text-blue-500 cursor-pointer"
           >
             <ShareIcon size={ICON_SIZES.MEDIUM} /> {/* シェアアイコン */}
-            <span className="text-sm">Share</span>
+            <span className="text-sm">登録</span>
           </button>
         </div>
       </li>
@@ -132,5 +140,5 @@ const MapListItem: React.FC<MapListItemProps> = ({
   );
 };
   
-export default MapListItem;
+export default SharedMapListItem;
   
