@@ -7,17 +7,16 @@ import ShareMapModal from "./ShareMapModal";
 import { toast } from "react-hot-toast";
 import { CheckCircle, Trash2, Share as ShareIcon } from "lucide-react";
 import { MapItem } from "../types/map";
-import { Group } from "../types/group";
 import { ICON_SIZES } from "../constants/ui";
 
 import { useMap } from "../contexts/MapContext";
+import { useGroup } from "../contexts/GroupContext";
 
 interface MapListItemProps {
   map: MapItem;
   selectedMapId: number | null;
   onSelect: (map: MapItem) => void;
   onClose: () => void;
-  selectedGroup: Group | null;
 }
   
 const MapListItem: React.FC<MapListItemProps> = ({ 
@@ -25,9 +24,9 @@ const MapListItem: React.FC<MapListItemProps> = ({
   selectedMapId, 
   onSelect, 
   onClose , 
-  selectedGroup,
 }) => {
   const { setMapList, setSelectedMap } = useMap(); // コンテキストからマップリストのセット関数を取得
+  const { selectedGroup } = useGroup(); // コンテキストから選択中のグループIDを取得
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);

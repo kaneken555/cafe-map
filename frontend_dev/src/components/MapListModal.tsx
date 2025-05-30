@@ -9,7 +9,6 @@ import SharedMapListItem from "./SharedMapListItem";
 import SharedMapSearchModal from "./SharedMapSearchModal";
 import { Coffee } from "lucide-react";
 import { MapItem, SharedMapItem, MapMode } from "../types/map";
-import { Group } from "../types/group";
 import { toast } from "react-hot-toast";
 import { extractUuidFromUrl } from "../utils/extractUuid";
 import { searchSharedMap } from "../api/cafe";
@@ -18,6 +17,7 @@ import { MODAL_STYLES } from "../constants/ui";
 // import { useAuth } from "../contexts/AuthContext";
 import { useMap } from "../contexts/MapContext";
 import { useCafe } from "../contexts/CafeContext"; // ✅ カフェコンテキストをインポート
+import { useGroup } from "../contexts/GroupContext"; // ✅ グループコンテキストをインポート
 
 
 interface MapListModalProps {
@@ -25,7 +25,6 @@ interface MapListModalProps {
   onClose: () => void;
   onSelectMap: (map: MapItem) => void;
   selectedMapId: number | null;
-  selectedGroup: Group | null;
   setMapMode: (mode: MapMode) => void; // ✅ マップモードをセットする関数
   setShareUuid: React.Dispatch<React.SetStateAction<string | null>>; // ✅ シェアマップのUUIDをセットする関数
 }
@@ -35,13 +34,13 @@ const MapListModal: React.FC<MapListModalProps> = ({
   onClose, 
   onSelectMap, 
   selectedMapId, 
-  selectedGroup,
   setMapMode, // ✅ マップモードをセットする関数
   setShareUuid, // ✅ シェアマップのUUIDをセットする関数
 }) => {
   // const { user } = useAuth();
   const { mapList, sharedMapList } = useMap(); // ✅ コンテキストからマップリストとセット関数を取得
   const { setSharedMapCafeList} = useCafe(); // ✅ シェアマップのカフェリストとセット関数を取得
+  const { selectedGroup } = useGroup(); // ✅ グループ情報を取得
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false); 
   const [isSharedMapSearchOpen, setIsSharedMapSearchOpen] = useState(false);
@@ -90,8 +89,6 @@ const MapListModal: React.FC<MapListModalProps> = ({
       <MapCreateModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
-        // setMapList={setMapList} 
-        selectedGroup={selectedGroup} // グループ情報を渡す
       />
 
       {/* // シェアマップ検索モーダル */}
@@ -146,7 +143,6 @@ const MapListModal: React.FC<MapListModalProps> = ({
                   selectedMapId={selectedMapId}
                   onSelect={onSelectMap}
                   onClose={onClose}
-                  selectedGroup={selectedGroup}
                 />
               ))}
               {activeTab === 'shared' &&

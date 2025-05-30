@@ -22,19 +22,15 @@ interface GroupListModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSelectGroup: (group: Group | null) => void;
-  selectedGroupId: number | null;
-  setSelectedGroupId: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
 const GroupListModal: React.FC<GroupListModalProps> = ({
   isOpen,
   onClose,
   onSelectGroup,
-  selectedGroupId,
-  setSelectedGroupId,
 }) => {
   const { setMapList, setSelectedMap } = useMap(); // マップリストのセット関数をコンテキストから取得
-  const { groupList, setGroupList } = useGroup(); // グループリストのセット関数をコンテキストから取得
+  const { groupList, setGroupList, selectedGroupId, setSelectedGroupId } = useGroup(); // グループリストのセット関数をコンテキストから取得
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false); // ✅ 招待モーダル状態
@@ -162,7 +158,6 @@ const GroupListModal: React.FC<GroupListModalProps> = ({
               <GroupListItem
                 key={group.id}
                 group={group}
-                selectedGroupId={selectedGroupId}
                 onSelect={handleGroupSelect} // ✅ 非同期対応
                 onInvite={handleInviteClick}
               />

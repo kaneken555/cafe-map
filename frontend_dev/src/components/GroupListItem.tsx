@@ -5,20 +5,21 @@ import { Group } from "../types/group";
 import toast from "react-hot-toast";
 import { ICON_SIZES } from "../constants/ui";
 
+import { useGroup } from "../contexts/GroupContext";
 
 interface GroupListItemProps {
   group: Group;
-  selectedGroupId: number | null;
   onSelect: (group: Group) => Promise<void>;
   onInvite: (group: Group) => void;
 }
 
 const GroupListItem: React.FC<GroupListItemProps> = ({
   group,
-  selectedGroupId,
   onSelect,
   onInvite,
 }) => {
+  const { selectedGroupId } = useGroup();
+
   const handleSelect = async () => {
     await onSelect(group); // ✅ 親でAPI呼び出し含めて実行
     toast.success(`${group.name}を選択しました`);

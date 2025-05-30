@@ -12,7 +12,6 @@ import { getMapList, getSharedMapList } from "../api/map";
 import { fetchGroupList } from "../api/group";
 import { toast } from "react-hot-toast";
 import { MapItem, MapMode } from "../types/map";
-import { Group } from "../types/group";
 import { ICON_SIZES } from "../constants/ui";
 
 // Contexts
@@ -42,14 +41,12 @@ const Header: React.FC<HeaderProps> = ({
   const { user, setUser, resetAuthContext } = useAuth();
   const { setMapList, selectedMap, setSelectedMap, setSharedMapList } = useMap(); // マップリストとセット関数をコンテキストから取得
   const { setCafeList, setMyCafeList } = useCafe(); // カフェリストとセット関数をコンテキストから取得
-  const { setGroupList } = useGroup(); // グループリストのセット関数をコンテキストから取得
+  const { setGroupList, setSelectedGroup, setSelectedGroupId, resetGroupContext } = useGroup(); // グループリストのセット関数をコンテキストから取得
 
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const [isMapListOpen, setIsMapListOpen] = useState(false);
   const [isLoginMenuOpen, setIsLoginMenuOpen] = useState(false);
   const [isGroupListOpen, setIsGroupListOpen] = useState(false); // 👈 グループ一覧モーダル
-  const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
-  const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
 
   
   const requireMapSelected = (action: () => void) => {
@@ -103,8 +100,7 @@ const Header: React.FC<HeaderProps> = ({
     await logout();
     resetAuthContext();         // ✅ ログアウト（ユーザー消す）
     setSelectedMap(null);       // ✅ 選択中マップもリセット
-    setSelectedGroup(null);     // ✅ 選択中グループもリセット
-    setSelectedGroupId(null);   // ✅ 選択中グループIDもリセット
+    resetGroupContext(); // ✅ グループコンテキストもリセット
     closeCafeListPanel();       // カフェ一覧パネルを閉じる
     setCafeList([]);            // ✅ カフェリストもリセット（オプション）
     setMapMode("search");       // ✅ マップモードもリセット（オプション）
@@ -132,7 +128,6 @@ const Header: React.FC<HeaderProps> = ({
           onClose={() => setIsMapListOpen(false)}
           onSelectMap={handleMapSelect}
           selectedMapId={selectedMap?.id ?? null} 
-          selectedGroup={selectedGroup}
           setMapMode={setMapMode} // ✅ マップモードをセットする関数
           setShareUuid={setShareUuid} // ✅ シェアマップのUUIDをセットする関数
         />
@@ -196,8 +191,6 @@ const Header: React.FC<HeaderProps> = ({
               setSelectedGroupId(group?.id ?? null);
               setIsGroupListOpen(false);
             }}
-            selectedGroupId={selectedGroupId}
-            setSelectedGroupId={setSelectedGroupId}
           />
         </div>
       </header>
