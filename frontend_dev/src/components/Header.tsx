@@ -6,12 +6,12 @@ import HeaderButton from "./HeaderButton";
 import UserMenu from "./UserMenu";
 import GroupListModal from "./GroupListModal";
 import { Coffee, Map as MapIcon, List as ListIcon, Layers, Menu } from "lucide-react";
-import { getCafeList } from "../api/cafe";
+import { getCafeList, getSharedMapCafeList } from "../api/cafe";
 import { guestLogin, logout } from "../api/auth";
 import { getMapList, getSharedMapList } from "../api/map";
 import { fetchGroupList } from "../api/group";
 import { toast } from "react-hot-toast";
-import { MapItem } from "../types/map";
+import { MapItem, SharedMapItem } from "../types/map";
 import { ICON_SIZES } from "../constants/ui";
 
 // Contexts
@@ -107,7 +107,16 @@ const Header: React.FC<HeaderProps> = ({
     setMyCafeList(cafes); // 地図用にも保存（もし必要なら）
   }
 
+  const handleSharedMapSelect = async (map: SharedMapItem) => {
+    setSelectedMap(map);
+    setIsMapListOpen(false);
 
+    const cafes = await getSharedMapCafeList(map.uuid);  // ✅ マップ選択と同時にカフェ取得
+    setCafeList(cafes);
+    setMyCafeList(cafes); // シェアマップなのでマイカフェリストは空にする
+  }
+
+  
   return (
     <>
       <SideMenu 
@@ -118,6 +127,7 @@ const Header: React.FC<HeaderProps> = ({
           isOpen={isMapListOpen}
           onClose={() => setIsMapListOpen(false)}
           onSelectMap={handleMapSelect}
+          onSelectSharedMap={handleSharedMapSelect} // ✅ シェアマップ選択ハンドラを追加
           selectedMapId={selectedMap?.id ?? null} 
           setShareUuid={setShareUuid} // ✅ シェアマップのUUIDをセットする関数
         />

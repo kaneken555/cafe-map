@@ -17,10 +17,10 @@ const HomePage: React.FC = () => {
   const { mapMode } = useMap(); // マップコンテキストからmapModeとsetMapModeを取得
 
   const [selectedCafe, setSelectedCafe] = useState<Cafe | null>(null); // ✅ カフェ詳細
+  const [selectedCafeId, setSelectedCafeId] = useState<number | null>(null);
   const [isMyCafeListOpen, setIsMyCafeListOpen] = useState(false); // ✅ カフェ一覧パネルの表示
   const [searchResultCafes, setSearchResultCafes] = useState<Cafe[]>(mockSearchResults); // 検索結果
   const [isSearchResultOpen, setIsSearchResultOpen] = useState(false); // ✅ 検索パネル表示用
-  const [selectedCafeId, setSelectedCafeId] = useState<number | null>(null);
   const [shareUuid, setShareUuid] = useState<string | null>(null);
 
   

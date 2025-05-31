@@ -5,7 +5,7 @@ import ShareMapModal from "./ShareMapModal";
 import SharedMapRegisterModal from "./SharedMapRegisterModal";
 import { toast } from "react-hot-toast";
 import { CheckCircle, Trash2, Share as ShareIcon } from "lucide-react";
-import { MapItem, SharedMapItem } from "../types/map";
+import { SharedMapItem } from "../types/map";
 import { ICON_SIZES } from "../constants/ui";
 
 // import { useMap } from "../contexts/MapContext";
@@ -13,7 +13,7 @@ import { ICON_SIZES } from "../constants/ui";
 interface SharedMapListItemProps {
   map: SharedMapItem;
   selectedMapId: number | null;
-  onSelect: (map: MapItem) => void;
+  onSelect: (map: SharedMapItem) => void;
   onClose: () => void;
 }
   

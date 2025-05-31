@@ -24,6 +24,7 @@ interface MapListModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSelectMap: (map: MapItem) => void;
+  onSelectSharedMap: (map: SharedMapItem) => void; // ✅ シェアマップ選択時のコールバック
   selectedMapId: number | null;
   setShareUuid: React.Dispatch<React.SetStateAction<string | null>>; // ✅ シェアマップのUUIDをセットする関数
 }
@@ -32,6 +33,7 @@ const MapListModal: React.FC<MapListModalProps> = ({
   isOpen, 
   onClose, 
   onSelectMap, 
+  onSelectSharedMap, // ✅ シェアマップ選択時のコールバック
   selectedMapId, 
   setShareUuid, // ✅ シェアマップのUUIDをセットする関数
 }) => {
@@ -149,7 +151,7 @@ const MapListModal: React.FC<MapListModalProps> = ({
                     key={map.id}
                     map={map}
                     selectedMapId={selectedMapId}
-                    onSelect={onSelectMap}
+                    onSelect={onSelectSharedMap}
                     onClose={onClose}
                   />
                 ))}
