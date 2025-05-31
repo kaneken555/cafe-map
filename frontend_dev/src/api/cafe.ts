@@ -222,8 +222,8 @@ export const getSharedMapCafeList = async (mapUuid: string): Promise<Cafe[]> => 
         withCredentials: true 
       } // クッキーを送信する
     );
-    console.log("📡 カフェ一覧取得リクエスト:", response.data);
-    console.log("📡 カフェ一覧取得リクエスト:", response.data.cafes);
+    console.log("📡 カフェ一覧取得リクエスト(シェアマップ):", response.data);
+    console.log("📡 カフェ一覧取得リクエスト(シェアマップ):", response.data.cafes);
 
     // ✅ cafesだけを取り出して、さらにフィールド名を変換して返す
     const cafes = response.data.cafes.map((cafe: any) => ({

@@ -3,7 +3,7 @@ import React from "react";
 import { LogIn, User as UserIcon } from "lucide-react";
 import LoginMenu from "./LoginMenu";
 import { googleLoginWithPopup } from "../api/auth";
-import { getMapList } from "../api/map";
+import { getMapList, getSharedMapList } from "../api/map";
 import { fetchGroupList } from "../api/group";
 import { toast } from "react-hot-toast";
 import { ICON_SIZES } from "../constants/ui";
@@ -29,7 +29,7 @@ const UserMenu: React.FC<Props> = ({
   onOpenGroupList,
 }) => {
   const { user, setUser } = useAuth();
-  const { setMapList } = useMap(); // マップリストのセット関数をコンテキストから取得
+  const { setMapList, setSharedMapList } = useMap(); // マップリストのセット関数をコンテキストから取得
   const { setGroupList } = useGroup(); // グループリストのセット関数をコンテキストから取得
 
   const handleGoogleLogin = async () => {
@@ -40,6 +40,10 @@ const UserMenu: React.FC<Props> = ({
       // ログイン時にマップを取得する
       const maps = await getMapList();
       setMapList(maps);
+
+      // 共有マップ一覧も取得
+      const sharedMaps = await getSharedMapList()
+      setSharedMapList(sharedMaps);
       
       // ✅ グループ一覧も取得
       const groups = await fetchGroupList();

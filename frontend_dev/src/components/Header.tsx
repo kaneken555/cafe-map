@@ -6,10 +6,6 @@ import HeaderButton from "./HeaderButton";
 import UserMenu from "./UserMenu";
 import GroupListModal from "./GroupListModal";
 import { Coffee, Map as MapIcon, List as ListIcon, Layers, Menu } from "lucide-react";
-import { getCafeList, getSharedMapCafeList } from "../api/cafe";
-import { guestLogin, logout } from "../api/auth";
-import { getMapList, getSharedMapList } from "../api/map";
-import { fetchGroupList } from "../api/group";
 import { toast } from "react-hot-toast";
 import { MapItem, SharedMapItem } from "../types/map";
 import { ICON_SIZES } from "../constants/ui";
@@ -17,8 +13,9 @@ import { ICON_SIZES } from "../constants/ui";
 // Contexts
 import { useAuth } from "../contexts/AuthContext";
 import { useMap } from "../contexts/MapContext";
-import { useCafe } from "../contexts/CafeContext";
 import { useGroup } from "../contexts/GroupContext";
+
+import { useHeaderActions } from "../hooks/useHeaderActions"; // ✅ ヘッダーアクションフックをインポート
 
 interface HeaderProps {
   openCafeListPanel: () => void;
@@ -32,18 +29,23 @@ const Header: React.FC<HeaderProps> = ({
   closeCafeListPanel,
   isMyCafeListOpen,
   setShareUuid, // ✅ シェアマップのUUIDをセットする関数
-
 }) => {    
-  const { user, setUser, resetAuthContext } = useAuth();
-  const { setMapList, selectedMap, setSelectedMap, setSharedMapList, mapMode, setMapMode } = useMap(); // マップリストとセット関数をコンテキストから取得
-  const { setCafeList, setMyCafeList } = useCafe(); // カフェリストとセット関数をコンテキストから取得
-  const { setGroupList, setSelectedGroup, setSelectedGroupId, resetGroupContext } = useGroup(); // グループリストのセット関数をコンテキストから取得
+  const { user } = useAuth();
+  const { selectedMap, mapMode, setMapMode } = useMap(); // マップリストとセット関数をコンテキストから取得
+  const { setSelectedGroup, setSelectedGroupId } = useGroup(); // グループリストのセット関数をコンテキストから取得
 
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const [isMapListOpen, setIsMapListOpen] = useState(false);
   const [isLoginMenuOpen, setIsLoginMenuOpen] = useState(false);
   const [isGroupListOpen, setIsGroupListOpen] = useState(false); // 👈 グループ一覧モーダル
 
+  const {
+    guestLoginHandler,
+    logoutHandler,
+    mapSelectHandler,
+    sharedMapSelectHandler,
+  } = useHeaderActions({ closeCafeListPanel, setShareUuid });
+  
   
   const requireMapSelected = (action: () => void) => {
     if (!selectedMap) {
@@ -64,56 +66,23 @@ const Header: React.FC<HeaderProps> = ({
   }
 
   const handleGuestLogin = async () => {
-    const userData = await guestLogin();
-    if (userData) {
-      setUser({ id: userData.id, name: userData.name }); // 👈 サーバーが返してきた本物のゲストユーザー情報をセット
-      toast.success("ゲストログインしました");
-      console.log("ゲストユーザー情報:", userData);
-
-      // ログイン時にマップを取得する
-      const maps = await getMapList();
-      setMapList(maps);
-      // 共有マップ一覧も取得
-      const sharedMaps = await getSharedMapList()
-      setSharedMapList(sharedMaps);
-
-      // ✅ グループ一覧も取得
-      const groups = await fetchGroupList();
-      setGroupList(groups);
-
-    } else {
-      toast.error("ゲストログインに失敗しました");
-    }
+    await guestLoginHandler(); // ✅ ヘッダーアクションフックのゲストログインハンドラを呼び出す
     setIsLoginMenuOpen(false);
   }
 
   const handleLogout = async () => {
-    await logout();
-    resetAuthContext();         // ✅ ログアウト（ユーザー消す）
-    setSelectedMap(null);       // ✅ 選択中マップもリセット
-    resetGroupContext(); // ✅ グループコンテキストもリセット
-    closeCafeListPanel();       // カフェ一覧パネルを閉じる
-    setCafeList([]);            // ✅ カフェリストもリセット（オプション）
-    setMapMode("search");       // ✅ マップモードもリセット（オプション）
+    await logoutHandler(); // ✅ ヘッダーアクションフックのログアウトハンドラを呼び出す
     setIsLoginMenuOpen(false);  // メニューを閉じる
   }
 
   const handleMapSelect = async (map: MapItem) => {
-    setSelectedMap(map);
+    await mapSelectHandler(map); // ✅ ヘッダーアクションフックのマップ選択ハンドラを呼び出す
     setIsMapListOpen(false);
-
-    const cafes = await getCafeList(map.id);  // ✅ マップ選択と同時にカフェ取得
-    setCafeList(cafes);
-    setMyCafeList(cafes); // 地図用にも保存（もし必要なら）
   }
 
   const handleSharedMapSelect = async (map: SharedMapItem) => {
-    setSelectedMap(map);
+    await sharedMapSelectHandler(map); // ✅ ヘッダーアクションフックのシェアマップ選択ハンドラを呼び出す
     setIsMapListOpen(false);
-
-    const cafes = await getSharedMapCafeList(map.uuid);  // ✅ マップ選択と同時にカフェ取得
-    setCafeList(cafes);
-    setMyCafeList(cafes); // シェアマップなのでマイカフェリストは空にする
   }
 
   
