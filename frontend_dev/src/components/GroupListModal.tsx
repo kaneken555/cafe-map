@@ -29,7 +29,7 @@ const GroupListModal: React.FC<GroupListModalProps> = ({
   onClose,
   onSelectGroup,
 }) => {
-  const { setMapList, setSelectedMap } = useMap(); // マップリストのセット関数をコンテキストから取得
+  const { setMapList, setSelectedMap, setSharedMapList } = useMap(); // マップリストのセット関数をコンテキストから取得
   const { groupList, setGroupList, selectedGroupId, setSelectedGroupId } = useGroup(); // グループリストのセット関数をコンテキストから取得
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -86,6 +86,8 @@ const GroupListModal: React.FC<GroupListModalProps> = ({
       const maps = await getGroupMapList(group.uuid); // グループマップ取得API（未実装ならダミー）
       setMapList(maps);
       toast.success(`グループ「${group.name}」を選択しました`);
+
+      setSharedMapList([]); // シェアマップリストはクリア
 
       setSelectedMap(null); // 選択中のマップもリセット
 

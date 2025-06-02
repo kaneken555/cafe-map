@@ -6,6 +6,9 @@ import { useGroup } from "../contexts/GroupContext";
 import { getMapList, getSharedMapList } from "../api/map";
 import { fetchGroupList } from "../api/group";
 
+const API_BASE = import.meta.env.VITE_API_URL;
+
+
 const InitializeApp = () => {
   const { user, setUser } = useAuth();
   const { setMapList, setSharedMapList } = useMap();
@@ -14,7 +17,7 @@ const InitializeApp = () => {
   useEffect(() => {
     const init = async () => {
       try {
-        const res = await fetch("http://localhost:8000/api/auth/login/success/", {
+        const res = await fetch(`${API_BASE}/auth/login/success/`, {
           credentials: "include",
         });
 
