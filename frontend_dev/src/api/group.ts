@@ -4,7 +4,6 @@ import { getCsrfToken } from "./auth";
 import { toast } from "react-hot-toast";
 import { Group } from "../types/group";
 
-const API_BASE = import.meta.env.VITE_API_URL;
 
 
 /**
@@ -12,9 +11,11 @@ const API_BASE = import.meta.env.VITE_API_URL;
  */
 export const fetchGroupList = async (): Promise<Group[]> => {
   try {
-    const res = await axios.get(`${API_BASE}/groups/`, {
-      withCredentials: true,
-    });
+    const res = await axios.get(`api/groups/`, 
+      {
+        withCredentials: true,
+      }
+    );
     console.log("📡 グループ一覧取得リクエスト:", res.data);
     return res.data;
   } catch (error) {
@@ -31,7 +32,7 @@ export const createGroup = async (name: string, description = ""): Promise<Group
 
   try {
     const res = await axios.post(
-      `${API_BASE}/groups/`,
+      `api/groups/`,
       { name, description },
       {
         headers: {
@@ -58,7 +59,7 @@ export const joinGroup = async (groupUuid: string): Promise<void> => {
 
   try {
     const res = await axios.post(
-      `${API_BASE}/groups/${groupUuid}/join/`,
+      `api/groups/${groupUuid}/join/`,
       {},
       {
         headers: {
@@ -81,9 +82,11 @@ export const joinGroup = async (groupUuid: string): Promise<void> => {
  */
 export const fetchGroupMaps = async (groupUuid: number): Promise<{ id: number; name: string }[]> => {
   try {
-    const res = await axios.get(`${API_BASE}/groups/${groupUuid}/maps/`, {
-      withCredentials: true,
-    });
+    const res = await axios.get(`api/groups/${groupUuid}/maps/`, 
+      {
+        withCredentials: true,
+      }
+    );
     console.log("📡 グループマップ一覧取得リクエスト:", res.data);
     return res.data;
   } catch (error) {
