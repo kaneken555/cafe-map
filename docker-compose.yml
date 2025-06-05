@@ -21,7 +21,7 @@ services:
     command: gunicorn config.wsgi:application --bind 0.0.0.0:8000 --timeout 120
     volumes:
       - ./backend:/app
-      - ./backend/staticfiles:/app/staticfiles  # ← 追加！
+      - ./backend/staticfiles:/app/staticfiles
     env_file:
       - .env
     depends_on:
@@ -31,7 +31,7 @@ services:
       - "8000:8000"
 
   # frontend:
-  #   build: ./frontend
+  #   build: ./frontend_dev
   #   command: npm start
   #   volumes:
   #     - ./frontend:/app
@@ -39,7 +39,7 @@ services:
   #   env_file:
   #     - .env
   #   ports:
-  #     - "3000:3000"
+  #     - "5173:5173"
   #   depends_on:
   #     - backend
 

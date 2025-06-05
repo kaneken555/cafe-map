@@ -13,12 +13,19 @@ export default defineConfig(({ mode }) => {
       tailwindcss(),
     ],
     server: {
+      host: '0.0.0.0', // ← Docker用に必須
+      port: 5173,
       proxy: {
         '/api': {
-          target: env.VITE_API_URL, // ⬅ 開発では http://localhost:8000 を使う
+          target: env.VITE_API_URL,
           changeOrigin: true,
           secure: false,
         },
+      },
+      hmr: {
+        protocol: 'ws',
+        host: 'localhost', // ← ホストOSからアクセスする場合
+        port: 5173,        // ← Vite のポート
       },
     },
     build: {
