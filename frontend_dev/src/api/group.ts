@@ -11,7 +11,7 @@ import { Group } from "../types/group";
  */
 export const fetchGroupList = async (): Promise<Group[]> => {
   try {
-    const res = await axios.get(`api/groups/`, 
+    const res = await axios.get(`/api/groups/`, 
       {
         withCredentials: true,
       }
@@ -32,7 +32,7 @@ export const createGroup = async (name: string, description = ""): Promise<Group
 
   try {
     const res = await axios.post(
-      `api/groups/`,
+      `/api/groups/`,
       { name, description },
       {
         headers: {
@@ -59,7 +59,7 @@ export const joinGroup = async (groupUuid: string): Promise<void> => {
 
   try {
     const res = await axios.post(
-      `api/groups/${groupUuid}/join/`,
+      `/api/groups/${groupUuid}/join/`,
       {},
       {
         headers: {
@@ -82,7 +82,7 @@ export const joinGroup = async (groupUuid: string): Promise<void> => {
  */
 export const fetchGroupMaps = async (groupUuid: number): Promise<{ id: number; name: string }[]> => {
   try {
-    const res = await axios.get(`api/groups/${groupUuid}/maps/`, 
+    const res = await axios.get(`/api/groups/${groupUuid}/maps/`, 
       {
         withCredentials: true,
       }

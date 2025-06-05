@@ -16,7 +16,7 @@ const InitializeApp = () => {
   useEffect(() => {
     const init = async () => {
       try {
-        const res = await fetch(`api/auth/login/success/`, 
+        const res = await fetch(`/api/auth/login/success/`, 
           {
             credentials: "include",
           }
