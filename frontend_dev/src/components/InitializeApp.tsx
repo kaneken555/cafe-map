@@ -6,6 +6,8 @@ import { useGroup } from "../contexts/GroupContext";
 import { getMapList, getSharedMapList } from "../api/map";
 import { fetchGroupList } from "../api/group";
 
+
+
 const InitializeApp = () => {
   const { user, setUser } = useAuth();
   const { setMapList, setSharedMapList } = useMap();
@@ -14,9 +16,11 @@ const InitializeApp = () => {
   useEffect(() => {
     const init = async () => {
       try {
-        const res = await fetch("http://localhost:8000/api/auth/login/success/", {
-          credentials: "include",
-        });
+        const res = await fetch(`/api/auth/login/success/`, 
+          {
+            credentials: "include",
+          }
+        );
 
         if (res.ok) {
           const data = await res.json();

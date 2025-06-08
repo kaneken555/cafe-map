@@ -2,6 +2,8 @@
 import axios from "axios";
 import { getCsrfToken } from "./auth";
 
+
+
 interface CreateSharedMapRequest {
   mapId: number;
   title: string;
@@ -27,7 +29,7 @@ export const createSharedMap = async (
 
   try {
     const response = await axios.post(
-      "http://localhost:8000/api/shared-maps/",
+      `/api/shared-maps/`,
       {
         map_id: params.mapId,
         title: params.title,
@@ -59,10 +61,12 @@ export const checkSharedMap = async (
   mapId: number
 ): Promise<CheckSharedMapResponse | null> => {
   try {
-    const response = await axios.get("http://localhost:8000/api/shared-maps/check/", {
-      params: { map_id: mapId },
-      withCredentials: true,
-    });
+    const response = await axios.get(`/api/shared-maps/check/`, 
+      {
+        params: { map_id: mapId },
+        withCredentials: true,
+      }
+    );
 
     console.log("✅ シェアマップ確認成功:", response.data);
     

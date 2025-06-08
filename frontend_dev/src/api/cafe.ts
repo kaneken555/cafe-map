@@ -5,11 +5,12 @@ import { getCsrfToken } from "./auth";
 import { toast } from "react-hot-toast";
 
 
+
 // マップに登録されているカフェの情報を取得する
 export const getCafeList = async (mapId: number): Promise<Cafe[]> => {
   const csrfToken = await getCsrfToken();
   try {
-    const response = await axios.get(`http://localhost:8000/api/maps/${mapId}/`,
+    const response = await axios.get(`/api/maps/${mapId}/`,
       { 
         headers: {
           "X-CSRFToken": csrfToken,
@@ -51,14 +52,13 @@ export const addCafeToMyCafe = async (mapId: number ,cafe: Cafe): Promise<void> 
 
   try {
     console.log("addCafe", cafe);
-    const response = await axios.post(`http://localhost:8000/api/maps/${mapId}/cafes/`, cafe,
-    { 
-      headers: {
-        "X-CSRFToken": csrfToken,
-      },
-      withCredentials: true 
-    } // クッキーを送信する
-
+    const response = await axios.post(`/api/maps/${mapId}/cafes/`, cafe,
+      { 
+        headers: {
+          "X-CSRFToken": csrfToken,
+        },
+        withCredentials: true 
+      } // クッキーを送信する
     );
     toast.success("カフェがマイカフェに追加されました");
     return response.data;
@@ -75,7 +75,7 @@ export const searchCafe = async (lat: number, lng: number): Promise<Cafe[]> => {
 
   try {
     // 1. 検索APIからplace_id一覧を取得
-    const baseRes = await axios.get(`http://localhost:8000/api/fetch-cafes/?lat=${lat}&lng=${lng}`,
+    const baseRes = await axios.get(`/api/fetch-cafes/?lat=${lat}&lng=${lng}`,
       {
         headers: { "X-CSRFToken": csrfToken },
         withCredentials: true,
@@ -107,7 +107,7 @@ export const searchCafeByKeyword = async (
   try {
     // 1. 検索APIからplace_id一覧を取得
     const res = await axios.get(
-      `http://localhost:8000/api/fetch-cafes/keyword/?q=${encodeURIComponent(keyword)}&lat=${lat}&lng=${lng}`,
+      `/api/fetch-cafes/keyword/?q=${encodeURIComponent(keyword)}&lat=${lat}&lng=${lng}`,
       {
         headers: { "X-CSRFToken": csrfToken },
         withCredentials: true,
@@ -137,7 +137,7 @@ export const fetchCafeDetailsByPlaceIds = async (placeIds: string[]): Promise<Ca
 
   const detailPromises = placeIds.map(async (placeId, index) => {
     const detailRes = await axios.get(
-      `http://localhost:8000/api/fetch-cafe-detail/?place_id=${placeId}`,
+      `/api/fetch-cafe-detail/?place_id=${placeId}`,
       {
         headers: { "X-CSRFToken": csrfToken },
         withCredentials: true,
@@ -177,7 +177,7 @@ export const searchSharedMap = async (groupUuid: string): Promise<Cafe[]> => {
 
   const csrfToken = await getCsrfToken(); // CSRF トークンを取得
   try {
-    const response = await axios.get(`http://localhost:8000/api/shared_maps/${groupUuid}/`, 
+    const response = await axios.get(`/api/shared_maps/${groupUuid}/`, 
       { 
         headers: {
           "X-CSRFToken": csrfToken,
@@ -208,3 +208,41 @@ export const searchSharedMap = async (groupUuid: string): Promise<Cafe[]> => {
     throw error;
   }
 }
+
+
+// シェアマップに登録されているカフェの情報を取得する
+export const getSharedMapCafeList = async (mapUuid: string): Promise<Cafe[]> => {
+  const csrfToken = await getCsrfToken();
+  try {
+    const response = await axios.get(`/api/shared_maps/${mapUuid}/`,
+      { 
+        headers: {
+          "X-CSRFToken": csrfToken,
+        },
+        withCredentials: true 
+      } // クッキーを送信する
+    );
+    console.log("📡 カフェ一覧取得リクエスト(シェアマップ):", response.data);
+    console.log("📡 カフェ一覧取得リクエスト(シェアマップ):", response.data.cafes);
+
+    // ✅ cafesだけを取り出して、さらにフィールド名を変換して返す
+    const cafes = response.data.cafes.map((cafe: any) => ({
+      id: cafe.id,
+      name: cafe.name,
+      lat: cafe.latitude,           // latitude → lat
+      lng: cafe.longitude,          // longitude → lng
+      placeId: cafe.place_id,       // place_id → placeId
+      photoUrls: cafe.photo_urls,   // photo_urls → photoUrls
+      address: cafe.address,
+      rating: cafe.rating,
+      phoneNumber: cafe.phone_number, // phone_number → phoneNumber
+      openTime: cafe.opening_hours,
+      website: cafe.website,
+      priceLevel: cafe.price_level,
+    }));
+    return cafes;
+  } catch (error) {
+    console.error("addCafe エラー:", error);
+    throw error;
+  } 
+};

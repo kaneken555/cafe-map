@@ -5,14 +5,17 @@ import { toast } from "react-hot-toast";
 import { Group } from "../types/group";
 
 
+
 /**
  * ログイン中のユーザーが所属するグループ一覧を取得
  */
 export const fetchGroupList = async (): Promise<Group[]> => {
   try {
-    const res = await axios.get("http://localhost:8000/api/groups/", {
-      withCredentials: true,
-    });
+    const res = await axios.get(`/api/groups/`, 
+      {
+        withCredentials: true,
+      }
+    );
     console.log("📡 グループ一覧取得リクエスト:", res.data);
     return res.data;
   } catch (error) {
@@ -29,7 +32,7 @@ export const createGroup = async (name: string, description = ""): Promise<Group
 
   try {
     const res = await axios.post(
-      "http://localhost:8000/api/groups/",
+      `/api/groups/`,
       { name, description },
       {
         headers: {
@@ -56,7 +59,7 @@ export const joinGroup = async (groupUuid: string): Promise<void> => {
 
   try {
     const res = await axios.post(
-      `http://localhost:8000/api/groups/${groupUuid}/join/`,
+      `/api/groups/${groupUuid}/join/`,
       {},
       {
         headers: {
@@ -79,9 +82,11 @@ export const joinGroup = async (groupUuid: string): Promise<void> => {
  */
 export const fetchGroupMaps = async (groupUuid: number): Promise<{ id: number; name: string }[]> => {
   try {
-    const res = await axios.get(`http://localhost:8000/api/groups/${groupUuid}/maps/`, {
-      withCredentials: true,
-    });
+    const res = await axios.get(`/api/groups/${groupUuid}/maps/`, 
+      {
+        withCredentials: true,
+      }
+    );
     console.log("📡 グループマップ一覧取得リクエスト:", res.data);
     return res.data;
   } catch (error) {

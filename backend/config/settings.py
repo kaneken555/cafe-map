@@ -27,17 +27,15 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'your-secret-key')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DJANGO_DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "").split(",")
+
 
 # ------------------------------
 # CORS 設定
 # ------------------------------
 CORS_ALLOW_ALL_ORIGINS = os.getenv("CORS_ALLOW_ALL_ORIGINS", "False") == "True"
 CORS_ALLOW_CREDENTIALS = True  # クッキーを含めたリクエストを許可
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # フロントエンドのURL
-    "http://localhost:5173",
-]
+CORS_ALLOWED_ORIGINS = os.getenv("DJANGO_ALLOWED_ORIGINS", "").split(",")
 CORS_ALLOW_HEADERS = [
     "authorization",
     "content-type",
@@ -47,7 +45,7 @@ CORS_ALLOW_HEADERS = [
 # ------------------------------
 # CSRF 設定
 # ------------------------------
-CSRF_TRUSTED_ORIGINS = ["http://localhost:3000", "http://localhost:5173"]  # フロントエンドのURL
+CSRF_TRUSTED_ORIGINS = os.getenv("DJANGO_CSRF_TRUSTED_ORIGINS", "").split(",")
 CSRF_COOKIE_SAMESITE = "None"  
 CSRF_COOKIE_SECURE = True  # クロスサイトリクエストには Secure 必須
 CSRF_COOKIE_HTTPONLY = True  # JavaScript からのアクセスを禁止
@@ -130,11 +128,16 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("POSTGRES_DB", "cafe_map"),
-        "USER": os.getenv("POSTGRES_USER", "postgres"),
-        "PASSWORD": os.getenv("POSTGRES_PASSWORD", "password"),
-        "HOST": "db",
-        "PORT": 5432,
+        "NAME": os.getenv("DB_NAME", "cafe_map"),
+        "USER": os.getenv("DB_USER", "postgres"),
+        "PASSWORD": os.getenv("DB_PASSWORD", "password"),
+        "HOST": os.getenv("DB_HOST", "localhost"),
+        "PORT": int(os.getenv("DB_PORT", 5432)),
+        "OPTIONS": {
+            'sslmode': os.getenv("DB_SSLMODE", "disable")
+        }
+        # "HOST": "db",
+        # "PORT": 5432,
     }
 }
 

@@ -3,9 +3,11 @@ import toast from "react-hot-toast";
 
 
 export const getCsrfToken = async () => {
-    const response = await fetch("http://localhost:8000/api/csrf/", {
-      credentials: "include",
-    });
+    const response = await fetch(`/api/csrf/`, 
+      {
+        credentials: "include",
+      }
+    );
     const data = await response.json();
     return data.csrfToken;
 };
@@ -15,14 +17,16 @@ export const guestLogin = async () => {
     try {
       const csrfToken = await getCsrfToken(); // CSRF トークンを取得
   
-      const response = await fetch("http://localhost:8000/api/guest-login/", {
-        method: "POST",
-        credentials: "include", // クッキーを送信
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRFToken": csrfToken, // CSRF トークンを追加
-        },
-      });
+      const response = await fetch(`/api/guest-login/`, 
+        {
+          method: "POST",
+          credentials: "include", // クッキーを送信
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrfToken, // CSRF トークンを追加
+          },
+        }
+      );
   
       if (!response.ok) {
         throw new Error("ゲストログインに失敗しました");
@@ -39,7 +43,7 @@ export const guestLogin = async () => {
 export const googleLoginWithPopup = (): Promise<{ id: number; name: string } | null> => {
   return new Promise((resolve) => {
     const popup = window.open(
-      "http://localhost:8000/api/auth/login/google-oauth2/?state=popup",
+      `/api/auth/login/google-oauth2/?state=popup`,
       "GoogleLogin",
       "width=500,height=600"
     );
@@ -56,9 +60,11 @@ export const googleLoginWithPopup = (): Promise<{ id: number; name: string } | n
 
     const checkSession = async () => {
       try {
-        const res = await fetch("http://localhost:8000/api/auth/login/success/", {
-          credentials: "include",
-        });
+        const res = await fetch(`/api/auth/login/success/`, 
+          {
+            credentials: "include",
+          }
+        );
         if (res.ok) {
           const user = await res.json();
           console.log("✅ ログイン成功:", user);
@@ -92,14 +98,16 @@ export const logout = async () => {
   try {
     const csrfToken = await getCsrfToken(); // ✅ CSRFトークンを取得
 
-    const response = await fetch("http://localhost:8000/api/auth/logout/", {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRFToken": csrfToken,
-      },
-    });
+    const response = await fetch(`/api/auth/logout/`, 
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrfToken,
+        },
+      }
+    );
 
     if (response.ok) {
       toast.success("ログアウトしました");
