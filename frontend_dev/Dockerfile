@@ -1,10 +1,18 @@
-FROM node:22-slim
+FROM node:20
 
 WORKDIR /app
 
 COPY package.json package-lock.json ./
+# COPY package.json ./
+
+
 RUN npm install
 
 COPY . .
 
-CMD ["npm", "start"]
+
+
+# ポート公開（Vite）
+EXPOSE 5173
+
+CMD ["npm", "run", "dev"]

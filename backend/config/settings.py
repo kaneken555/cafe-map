@@ -128,11 +128,16 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("POSTGRES_DB", "cafe_map"),
-        "USER": os.getenv("POSTGRES_USER", "postgres"),
-        "PASSWORD": os.getenv("POSTGRES_PASSWORD", "password"),
-        "HOST": "db",
-        "PORT": 5432,
+        "NAME": os.getenv("DB_NAME", "cafe_map"),
+        "USER": os.getenv("DB_USER", "postgres"),
+        "PASSWORD": os.getenv("DB_PASSWORD", "password"),
+        "HOST": os.getenv("DB_HOST", "localhost"),
+        "PORT": int(os.getenv("DB_PORT", 5432)),
+        "OPTIONS": {
+            'sslmode': os.getenv("DB_SSLMODE", "disable")
+        }
+        # "HOST": "db",
+        # "PORT": 5432,
     }
 }
 
