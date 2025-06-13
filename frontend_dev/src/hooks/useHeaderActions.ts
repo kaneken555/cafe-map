@@ -9,7 +9,7 @@ import { getMapList, getSharedMapList } from "../api/map";
 import { fetchGroupList } from "../api/group";
 import { toast } from "react-hot-toast";
 import { MapItem, SharedMapItem } from "../types/map";
-import { Group } from "../types/group";
+
 
 interface UseHeaderActionsParams {
   closeCafeListPanel: () => void;
@@ -18,10 +18,10 @@ interface UseHeaderActionsParams {
 
 export const useHeaderActions = ({ closeCafeListPanel }: UseHeaderActionsParams) => {
 
-  const { user, setUser, resetAuthContext } = useAuth();
+  const { setUser, resetAuthContext } = useAuth();
   const { setMapList, setSelectedMap, setSharedMapList, setMapMode } = useMap();
   const { setCafeList, setMyCafeList } = useCafe();
-  const { setGroupList, setSelectedGroup, setSelectedGroupId, resetGroupContext } = useGroup();
+  const { setGroupList, resetGroupContext } = useGroup();
 
 
   const guestLoginHandler = async () => {

@@ -17,7 +17,7 @@ const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    let timer: number; 
+    let timer: ReturnType<typeof setTimeout>;
 
     if (isActive) {
       setVisible(true);
