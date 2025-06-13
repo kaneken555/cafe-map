@@ -9,7 +9,7 @@ import { fetchGroupList } from "../api/group";
 
 
 const InitializeApp = () => {
-  const { user, setUser } = useAuth();
+  const { setUser } = useAuth();
   const { setMapList, setSharedMapList } = useMap();
   const { setGroupList } = useGroup();
 
