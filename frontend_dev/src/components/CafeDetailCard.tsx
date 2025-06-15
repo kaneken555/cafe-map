@@ -68,10 +68,10 @@ const CafeDetailCard: React.FC<CafeDetailCardProps> = ({
         <div className="mt-3 flex justify-between items-start">
           {/* 左側：営業情報 */}
           <div className="text-sm text-gray-800">
-            <div className="flex space-x-4">
-              <span>昼：{cafe.price_day || "不明"}</span>
-              <span>夜：{cafe.price_night || "不明"}</span>
-            </div>
+            {/* <div className="flex space-x-4"> */}
+              {/* <span>昼：{cafe.price_day || "不明"}</span> */}
+              {/* <span>夜：{cafe.price_night || "不明"}</span> */}
+            {/* </div> */}
             <div className="flex items-center space-x-2 mt-1">
               <span className="text-blue-600 font-semibold">{cafe.status}</span>
               <span className="text-gray-600">({cafe.openTime})</span>
