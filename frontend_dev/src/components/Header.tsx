@@ -117,30 +117,33 @@ const Header: React.FC<HeaderProps> = ({
 
         {/* 右：操作ボタン群 */}
         <div className="flex items-center space-x-2">
-          <HeaderButton
-            onClick={handleOpenCafeList}
-            disabled={!user}
-            icon={<ListIcon size={ICON_SIZES.MEDIUM} />}
-            label="My Café List"
-            active={isMyCafeListOpen}
-          />
+          <div className="hidden md:flex items-center space-x-2">          
+            <HeaderButton
+              onClick={handleOpenCafeList}
+              disabled={!user}
+              icon={<ListIcon size={ICON_SIZES.MEDIUM} />}
+              label="My Café List"
+              active={isMyCafeListOpen}
+            />
 
-          <HeaderButton
-            onClick={handleShowMyCafeMap}
-            disabled={!user}
-            icon={<MapIcon size={ICON_SIZES.MEDIUM} />}
-            label="My Café Map"
-            active={mapMode === "mycafe"} // ✅ 現在のモードによって強調
-          />
+            <HeaderButton
+              onClick={handleShowMyCafeMap}
+              disabled={!user}
+              icon={<MapIcon size={ICON_SIZES.MEDIUM} />}
+              label="My Café Map"
+              active={mapMode === "mycafe"} // ✅ 現在のモードによって強調
+            />
 
-          <HeaderButton
-            onClick={handleOpenMapList}
-            disabled={!user}
-            icon={<Layers size={ICON_SIZES.MEDIUM} />}
-            label={selectedMap?.name || "My Map List"}
-            active={!!selectedMap} // ✅ 現在のマップによって強調
-          />
+            <HeaderButton
+              onClick={handleOpenMapList}
+              disabled={!user}
+              icon={<Layers size={ICON_SIZES.MEDIUM} />}
+              label={selectedMap?.name || "My Map List"}
+              active={!!selectedMap} // ✅ 現在のマップによって強調
+            />
+          </div>
 
+          {/* ユーザーメニュー */}
           <UserMenu
             isOpen={isLoginMenuOpen}
             onToggle={() => setIsLoginMenuOpen((prev) => !prev)}
@@ -151,6 +154,7 @@ const Header: React.FC<HeaderProps> = ({
               setIsLoginMenuOpen(false); // 👈 メニューを閉じてからモーダルを開く
             }}
           />
+        </div>
 
           <GroupListModal
             isOpen={isGroupListOpen}
@@ -161,7 +165,6 @@ const Header: React.FC<HeaderProps> = ({
               setIsGroupListOpen(false);
             }}
           />
-        </div>
       </header>
     </>
   );
