@@ -20,8 +20,11 @@ ssh -i $KEY_PATH $EC2_USER@$EC2_HOST "chmod 600 /home/$EC2_USER/.ssh/id_rsa"
 echo "📤 デプロイスクリプトをEC2に送信中..."
 scp -i $KEY_PATH $SCRIPT_NAME $EC2_USER@$EC2_HOST:/home/$EC2_USER/
 
+# 先にディレクトリを作成
+ssh -i $KEY_PATH $EC2_USER@$EC2_HOST "mkdir -p /home/$EC2_USER/myapp/$REPO_DIR"
+# .env.deployファイルをEC2に転送
 echo "📤 .env をEC2に転送中..."
-scp -i $KEY_PATH .env.deploy $EC2_USER@$EC2_HOST:/home/$EC2_USER/myapp/cafe-map
+scp -i $KEY_PATH .env.deploy $EC2_USER@$EC2_HOST:/home/$EC2_USER/myapp/$REPO_DIR/.env.deploy
 
 echo "📡 EC2上でデプロイスクリプトを実行中..."
 ssh -i $KEY_PATH $EC2_USER@$EC2_HOST "chmod +x $SCRIPT_NAME && ./deploy.sh"
