@@ -41,10 +41,8 @@ docker compose --version
 
 
 # 必要な環境変数を読み込む
-cd /home/ec2-user/
-
-if [ -f .env.deploy ]; then
-  source .env.deploy
+if [ -f /home/ec2-user/.env.deploy ]; then
+  source /home/ec2-user/.env.deploy
 else
   echo "❌ .env.deploy ファイルが見つかりません"
   exit 1
@@ -52,7 +50,6 @@ fi
 
 
 # アプリケーションディレクトリへ移動
-mkdir -p /home/ec2-user/myapp
 cd /home/ec2-user/myapp/
 
 
@@ -73,15 +70,18 @@ ssh-keyscan github.com >> ~/.ssh/known_hosts
 # 3. リポジトリのクローン
 REPO_URL="git@github.com:$REPO_OWNER/$REPO_NAME.git"
 # リポジトリが存在しない場合にのみクローン
-if [ ! -d "cafe-map/.git" ]; then
+if [ ! -d "$REPO_DIR" ]; then
     echo "📥 リポジトリをクローン中..."
     git clone -b $BRANCH $REPO_URL
-else
+elif [ -d "$REPO_DIR/.git" ]; then
     echo "📥 最新コード取得中..."
-    cd cafe-map
+    cd "$REPO_DIR"
     git fetch origin $BRANCH
     git pull origin $BRANCH
     cd ..
+else
+    echo "⚠️ '$REPO_DIR' は存在しますがGitリポジトリではありません。削除または修正してください。"
+    exit 1
 fi
 
 cd /home/ec2-user/myapp/cafe-map
