@@ -6,7 +6,7 @@ services:
     volumes:
       - ./backend/staticfiles:/app/staticfiles
     env_file:
-      - .env.production
+      - .env.deploy
     ports:
       - "8000:8000"
     restart: always
