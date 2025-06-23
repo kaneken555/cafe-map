@@ -31,13 +31,13 @@ const CafeImageCarousel: React.FC<CafeImageCarouselProps> = ({ photoUrls, altTex
         <>
           <button
             onClick={handlePrev}
-            className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/50 rounded-full p-1"
+            className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/50 rounded-full p-1 cursor-pointer"
           >
             ◀
           </button>
           <button
             onClick={handleNext}
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/50 rounded-full p-1"
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/50 rounded-full p-1 cursor-pointer"
           >
             ▶
           </button>

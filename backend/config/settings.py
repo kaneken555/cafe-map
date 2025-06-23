@@ -27,17 +27,15 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'your-secret-key')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DJANGO_DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "").split(",")
+
 
 # ------------------------------
 # CORS 設定
 # ------------------------------
 CORS_ALLOW_ALL_ORIGINS = os.getenv("CORS_ALLOW_ALL_ORIGINS", "False") == "True"
 CORS_ALLOW_CREDENTIALS = True  # クッキーを含めたリクエストを許可
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # フロントエンドのURL
-    "http://localhost:5173",
-]
+CORS_ALLOWED_ORIGINS = os.getenv("DJANGO_ALLOWED_ORIGINS", "").split(",")
 CORS_ALLOW_HEADERS = [
     "authorization",
     "content-type",
@@ -47,7 +45,7 @@ CORS_ALLOW_HEADERS = [
 # ------------------------------
 # CSRF 設定
 # ------------------------------
-CSRF_TRUSTED_ORIGINS = ["http://localhost:3000", "http://localhost:5173"]  # フロントエンドのURL
+CSRF_TRUSTED_ORIGINS = os.getenv("DJANGO_CSRF_TRUSTED_ORIGINS", "").split(",")
 CSRF_COOKIE_SAMESITE = "None"  
 CSRF_COOKIE_SECURE = True  # クロスサイトリクエストには Secure 必須
 CSRF_COOKIE_HTTPONLY = True  # JavaScript からのアクセスを禁止
@@ -59,7 +57,6 @@ CSRF_COOKIE_HTTPONLY = True  # JavaScript からのアクセスを禁止
 SESSION_COOKIE_SECURE = True  # `SESSION_COOKIE_SAMESITE = "None"` の場合は True にする
 SESSION_COOKIE_SAMESITE = "None" 
 SESSION_ENGINE = "django.contrib.sessions.backends.db"
-
 
 
 # ------------------------------
@@ -87,6 +84,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     "rest_framework",
     "corsheaders",
+    'social_django',
     'cafemap',
 
 ]
@@ -100,6 +98,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -107,7 +106,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -126,15 +125,19 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("POSTGRES_DB", "cafe_map"),
-        "USER": os.getenv("POSTGRES_USER", "postgres"),
-        "PASSWORD": os.getenv("POSTGRES_PASSWORD", "password"),
-        "HOST": "db",
-        "PORT": 5432,
+        "NAME": os.getenv("DB_NAME", "cafe_map"),
+        "USER": os.getenv("DB_USER", "postgres"),
+        "PASSWORD": os.getenv("DB_PASSWORD", "password"),
+        "HOST": os.getenv("DB_HOST", "localhost"),
+        "PORT": int(os.getenv("DB_PORT", 5432)),
+        "OPTIONS": {
+            'sslmode': os.getenv("DB_SSLMODE", "disable")
+        }
+        # "HOST": "db",
+        # "PORT": 5432,
     }
 }
 
@@ -183,3 +186,23 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'cafemap.User'
 
+
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.google.GoogleOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+# Google OAuth2 設定
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv('GOOGLE_CLIENT_ID')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
+
+LOGIN_REDIRECT_URL = "/api/auth/login/success-popup/"
+LOGIN_URL = '/api/auth/login/google-oauth2/'
+
+SOCIAL_AUTH_URL_NAMESPACE = 'social'
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
+    'https://www.googleapis.com/auth/userinfo.email',
+    'https://www.googleapis.com/auth/userinfo.profile',
+]
+SOCIAL_AUTH_GOOGLE_OAUTH2_USE_UNIQUE_USER_ID = True
