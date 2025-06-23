@@ -55,6 +55,7 @@ export const useHeaderActions = ({ closeCafeListPanel }: UseHeaderActionsParams)
     setSelectedMap(null);
     closeCafeListPanel();
     setCafeList([]);
+    setMyCafeList([]);
     setMapMode("search");
   };
 

@@ -1,6 +1,6 @@
 // components/CafeDetailCard.tsx
 import React from "react";
-import { Heart, Share2 } from "lucide-react";
+import { Heart, Share2, CirclePlus } from "lucide-react";
 import GoogleMapButton from "./GoogleMapButton";
 import CafeImageCarousel from "./CafeImageCarousel"; 
 import CafeDetailInfoTable from "./CafeDetailInfoTable"; 
@@ -15,6 +15,7 @@ interface CafeDetailCardProps {
   selectedMap: MapItem | null; 
   myCafeList?: Cafe[];
   setMyCafeList: React.Dispatch<React.SetStateAction<Cafe[]>>;
+  onAddClick?: () => void; // ✅ 追加ボタン用
 }
 
 
@@ -22,7 +23,8 @@ const CafeDetailCard: React.FC<CafeDetailCardProps> = ({
   cafe, 
   selectedMap, 
   myCafeList, 
-  setMyCafeList 
+  setMyCafeList,
+  onAddClick = () => {}, // ✅ デフォルトは何もしない 
 }) => {
   // ✅ このカフェが登録済みか？
   const isRegistered = myCafeList?.some((myCafe) => myCafe.placeId === cafe.placeId) ?? false;
@@ -46,6 +48,15 @@ const CafeDetailCard: React.FC<CafeDetailCardProps> = ({
           {/* <h3 className="text-xl font-black">{cafe.name_en}</h3> */}
         </div>
         <div className="flex space-x-2 mt-1">
+          {onAddClick && (
+            <button
+              className="text-gray-600 hover:text-black cursor-pointer"
+              onClick={onAddClick}
+            >
+              <CirclePlus size={20} />
+            </button>
+          )}
+
           <button 
             className={`${
               isRegistered ? "text-red-500" : "text-gray-600"
