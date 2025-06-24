@@ -22,12 +22,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd frontend  # frontendがViteのルートならここを調整
+          cd frontend_dev  # frontendがViteのルートならここを調整
           npm ci
 
       - name: Build frontend
         run: |
-          cd frontend
+          cd frontend_dev
           npm run build
 
       - name: Sync to S3
