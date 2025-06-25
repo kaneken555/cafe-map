@@ -1,28 +1,21 @@
-import { useEffect, useState } from 'react';
-import axios from 'axios';
+// src/App.tsx
+import React, { useState } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import HomePage from "./pages/HomePage";
+import Header from "./components/Header";
+import MapComponent from "./components/Map"; // ← MapComponent追加
 
-function App() {
-  const [message, setMessage] = useState('');
-
-  useEffect(() => {
-    axios.get('http://localhost:8000/api/')
-      .then(response => {
-        setMessage(response.data.message);
-      })
-      .catch(error => {
-        console.error("API request error:", error);
-        setMessage("API error");
-      });
-  }, []);
+const App: React.FC = () => {
+  const [selectedMap, setSelectedMap] = useState<{ id: number; name: string } | null>(null);
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>My Cafe Map</h1>
-        <p>API Response: {message}</p>
-      </header>
-    </div>
+    <Router>
+      <Header selectedMap={selectedMap} setSelectedMap={setSelectedMap} />
+      <Routes>
+      <Route path="/" element={<HomePage selectedMap={selectedMap} />} />
+      </Routes>
+    </Router>
   );
-}
+};
 
 export default App;
