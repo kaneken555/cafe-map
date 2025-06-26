@@ -9,7 +9,7 @@ on:
     paths:
       - 'backend/**'
       - 'docker/**'
-      - '.github/workflows/backend-deploy.yml'
+      - '.github/workflows/backend.yml'
 
 jobs:
   deploy-backend:
@@ -39,6 +39,6 @@ jobs:
             docker compose -f docker-compose.prod.yml up -d --build
 
             echo "🧹 静的ファイル収集中..."
-            docker compose -f docker-compose.prod.yml exec backend python manage.py collectstatic --noinput
+            docker compose -f docker-compose.prod.yml exec -T backend python manage.py collectstatic --noinput
 
             echo "✅ デプロイ完了"
