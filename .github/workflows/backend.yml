@@ -33,12 +33,12 @@ jobs:
             git pull origin main
 
             echo "🧹 古いコンテナ停止"
-            docker compose -f docker-compose.prod.yml down
+            docker-compose -f docker-compose.prod.yml down
 
             echo "🐳 再ビルド & 起動"
-            docker compose -f docker-compose.prod.yml up -d --build
+            docker-compose -f docker-compose.prod.yml up -d --build
 
             echo "🧹 静的ファイル収集中..."
-            docker compose -f docker-compose.prod.yml exec -T backend python manage.py collectstatic --noinput
+            docker-compose -f docker-compose.prod.yml exec -T backend python manage.py collectstatic --noinput
 
             echo "✅ デプロイ完了"
