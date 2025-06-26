@@ -41,4 +41,7 @@ jobs:
             echo "🧹 静的ファイル収集中..."
             docker-compose -f docker-compose.prod.yml exec -T backend python manage.py collectstatic --noinput
 
+            echo "📦 DBマイグレーション中..."
+            docker-compose -f docker-compose.prod.yml exec -T backend python manage.py migrate
+
             echo "✅ デプロイ完了"
