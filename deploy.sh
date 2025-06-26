@@ -102,10 +102,10 @@ sudo docker-compose -f docker-compose.prod.yml up -d --build
 
 # 6. 静的ファイル収集
 echo "🧹 静的ファイル収集中..."
-sudo docker-compose -f docker-compose.prod.yml -T exec backend python manage.py collectstatic --noinput
+sudo docker-compose -f docker-compose.prod.yml exec -T backend python manage.py collectstatic --noinput
 
 # 7. DBマイグレーション
 echo "📦 DBマイグレーション中..."
-sudo docker-compose -f docker-compose.prod.yml -T exec backend python manage.py migrate
+sudo docker-compose -f docker-compose.prod.yml exec -T backend python manage.py migrate
 
 echo "✅ デプロイ完了"
