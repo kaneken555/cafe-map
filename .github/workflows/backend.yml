@@ -38,4 +38,7 @@ jobs:
             echo "🐳 再ビルド & 起動"
             docker compose -f docker-compose.prod.yml up -d --build
 
+            echo "🧹 静的ファイル収集中..."
+            docker compose -f docker-compose.prod.yml exec backend python manage.py collectstatic --noinput
+
             echo "✅ デプロイ完了"
