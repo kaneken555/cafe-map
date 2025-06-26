@@ -40,17 +40,21 @@ docker --version
 docker compose --version
 
 
+# 📝 実行ユーザーのホームディレクトリを使用（/home/ec2-user や /home/ubuntu に対応）
+USER_HOME=$(eval echo ~$USER)
+
 # 必要な環境変数を読み込む
-if [ -f /home/ec2-user/.env.deploy ]; then
-  source /home/ec2-user/.env.deploy
+if [ -f $USER_HOME/.env.deploy ]; then
+  source $USER_HOME/.env.deploy
 else
   echo "❌ .env.deploy ファイルが見つかりません"
   exit 1
 fi
 
-
+# アプリケーションディレクトリを作成（存在しない場合）
+mkdir -p $USER_HOME/myapp
 # アプリケーションディレクトリへ移動
-cd /home/ec2-user/myapp/
+cd $USER_HOME/myapp/
 
 
 # 1. GitHubのホスト鍵を~/.ssh/known_hostsに追加
@@ -84,7 +88,9 @@ else
     exit 1
 fi
 
-cd /home/ec2-user/myapp/cafe-map
+cp $USER_HOME/.env.deploy $USER_HOME/myapp/$REPO_DIR/.env.deploy
+
+cd $USER_HOME/myapp/$REPO_DIR
 
 # 4. 古いコンテナを停止
 echo "🛑 古いコンテナを停止中..."
@@ -96,10 +102,10 @@ sudo docker-compose -f docker-compose.prod.yml up -d --build
 
 # 6. 静的ファイル収集
 echo "🧹 静的ファイル収集中..."
-sudo docker-compose -f docker-compose.prod.yml exec web python manage.py collectstatic --noinput
+sudo docker-compose -f docker-compose.prod.yml -T exec backend python manage.py collectstatic --noinput
 
 # 7. DBマイグレーション
 echo "📦 DBマイグレーション中..."
-sudo docker-compose -f docker-compose.prod.yml exec web python manage.py migrate
+sudo docker-compose -f docker-compose.prod.yml -T exec backend python manage.py migrate
 
 echo "✅ デプロイ完了"
