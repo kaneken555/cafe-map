@@ -9,7 +9,7 @@ on:
     paths:
       - 'backend/**'
       - 'docker/**'
-      - '.github/workflows/backend-deploy.yml'
+      - '.github/workflows/backend.yml'
 
 jobs:
   deploy-backend:
