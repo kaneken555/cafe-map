@@ -18,7 +18,7 @@ http {
 
     server {
         listen 80;
-        server_name localhost;
+        server_name ${NGINX_SERVER_NAME};
 
         # 静的ファイル（admin画面のCSSなど）
         location /static/ {
