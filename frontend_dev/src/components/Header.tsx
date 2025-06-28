@@ -117,7 +117,8 @@ const Header: React.FC<HeaderProps> = ({
 
         {/* 右：操作ボタン群 */}
         <div className="flex items-center space-x-2">
-          <div className="hidden md:flex items-center space-x-2">          
+          <div className="flex items-center space-x-2">       
+          {/* <div className="hidden md:flex items-center space-x-2">              */}
             <HeaderButton
               onClick={handleOpenCafeList}
               disabled={!user}
