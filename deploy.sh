@@ -3,8 +3,6 @@ set -e  # エラーが出たらスクリプト停止
 
 echo "🚀 デプロイ開始..."
 
-# パッケージリストを更新
-# sudo dnf update -y
 
 # Gitがインストールされているかチェック
 if ! command -v git &> /dev/null; then
@@ -61,17 +59,8 @@ cd $USER_HOME/myapp/
 echo "📡 GitHubのホスト鍵を~/.ssh/known_hostsに追加中..."
 ssh-keyscan github.com >> ~/.ssh/known_hosts
 
-# 2. GitHubへの接続テスト
-# echo "📡 GitHubへの接続テスト中..."
-# ssh -T -o BatchMode=yes git@github.com
-# if [ $? -eq 1 ]; then
-#     echo "❌ GitHubへの接続に失敗しました。公開鍵がGitHubに追加されているか確認してください。"
-#     exit 1
-# else
-#     echo "✅ GitHubへの接続成功！"
-# fi
 
-# 3. リポジトリのクローン
+# 2. リポジトリのクローン
 REPO_URL="git@github.com:$REPO_OWNER/$REPO_NAME.git"
 # リポジトリが存在しない場合にのみクローン
 if [ ! -d "$REPO_DIR" ]; then
@@ -92,19 +81,19 @@ cp $USER_HOME/.env.deploy $USER_HOME/myapp/$REPO_DIR/.env.deploy
 
 cd $USER_HOME/myapp/$REPO_DIR
 
-# 4. 古いコンテナを停止
+# 3. 古いコンテナを停止
 echo "🛑 古いコンテナを停止中..."
 sudo docker-compose -f docker-compose.prod.yml down
 
-# 5. 新しいイメージをビルドして起動
+# 4. 新しいイメージをビルドして起動
 echo "🔧 新しいイメージをビルドして起動中..."
 sudo docker-compose -f docker-compose.prod.yml up -d --build
 
-# 6. 静的ファイル収集
+# 5. 静的ファイル収集
 echo "🧹 静的ファイル収集中..."
 sudo docker-compose -f docker-compose.prod.yml exec -T backend python manage.py collectstatic --noinput
 
-# 7. DBマイグレーション
+# 6. DBマイグレーション
 echo "📦 DBマイグレーション中..."
 sudo docker-compose -f docker-compose.prod.yml exec -T backend python manage.py migrate
 
