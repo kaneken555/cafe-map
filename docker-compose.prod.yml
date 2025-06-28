@@ -14,12 +14,13 @@ services:
 
 
   nginx:
-    image: nginx:latest
+    build: ./nginx  # ← image: nginx:latest を build に変更
     ports:
       - "80:80"
     depends_on:
       - backend
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./backend/staticfiles:/app/staticfiles
+    env_file:
+      - .env.deploy
     restart: always
