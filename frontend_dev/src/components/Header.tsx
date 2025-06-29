@@ -90,7 +90,7 @@ const Header: React.FC<HeaderProps> = ({
         onClose={() => setIsSideMenuOpen(false)} 
       />
         
-      <header className="w-full h-16 px-4 flex justify-between items-center bg-gradient-to-r from-yellow-300 to-yellow-500 shadow-md">
+      <header className="w-full h-12 md:h-16 px-2 md:px-4 flex justify-between items-center bg-gradient-to-r from-yellow-300 to-yellow-500 shadow-md">
         {/* 左：サイドメニュー */}
         <div className="flex items-center">
           <button onClick={() => setIsSideMenuOpen(true)} className="text-2xl cursor-pointer">
@@ -101,7 +101,7 @@ const Header: React.FC<HeaderProps> = ({
         {/* 中央：タイトル */}
         <div className="flex-grow flex justify-center items-center space-x-2">
           <Coffee size={ICON_SIZES.MEDIUM} />
-          <h1 className="text-2xl font-bold text-black">Café Map</h1>
+          <h1 className="text-lg md:text-2xl font-bold text-black">Café Map</h1>
         </div>
 
         {/* 右：操作ボタン群 */}

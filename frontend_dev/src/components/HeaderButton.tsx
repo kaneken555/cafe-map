@@ -14,7 +14,7 @@ const HeaderButton: React.FC<HeaderButtonProps> = ({ onClick, disabled, icon, la
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`flex flex-col items-center justify-center px-2 py-1 border rounded w-21 h-14
+      className={`flex flex-col items-center justify-center px-2 py-1 border rounded w-full md:w-21 h-14
         ${disabled
           ? "bg-gray-300 text-gray-500 border-gray-400 cursor-not-allowed"
           : active

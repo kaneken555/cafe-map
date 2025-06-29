@@ -24,7 +24,7 @@ const FooterActions: React.FC<Props> = ({
 
 
   return (
-    <div className="fixed bottom-0 w-full h-16 bg-white border-t border-gray-300 flex justify-around items-center md:hidden z-50">
+    <div className="fixed bottom-0 w-full h-16 bg-white border-t border-gray-300 grid grid-cols-3 items-center md:hidden z-50">
       <HeaderButton
         onClick={onOpenCafeList}
         disabled={!user}
