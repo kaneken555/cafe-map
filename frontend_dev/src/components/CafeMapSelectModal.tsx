@@ -1,12 +1,10 @@
 // components/CafeMapSelectModal.tsx
 import React, { useEffect, useState } from "react";
 import { MapIcon } from "lucide-react";
-import CloseModalButton from "./CloseModalButton";
 import { MapItem } from "../types/map";
 import { useMap } from "../contexts/MapContext";
 import { toast } from "react-hot-toast";
 import BaseModal from "./BaseModal";
-import { MODAL_STYLES } from "../constants/ui";
 
 interface CafeMapSelectModalProps {
   isOpen: boolean;
@@ -54,54 +52,42 @@ const CafeMapSelectModal: React.FC<CafeMapSelectModalProps> = ({
     setSelectedMaps([]);
   };
 
-  if (!isOpen) return null;
 
   return (
-    // <div className={MODAL_STYLES.MAIN_MODAL.CONTAINER} onClick={onClose}>
-    //   <div
-    //     className="bg-[#fffaf0] w-[700px] max-w-full rounded-lg p-6 shadow-xl relative"
-    //     onClick={(e) => e.stopPropagation()}
-    //   >
-    //     <CloseModalButton onClose={onClose} />
+    <BaseModal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="カフェを追加するマップを選択してください"
+      icon={<MapIcon className="w-6 h-6 text-[#6b4226]" />}
+      size="lg"
+    >
 
-    //     <h2 className="text-xl font-bold text-[#6b4226] mb-4">
-    //       カフェを追加するマップを選択してください
-    //     </h2>
+        <ul className="space-y-2 mb-6 max-h-[400px] overflow-y-auto">
+          {mapList.map((map) => {
+            const isSelected = selectedMaps.some((m) => m.id === map.id);
+            return (
+              <li
+                key={map.id}
+                className={`flex justify-between items-center p-2 border rounded cursor-pointer ${
+                  isSelected ? "bg-green-100" : "hover:bg-gray-100"
+                }`}
+                onClick={() => toggleMapSelection(map)}
+              >
+                <span>{map.name}</span>
+                {isSelected && <span>✅</span>}
+              </li>
+            );
+          })}
+        </ul>
 
-        <BaseModal
-          isOpen={isOpen}
-          onClose={onClose}
-          title="カフェを追加するマップを選択してください"
-          icon={<MapIcon className="w-6 h-6 text-[#6b4226]" />}
+        <button
+          className="w-full px-4 py-2 bg-[#FFC800] hover:bg-[#D8A900] text-black rounded cursor-pointer"
+          onClick={handleAdd}
         >
-
-          <ul className="space-y-2 mb-6 max-h-[400px] overflow-y-auto">
-            {mapList.map((map) => {
-              const isSelected = selectedMaps.some((m) => m.id === map.id);
-              return (
-                <li
-                  key={map.id}
-                  className={`flex justify-between items-center p-2 border rounded cursor-pointer ${
-                    isSelected ? "bg-green-100" : "hover:bg-gray-100"
-                  }`}
-                  onClick={() => toggleMapSelection(map)}
-                >
-                  <span>{map.name}</span>
-                  {isSelected && <span>✅</span>}
-                </li>
-              );
-            })}
-          </ul>
-
-          <button
-            className="w-full px-4 py-2 bg-[#FFC800] hover:bg-[#D8A900] text-black rounded cursor-pointer"
-            onClick={handleAdd}
-          >
-            追加
-          </button>
+          追加
+        </button>
+        
     </BaseModal>
-    /* </div>
-    </div> */
   );
 };
 

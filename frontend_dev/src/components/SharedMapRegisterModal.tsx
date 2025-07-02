@@ -1,12 +1,12 @@
 // components/SharedMapRegisterModal.tsx
 import React, { useState } from "react";
-import CloseModalButton from "./CloseModalButton";
+import BaseModal from "./BaseModal";
 import { SharedMapItem } from "../types/map";
 import { getMapList, copySharedMap } from "../api/map";
 import toast from "react-hot-toast";
-import { MODAL_STYLES } from "../constants/ui";
 
 import { useMap } from "../contexts/MapContext"; // マップコンテキストをインポート
+
 
 interface SharedMapRegisterModalProps {
   isOpen: boolean;
@@ -25,7 +25,7 @@ const SharedMapRegisterModal: React.FC<SharedMapRegisterModalProps> = ({
 
   const [mapName, setMapName] = useState(initialMapName);
 
-  if (!isOpen) return null;
+  // if (!isOpen) return null;
 
   const handleClose = () => {
     setMapName(initialMapName); // 初期化
@@ -52,18 +52,7 @@ const SharedMapRegisterModal: React.FC<SharedMapRegisterModalProps> = ({
   };
 
   return (
-    <div
-      className={MODAL_STYLES.SUB_MODAL.CONTAINER}
-      onClick={handleClose}
-    >
-      <div
-        className="bg-[#fffaf0] w-[400px] p-6 rounded-lg shadow-md relative"
-        onClick={(e) => e.stopPropagation()}
-      >
-
-        <CloseModalButton onClose={handleClose} /> {/* ここで共通閉じるボタンを使う */}
-
-        <h2 className={MODAL_STYLES.SUB_MODAL.TITLE}>マイマップ登録</h2>
+    <BaseModal isOpen={isOpen} onClose={handleClose} title="マイマップ登録" size="md">
 
         <input
           type="text"
@@ -82,8 +71,8 @@ const SharedMapRegisterModal: React.FC<SharedMapRegisterModalProps> = ({
         >
           登録
         </button>
-      </div>
-    </div>
+
+    </BaseModal>
   );
 };
 
