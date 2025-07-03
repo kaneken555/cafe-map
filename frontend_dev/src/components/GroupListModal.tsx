@@ -1,19 +1,19 @@
 // components/GroupListModal.tsx
 import React, { useState } from "react";
-import CloseModalButton from "./CloseModalButton";
 import GroupCreateModal from "./GroupCreateModal";
 import GroupInvitationModal from "./GroupInvitationModal";
 import GroupListItem from "./GroupListItem"; 
 import GroupSearchModal from "./GroupSearchModal";
 import GroupJoinModal from "./GroupJoinModal";
 import ModalActionButton from "./ModalActionButton";
+import BaseModal from "./BaseModal";
+
 import { Users } from "lucide-react";
 import { Group } from "../types/group";
 import { fetchGroupList, joinGroup } from "../api/group";
 import { getMapList, getGroupMapList } from "../api/map";
 import { toast } from "react-hot-toast";
 import { extractUuidFromUrl } from "../utils/extractUuid";
-import { MODAL_STYLES } from "../constants/ui";
 
 import { useMap } from "../contexts/MapContext";
 import { useGroup } from "../contexts/GroupContext";
@@ -40,8 +40,6 @@ const GroupListModal: React.FC<GroupListModalProps> = ({
   const [joiningGroupName, setJoiningGroupName] = useState("");      // 参加対象グループ名
   const [joiningGroupUuid, setJoiningGroupUuid] = useState<string>("");
 
-
-  if (!isOpen) return null;
 
   const handleInviteClick = (group: Group) => {
     setInviteTargetGroup(group);
@@ -139,55 +137,46 @@ const GroupListModal: React.FC<GroupListModalProps> = ({
         onJoin={handleGroupJoin}
       />
 
-      <div 
-        className={MODAL_STYLES.MAIN_MODAL.CONTAINER}
-        onClick={onClose}
+      <BaseModal
+        isOpen={isOpen}
+        onClose={onClose}
+        title="グループ一覧"
+        icon={<Users className="w-6 h-6 text-[#6b4226]" />}
+        size="lg" // サイズを指定
       >
-        <div
-          className="bg-[#fffaf0] w-[700px] max-w-full rounded-lg p-6 shadow-xl relative"
-          onClick={(e) => e.stopPropagation()}
-        >
 
-          <CloseModalButton onClose={onClose} /> {/* ここで共通閉じるボタンを使う */}
-
-          <div className="flex items-center mb-6">
-            <Users className="w-6 h-6 text-[#6b4226] mr-2" />
-            <h2 className="text-xl font-bold text-[#6b4226]">グループ一覧</h2>
-          </div>
-
-          <ul className="space-y-2 mb-4">
-            {groupList.map((group) => (
-              <GroupListItem
-                key={group.id}
-                group={group}
-                onSelect={handleGroupSelect} // ✅ 非同期対応
-                onInvite={handleInviteClick}
-              />
-            ))}
-          </ul>
-
-          <div className="grid grid-cols-2 gap-2 mt-6">
-            <ModalActionButton
-              label="＋新しいグループを作る"
-              onClick={() => setIsCreateModalOpen(true)}
+        <ul className="space-y-2 mb-4">
+          {groupList.map((group) => (
+            <GroupListItem
+              key={group.id}
+              group={group}
+              onSelect={handleGroupSelect} // ✅ 非同期対応
+              onInvite={handleInviteClick}
             />
-            <ModalActionButton
-              label="🔍 グループに参加する"
-              onClick={() => setIsSearchModalOpen(true)}
-            />
-          </div>
+          ))}
+        </ul>
 
-          {selectedGroupId !== null && (
-            <div className="mt-4">
-              <ModalActionButton
-                label="🚫 グループ選択を解除"
-                onClick={handleGroupClear}
-              />
-            </div>
-          )}
-
+        <div className="grid grid-cols-2 gap-2 mt-6">
+          <ModalActionButton
+            label="＋新しいグループを作る"
+            onClick={() => setIsCreateModalOpen(true)}
+          />
+          <ModalActionButton
+            label="🔍 グループに参加する"
+            onClick={() => setIsSearchModalOpen(true)}
+          />
         </div>
-      </div>
+
+        {selectedGroupId !== null && (
+          <div className="mt-4">
+            <ModalActionButton
+              label="🚫 グループ選択を解除"
+              onClick={handleGroupClear}
+            />
+          </div>
+        )}
+
+      </BaseModal>
     </>
   );
 };

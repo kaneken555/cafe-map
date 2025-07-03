@@ -1,7 +1,7 @@
 // components/GroupJoinModal.tsx
 import React from "react";
-import CloseModalButton from "./CloseModalButton";
-import { MODAL_STYLES } from "../constants/ui";
+import BaseModal from "./BaseModal";
+
 
 interface GroupJoinModalProps {
   isOpen: boolean;
@@ -16,15 +16,10 @@ const GroupJoinModal: React.FC<GroupJoinModalProps> = ({
   groupName,
   onJoin,
 }) => {
-  if (!isOpen) return null;
 
   return (
-    <div className={MODAL_STYLES.SUB_MODAL.CONTAINER}>
-      <div className="bg-[#fffaf0] w-[400px] p-6 rounded-lg shadow-md relative">
+    <BaseModal isOpen={isOpen} onClose={onClose} title="グループ参加" size="md">
 
-        <CloseModalButton onClose={onClose} /> {/* ここで共通閉じるボタンを使う */}
-
-        <h2 className={MODAL_STYLES.SUB_MODAL.TITLE}>グループ参加</h2>
         <p className="text-center text-lg mb-6">{groupName}</p>
         <button
           onClick={onJoin}
@@ -32,8 +27,8 @@ const GroupJoinModal: React.FC<GroupJoinModalProps> = ({
         >
           参加
         </button>
-      </div>
-    </div>
+
+    </BaseModal>
   );
 };
 

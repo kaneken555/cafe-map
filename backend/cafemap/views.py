@@ -14,6 +14,10 @@ from django.utils.decorators import method_decorator
 from django.middleware.csrf import get_token
 from uuid import UUID
 
+import logging
+
+logger = logging.getLogger(__name__)  # ← ファイル名に対応したロガーを使う
+
 
 GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
 
@@ -166,7 +170,7 @@ def get_cafe_detail(request):
 @permission_classes([AllowAny])  # ✅ 認証なしでもアクセス可能にする
 @csrf_exempt  # CSRF チェックを無効化
 def guest_login(request):
-    print("✅ ゲストログイン API が呼ばれました")
+    logger.info("✅ ゲストログイン API が呼ばれました")  # ← ログ追加
 
     try:
         # 「ゲストユーザー」を取得（なければ作成する）

@@ -7,5 +7,5 @@ echo "🚀 バックエンド（Docker）を起動します..."
 docker compose up -d
 
 echo "🌐 フロントエンド（React + Vite）を起動します..."
-cd portforio/cafe-map/frontend_dev
+cd frontend_dev
 npm run dev
