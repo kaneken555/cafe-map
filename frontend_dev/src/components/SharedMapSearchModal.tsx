@@ -1,7 +1,7 @@
 // components/SharedMapSearchModal.tsx
 import React, { useState } from "react";
-import CloseModalButton from "./CloseModalButton"; // 共通の閉じるボタンコンポーネント
-import { MODAL_STYLES } from "../constants/ui";
+import BaseModal from "./BaseModal";
+
 
 interface SharedMapSearchModalProps {
   isOpen: boolean;
@@ -19,12 +19,8 @@ const SharedMapSearchModal: React.FC<SharedMapSearchModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className={MODAL_STYLES.SUB_MODAL.CONTAINER}>
-      <div className="bg-[#fffaf0] w-[400px] p-6 rounded-lg shadow-md relative">
+    <BaseModal isOpen={isOpen} onClose={onClose} title="シェアマップを開く" size="md">
 
-        <CloseModalButton onClose={onClose} /> {/* ここで共通閉じるボタンを使う */}
-
-        <h2 className={MODAL_STYLES.SUB_MODAL.TITLE}>シェアマップを開く</h2>
         <p className="text-sm text-gray-700 mb-2">シェアマップのURLまたはIDを入力してください</p>
         <input
           type="text"
@@ -39,8 +35,8 @@ const SharedMapSearchModal: React.FC<SharedMapSearchModalProps> = ({
         >
           検索
         </button>
-      </div>
-    </div>
+        
+    </BaseModal>
   );
 };
 

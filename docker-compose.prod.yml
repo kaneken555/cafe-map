@@ -5,6 +5,7 @@ services:
     working_dir: /app
     volumes:
       - ./backend/staticfiles:/app/staticfiles
+      - ./logs/django:/app/logs   # ← Djangoログをホストと共有
     env_file:
       - .env.deploy
     ports:
@@ -21,6 +22,7 @@ services:
       - backend
     volumes:
       - ./backend/staticfiles:/app/staticfiles
+      - ./logs/nginx:/var/log/nginx   # ← Nginxログをホストと共有
     env_file:
       - .env.deploy
     restart: always

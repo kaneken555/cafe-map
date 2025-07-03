@@ -1,11 +1,10 @@
 // components/ShareMapModal.tsx
 import React, { useRef } from "react";
+import BaseModal from "./BaseModal";
 import toast from "react-hot-toast";
 import { createSharedMap } from "../api/sharedMap";
-import CloseModalButton from "./CloseModalButton";
 import ShareLinkSection from "./ShareLinkSection";
 import QRCodeSection from "./QRCodeSection";
-import { MODAL_STYLES } from "../constants/ui";
 
 
 interface ShareMapModalProps {
@@ -24,7 +23,6 @@ const ShareMapModal: React.FC<ShareMapModalProps> = ({
   selectedMap,
 }) => {
 
-  if (!isOpen) return null;
 
   const qrWrapperRef = useRef<HTMLDivElement>(null);
 
@@ -51,12 +49,7 @@ const ShareMapModal: React.FC<ShareMapModalProps> = ({
 
 
   return (
-    <div className={MODAL_STYLES.SUB_MODAL.CONTAINER}>
-      <div className="bg-[#fef7ec] p-6 rounded-lg w-[360px] relative shadow-md">
-
-        <CloseModalButton onClose={onClose} /> {/* ここで共通閉じるボタンを使う */}
-
-        <h2 className={MODAL_STYLES.SUB_MODAL.TITLE}>シェアマップ</h2>
+    <BaseModal isOpen={isOpen} onClose={onClose} title="シェアマップ" size="md">
 
         {/* シェアリンクを作成するボタン */}
         {!shareUrl && (
@@ -75,8 +68,8 @@ const ShareMapModal: React.FC<ShareMapModalProps> = ({
             <QRCodeSection qrWrapperRef={qrWrapperRef} shareUrl={shareUrl} />
           </>
         )}
-      </div>
-    </div>
+
+    </BaseModal>
   );
 };
 

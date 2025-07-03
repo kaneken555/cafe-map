@@ -1,10 +1,10 @@
 // components/CafeMapSelectModal.tsx
 import React, { useEffect, useState } from "react";
-import CloseModalButton from "./CloseModalButton";
+import { MapIcon } from "lucide-react";
 import { MapItem } from "../types/map";
 import { useMap } from "../contexts/MapContext";
 import { toast } from "react-hot-toast";
-import { MODAL_STYLES } from "../constants/ui";
+import BaseModal from "./BaseModal";
 
 interface CafeMapSelectModalProps {
   isOpen: boolean;
@@ -52,19 +52,15 @@ const CafeMapSelectModal: React.FC<CafeMapSelectModalProps> = ({
     setSelectedMaps([]);
   };
 
-  if (!isOpen) return null;
 
   return (
-    <div className={MODAL_STYLES.MAIN_MODAL.CONTAINER} onClick={onClose}>
-      <div
-        className="bg-[#fffaf0] w-[700px] max-w-full rounded-lg p-6 shadow-xl relative"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <CloseModalButton onClose={onClose} />
-
-        <h2 className="text-xl font-bold text-[#6b4226] mb-4">
-          カフェを追加するマップを選択してください
-        </h2>
+    <BaseModal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="カフェを追加するマップを選択してください"
+      icon={<MapIcon className="w-6 h-6 text-[#6b4226]" />}
+      size="lg"
+    >
 
         <ul className="space-y-2 mb-6 max-h-[400px] overflow-y-auto">
           {mapList.map((map) => {
@@ -90,8 +86,8 @@ const CafeMapSelectModal: React.FC<CafeMapSelectModalProps> = ({
         >
           追加
         </button>
-      </div>
-    </div>
+        
+    </BaseModal>
   );
 };
 
