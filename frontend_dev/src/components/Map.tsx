@@ -145,6 +145,12 @@ const Map: React.FC<MapProps> = ({
           onUnmount={() => {
             mapRef.current = null;
           }}
+          options={{
+            mapTypeControl: false,       // 「地図 / 航空写真」切り替えを非表示
+            streetViewControl: false,    // ペグマンを非表示
+            // fullscreenControl: false,    // 全画面ボタンを非表示
+            // zoomControl: false,          // ズームボタンを非表示（必要に応じて）
+          }}
         >
           {cafes.map((cafe) => (
             <CafeOverlayIcon

@@ -17,7 +17,7 @@ const CafeListItem: React.FC<CafeListItemProps> = ({ cafe, onClick }) => {
       <div>
         <div className="font-bold text-sm">{cafe.name}</div>
         <div className="text-blue-600 text-xs font-semibold">{cafe.status}</div>
-        <div className="text-xs text-gray-500">{cafe.openTime}</div>
+        {/* <div className="text-xs text-gray-500">{cafe.openTime}</div> */}
         <div className="text-xs text-gray-500">{cafe.distance}</div>
       </div>
       <img

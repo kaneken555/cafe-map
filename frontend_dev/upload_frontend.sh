@@ -14,3 +14,11 @@ npm run build
 aws s3 sync dist s3://$BUCKET_NAME --delete --profile $PROFILE_NAME
 
 echo "✅ フロントエンドをS3にアップロードしました"
+
+# CloudFrontキャッシュの無効化
+aws cloudfront create-invalidation \
+  --distribution-id $CLOUDFRONT_DISTRIBUTION_ID \
+  --paths "/*" \
+  --profile $PROFILE_NAME
+
+echo "🧹 CloudFront キャッシュを無効化しました"

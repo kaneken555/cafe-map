@@ -58,12 +58,12 @@ const UserMenu: React.FC<Props> = ({
   return (
     <div className="relative">
       <button
-        className="flex flex-col items-center justify-center px-2 py-1 border border-black rounded bg-white text-black cursor-pointer hover:bg-gray-100 w-18 h-14"
+        className="flex flex-col items-center justify-center px-2 py-1 border border-black rounded bg-white text-black cursor-pointer hover:bg-gray-100 w-14 h-12 md:w-18 md:h-14"
         onClick={onToggle}
         title={user ? user.name : "ログイン"}
       >
         {user ? <UserIcon size={ICON_SIZES.MEDIUM} /> : <LogIn size={ICON_SIZES.MEDIUM} />}
-        <span className="text-[10px] mt-1">{user ? user.name : "ログイン"}</span>
+        <span className="text-[8px] md:text-[10px] mt-1">{user ? user.name : "ログイン"}</span>
       </button>
 
       {/* ▼ ドロップダウンメニュー */}
