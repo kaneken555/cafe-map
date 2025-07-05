@@ -10,6 +10,9 @@ import { MODAL_STYLES } from "../constants/ui";  // スタイルをインポー�
 import { useMap } from "../contexts/MapContext"; // マップコンテキストをインポート
 import { useGroup } from "../contexts/GroupContext"; // グループコンテキストをインポート
 
+import ReactGA from "react-ga4";
+
+
 interface MapCreateModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -53,6 +56,9 @@ const MapCreateModal: React.FC<MapCreateModalProps> = ({
         const maps = await getMapList();
         setMapList(maps);
         console.log("取得したマップ一覧:", maps);
+        ReactGA.gtag("event", "map_create", {
+          map_name: mapName,
+        });
       }
   
       handleClose(); // ✅ モーダル閉じる
