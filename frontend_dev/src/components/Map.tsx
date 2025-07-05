@@ -14,6 +14,9 @@ import toast from "react-hot-toast";
 
 import { useMap } from "../contexts/MapContext";
 
+import ReactGA from "react-ga4";
+
+
 interface MapProps {
   cafes: Cafe[];
   onCafeIconClick: (cafe: Cafe) => void;
@@ -70,14 +73,24 @@ const Map: React.FC<MapProps> = ({
     if (!center) return;
     console.log("📡 検索実行: 中心座標 =", center.lat, center.lng);
     await searchCafes(center);
+
+    ReactGA.gtag("event", "map_search", {
+      search_type: "default",
+    });
   };
+
 
   const handleKeywordSearchClick = async (keyword: string) => {
     console.log("📡 キーワード検索実行:", keyword);
     const center = getMapCenter();
     if (!center) return;
     await searchCafes(center, keyword);
-    setIsKeywordSearchOpen(false); 
+    setIsKeywordSearchOpen(false);
+
+    ReactGA.gtag("event", "cafe_search", {
+      search_type: "keyword",
+      keyword: keyword.trim(),
+    });
   };
   
   const handleMapLoad = (map: google.maps.Map) => {
