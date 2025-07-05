@@ -18,6 +18,9 @@ import { useGroup } from "../contexts/GroupContext";
 import { useHeaderActions } from "../hooks/useHeaderActions"; // ✅ ヘッダーアクションフックをインポート
 import { requireMapSelected } from "../utils/mapUtils";
 
+import ReactGA from "react-ga4";
+
+
 interface HeaderProps {
   openCafeListPanel: () => void;
   closeCafeListPanel: () => void;
@@ -65,6 +68,11 @@ const Header: React.FC<HeaderProps> = ({
   const handleGuestLogin = async () => {
     await guestLoginHandler(); // ✅ ヘッダーアクションフックのゲストログインハンドラを呼び出す
     setIsLoginMenuOpen(false);
+
+    ReactGA.gtag("event", "login", {
+      method: "guest",
+    });
+    
   }
 
   const handleLogout = async () => {

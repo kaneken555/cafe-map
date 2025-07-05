@@ -9,6 +9,8 @@ import { toast } from "react-hot-toast";
 import { MapItem } from "../types/map";
 import { Cafe } from "../types/cafe";
 
+import ReactGA from "react-ga4";
+
 
 interface CafeDetailCardProps {
   cafe: Cafe;
@@ -33,11 +35,40 @@ const CafeDetailCard: React.FC<CafeDetailCardProps> = ({
     if (!selectedMap) return toast.error("マップを選択してください");
     addCafeToMyCafe(selectedMap.id, cafe);
     setMyCafeList(prev => [...prev, cafe]); // ✅ ここでmyCafeListを更新する！
+
+    ReactGA.gtag("event", "cafe_add", {
+      cafe_name: cafe.name,
+    });
   }
 
   const handleShareCafe = () => {
     toast("カフェ共有機能は未実装です");
   }
+
+
+  const getTodayOpenTime = (openTime: string | undefined): string | null => {
+    if (!openTime) return null;
+  
+    const days = [
+      "日曜日", "月曜日", "火曜日", "水曜日", "木曜日", "金曜日", "土曜日",
+    ];
+    const today = new Date().getDay(); // 0=日曜日〜6=土曜日
+    const todayLabel = days[today];
+  
+    const timeMap = new Map<string, string>();
+    const timeEntries = openTime.match(/([^\s:：、]+):\s*([^,、)]+)/g); // 月曜日: xx～xx の形式を抽出
+    if (timeEntries) {
+      timeEntries.forEach((entry) => {
+        const [day, time] = entry.split(":");
+        if (day && time) {
+          timeMap.set(day.trim(), time.trim());
+        }
+      });
+    }
+  
+    return timeMap.get(todayLabel) ?? null;
+  };
+  
 
   return (
     <div className="h-[calc(100vh-4rem-2rem)] flex flex-col px-2">
@@ -85,7 +116,11 @@ const CafeDetailCard: React.FC<CafeDetailCardProps> = ({
             {/* </div> */}
             <div className="flex items-center space-x-2 mt-1">
               <span className="text-blue-600 font-semibold">{cafe.status}</span>
-              <span className="text-gray-600">({cafe.openTime})</span>
+              {cafe.openTime && (
+                <span className="text-gray-600">
+                  営業時間: {getTodayOpenTime(cafe.openTime) ?? "不明"}
+                </span>
+              )}
             </div>
           </div>
           <div>
