@@ -19,6 +19,8 @@ import { useMap } from "../contexts/MapContext";
 import { useCafe } from "../contexts/CafeContext"; // ✅ カフェコンテキストをインポート
 import { useGroup } from "../contexts/GroupContext"; // ✅ グループコンテキストをインポート
 
+import { MAP_MODES } from "../constants/map";
+
 
 interface MapListModalProps {
   isOpen: boolean;
@@ -72,7 +74,7 @@ const MapListModal: React.FC<MapListModalProps> = ({
   
       // ✅ 検索成功 → カフェ情報取得 & マップ表示
       setSharedMapCafeList(result);
-      setMapMode("share"); // ✅ マップモードをシェアに変更
+      setMapMode(MAP_MODES.search); // ✅ マップモードをシェアに変更
       console.log("✅ 検索結果:", result);
       // TODO: setSelectedMap や setCafeList などに渡す処理を書く
       setIsSharedMapSearchOpen(false); // ここでモーダルを閉じる

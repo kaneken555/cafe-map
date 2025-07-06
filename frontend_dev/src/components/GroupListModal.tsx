@@ -18,6 +18,9 @@ import { extractUuidFromUrl } from "../utils/extractUuid";
 import { useMap } from "../contexts/MapContext";
 import { useGroup } from "../contexts/GroupContext";
 
+import { MAP_MODES } from "../constants/map";
+
+
 interface GroupListModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -29,8 +32,8 @@ const GroupListModal: React.FC<GroupListModalProps> = ({
   onClose,
   onSelectGroup,
 }) => {
-  const { setMapList, setSelectedMap, setSharedMapList } = useMap(); // マップリストのセット関数をコンテキストから取得
-  const { groupList, setGroupList, selectedGroupId, setSelectedGroupId } = useGroup(); // グループリストのセット関数をコンテキストから取得
+  const { setMapList, setSelectedMap, setSharedMapList, setMapMode } = useMap(); // マップリストのセット関数をコンテキストから取得
+  const { groupList, setGroupList, selectedGroupId, setSelectedGroupId } = useGroup(); // グループリストのセット関数をコンテキストから取得  
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false); // ✅ 招待モーダル状態
@@ -86,8 +89,9 @@ const GroupListModal: React.FC<GroupListModalProps> = ({
       toast.success(`グループ「${group.name}」を選択しました`);
 
       setSharedMapList([]); // シェアマップリストはクリア
-
       setSelectedMap(null); // 選択中のマップもリセット
+
+      setMapMode(MAP_MODES.search);
 
     } catch (error) {
       toast.error("グループのマップ取得に失敗しました");
