@@ -1,13 +1,13 @@
 // components/Header.tsx
 import React, { useState } from "react";
+import clsx from "clsx";
 import SideMenu from "./SideMenu";
-// import MapListModal from "./MapListModal";
 import HeaderButton from "./HeaderButton";
 import UserMenu from "./UserMenu";
 import GroupListModal from "./GroupListModal";
 import { Coffee, Map as MapIcon, List as ListIcon, Layers, Menu } from "lucide-react";
-// import { toast } from "react-hot-toast";
 // import { MapItem, SharedMapItem } from "../types/map";
+import { APP_TITLE } from "../constants/app"; // アプリタイトルをインポート
 import { ICON_SIZES } from "../constants/ui";
 
 // Contexts
@@ -16,28 +16,29 @@ import { useMap } from "../contexts/MapContext";
 import { useGroup } from "../contexts/GroupContext";
 
 import { useHeaderActions } from "../hooks/useHeaderActions"; // ✅ ヘッダーアクションフックをインポート
-import { requireMapSelected } from "../utils/mapUtils";
 
 import ReactGA from "react-ga4";
 
 
 interface HeaderProps {
-  openCafeListPanel: () => void;
   closeCafeListPanel: () => void;
   isMyCafeListOpen: boolean;
   setShareUuid: React.Dispatch<React.SetStateAction<string | null>>; // ✅ シェアマップのUUIDをセットする関数
+  onOpenCafeList: () => void; // ✅ カフェ一覧パネルを開く関数
+  onShowMyCafeMap: () => void; // ✅ 追加
   onOpenMapList: () => void; // ✅ 追加
 }
 
 const Header: React.FC<HeaderProps> = ({
-  openCafeListPanel,
   closeCafeListPanel,
   isMyCafeListOpen,
   setShareUuid, // ✅ シェアマップのUUIDをセットする関数
+  onOpenCafeList, // ✅ カフェ一覧パネルを開く関数
+  onShowMyCafeMap, // ✅ 追加
   onOpenMapList,
 }) => {    
   const { user } = useAuth();
-  const { selectedMap, mapMode, setMapMode } = useMap(); // マップリストとセット関数をコンテキストから取得
+  const { selectedMap, mapMode } = useMap(); // マップリストとセット関数をコンテキストから取得
   const { setSelectedGroup, setSelectedGroupId } = useGroup(); // グループリストのセット関数をコンテキストから取得
 
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
@@ -52,18 +53,6 @@ const Header: React.FC<HeaderProps> = ({
     // sharedMapSelectHandler,
   } = useHeaderActions({ closeCafeListPanel, setShareUuid });
   
-  
-
-  const handleOpenCafeList = () =>
-    requireMapSelected(selectedMap, openCafeListPanel);
-  
-  const handleShowMyCafeMap = () =>
-    requireMapSelected(selectedMap, () => setMapMode("mycafe"));
-  
-
-  // const handleOpenMapList = () => {
-  //   setIsMapListOpen(true);
-  // }
 
   const handleGuestLogin = async () => {
     await guestLoginHandler(); // ✅ ヘッダーアクションフックのゲストログインハンドラを呼び出す
@@ -80,16 +69,10 @@ const Header: React.FC<HeaderProps> = ({
     setIsLoginMenuOpen(false);  // メニューを閉じる
   }
 
-  // const handleMapSelect = async (map: MapItem) => {
-  //   await mapSelectHandler(map); // ✅ ヘッダーアクションフックのマップ選択ハンドラを呼び出す
-  //   setIsMapListOpen(false);
-  // }
-
-  // const handleSharedMapSelect = async (map: SharedMapItem) => {
-  //   await sharedMapSelectHandler(map); // ✅ ヘッダーアクションフックのシェアマップ選択ハンドラを呼び出す
-  //   setIsMapListOpen(false);
-  // }
-
+  const handleOpenGroupList = () => {
+    setIsGroupListOpen(true);
+    setIsLoginMenuOpen(false);
+  };
   
   return (
     <>
@@ -98,7 +81,15 @@ const Header: React.FC<HeaderProps> = ({
         onClose={() => setIsSideMenuOpen(false)} 
       />
         
-      <header className="w-full h-12 md:h-16 px-2 md:px-4 flex justify-between items-center bg-gradient-to-r from-yellow-300 to-yellow-500 shadow-md">
+      {/* <header className="w-full h-12 md:h-16 px-2 md:px-4 flex justify-between items-center bg-gradient-to-r from-yellow-300 to-yellow-500 shadow-md"> */}
+      <header
+        className={clsx(
+          "w-full flex justify-between items-center shadow-md",
+          "h-12 md:h-16 px-2 md:px-4",
+          "bg-gradient-to-r from-yellow-300 to-yellow-500"
+        )}
+      >
+
         {/* 左：サイドメニュー */}
         <div className="flex items-center">
           <button onClick={() => setIsSideMenuOpen(true)} className="text-2xl cursor-pointer">
@@ -109,7 +100,7 @@ const Header: React.FC<HeaderProps> = ({
         {/* 中央：タイトル */}
         <div className="flex-grow flex justify-center items-center space-x-2">
           <Coffee size={ICON_SIZES.MEDIUM} />
-          <h1 className="text-lg md:text-2xl font-bold text-black">Café Map</h1>
+          <h1 className="text-lg md:text-2xl font-bold text-black">{APP_TITLE}</h1>
         </div>
 
         {/* 右：操作ボタン群 */}
@@ -117,7 +108,7 @@ const Header: React.FC<HeaderProps> = ({
           {/* <div className="flex items-center space-x-2">        */}
           <div className="hidden md:flex items-center space-x-2">             
             <HeaderButton
-              onClick={handleOpenCafeList}
+              onClick={onOpenCafeList}
               disabled={!user}
               icon={<ListIcon size={ICON_SIZES.MEDIUM} />}
               label="My Café List"
@@ -125,7 +116,7 @@ const Header: React.FC<HeaderProps> = ({
             />
 
             <HeaderButton
-              onClick={handleShowMyCafeMap}
+              onClick={onShowMyCafeMap}
               disabled={!user}
               icon={<MapIcon size={ICON_SIZES.MEDIUM} />}
               label="My Café Map"
@@ -147,10 +138,7 @@ const Header: React.FC<HeaderProps> = ({
             onToggle={() => setIsLoginMenuOpen((prev) => !prev)}
             onGuestLogin={handleGuestLogin}
             onLogout={handleLogout}
-            onOpenGroupList={() => {
-              setIsGroupListOpen(true);
-              setIsLoginMenuOpen(false); // 👈 メニューを閉じてからモーダルを開く
-            }}
+            onOpenGroupList={handleOpenGroupList} // グループ一覧を開くハンドラ
           />
         </div>
 

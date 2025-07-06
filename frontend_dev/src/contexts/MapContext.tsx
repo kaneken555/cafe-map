@@ -1,6 +1,8 @@
 // context/MapContext.tsx
 import React, { createContext, useContext, useState, useMemo } from "react";
 import { MapItem, SharedMapItem, MapMode } from "../types/map";
+import { MAP_MODES } from "../constants/map";
+
 
 interface MapContextProps {
   mapList: MapItem[];
@@ -20,13 +22,13 @@ export const MapProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [mapList, setMapList] = useState<MapItem[]>([]);
   const [selectedMap, setSelectedMap] = useState<MapItem | null>(null);
   const [sharedMapList, setSharedMapList] = useState<SharedMapItem[]>([]);
-  const [mapMode, setMapMode] = useState<MapMode>("search"); // 初期値を "mycafe" に設定
+  const [mapMode, setMapMode] = useState<MapMode>(MAP_MODES.search); // 初期値を "mycafe" に設定
 
   const resetMapContext = () => {
     setMapList([]);
     setSelectedMap(null);
     setSharedMapList([]);
-    setMapMode("search"); // 初期値にリセット
+    setMapMode(MAP_MODES.search); // 初期値にリセット
   };
 
   const value = useMemo(

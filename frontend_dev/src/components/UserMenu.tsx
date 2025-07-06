@@ -1,5 +1,7 @@
 // components/UserMenu.tsx
 import React from "react";
+import clsx from "clsx";
+
 import { LogIn, User as UserIcon } from "lucide-react";
 import LoginMenu from "./LoginMenu";
 import { googleLoginWithPopup } from "../api/auth";
@@ -58,7 +60,13 @@ const UserMenu: React.FC<Props> = ({
   return (
     <div className="relative">
       <button
-        className="flex flex-col items-center justify-center px-2 py-1 border border-black rounded bg-white text-black cursor-pointer hover:bg-gray-100 w-14 h-12 md:w-18 md:h-14"
+        className={clsx(
+          "flex flex-col items-center justify-center",
+          "px-2 py-1 border border-black rounded",
+          "bg-white text-black hover:bg-gray-100",
+          "cursor-pointer",
+          "w-14 h-12 md:w-18 md:h-14"
+        )}
         onClick={onToggle}
         title={user ? user.name : "ログイン"}
       >
