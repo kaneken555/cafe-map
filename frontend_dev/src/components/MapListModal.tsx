@@ -1,5 +1,7 @@
 // components/MapListModal.tsx
 import React, { useState } from "react";
+import clsx from "clsx";
+
 import MapCreateModal from "./MapCreateModal"; 
 // import { mockMapData } from "../api/mockMapData"; 
 import MapListItem from "./MapListItem"; 
@@ -111,13 +113,19 @@ const MapListModal: React.FC<MapListModalProps> = ({
         {/* タブ切り替え */}
         <div className="flex space-x-2 mb-4">
           <button
-            className={`px-3 py-1 rounded cursor-pointer ${activeTab === 'my' ? 'bg-green-100' : 'bg-gray-100'}`}
+            className={clsx(
+              "px-3 py-1 rounded cursor-pointer",
+              activeTab === "my" ? "bg-green-100" : "bg-gray-100"
+            )}
             onClick={() => setActiveTab('my')}
           >
             マイマップ
           </button>
           <button
-            className={`px-3 py-1 rounded cursor-pointer ${activeTab === 'shared' ? 'bg-green-100' : 'bg-gray-100'}`}
+            className={clsx(
+              "px-3 py-1 rounded cursor-pointer",
+              activeTab === "shared" ? "bg-green-100" : "bg-gray-100"
+            )}
             onClick={() => setActiveTab('shared')}
           >
             シェアマップ

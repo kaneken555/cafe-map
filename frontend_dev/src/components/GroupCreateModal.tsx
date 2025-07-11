@@ -1,5 +1,6 @@
 // components/GroupCreateModal.tsx
 import React, { useState } from "react";
+import clsx from "clsx";
 import { createGroup } from "../api/group";
 import { MODAL_STYLES } from "../constants/ui";  // スタイルをインポート
 import CloseModalButton from "./CloseModalButton"; // 共通の閉じるボタンコンポーネント
@@ -58,9 +59,12 @@ const GroupCreateModal: React.FC<GroupCreateModalProps> = ({
         />
 
         <button
-          className={`w-full py-3 text-black text-lg rounded cursor-pointer ${
-            groupName ? "bg-[#FFC800] hover:bg-[#D8A900]" : "bg-gray-300 cursor-not-allowed"
-          }`}
+          className={clsx(
+            "w-full py-3 text-black text-lg rounded cursor-pointer",
+            groupName
+              ? "bg-[#FFC800] hover:bg-[#D8A900]"
+              : "bg-gray-300 cursor-not-allowed"
+          )}
           disabled={!groupName}
           onClick={handleCreate}
         >

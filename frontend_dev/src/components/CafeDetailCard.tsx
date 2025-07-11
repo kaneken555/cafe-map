@@ -1,5 +1,6 @@
 // components/CafeDetailCard.tsx
 import React from "react";
+import clsx from "clsx";
 import { Heart, Share2, CirclePlus } from "lucide-react";
 import GoogleMapButton from "./GoogleMapButton";
 import CafeImageCarousel from "./CafeImageCarousel"; 
@@ -81,7 +82,10 @@ const CafeDetailCard: React.FC<CafeDetailCardProps> = ({
         <div className="flex space-x-2 mt-1">
           {onAddClick && (
             <button
-              className="text-gray-600 hover:text-black cursor-pointer"
+              className={clsx(
+                "hover:text-black cursor-pointer",
+                "text-gray-600"
+              )}
               onClick={onAddClick}
             >
               <CirclePlus size={20} />
@@ -89,15 +93,19 @@ const CafeDetailCard: React.FC<CafeDetailCardProps> = ({
           )}
 
           <button 
-            className={`${
+            className={clsx(
+              "hover:text-black cursor-pointer",
               isRegistered ? "text-red-500" : "text-gray-600"
-            } hover:text-black cursor-pointer`}
+            )}
             onClick={handleAddCafe}
           >
             <Heart size={20} />
           </button>
           <button 
-            className="text-gray-600 hover:text-black cursor-pointer"
+            className={clsx(
+              "hover:text-black cursor-pointer",
+              "text-gray-600"
+            )}
             onClick={handleShareCafe}
           >
             <Share2 size={20} />
