@@ -23,7 +23,7 @@ const KeywordSearchModal: React.FC<Props> = ({
     <div className={MODAL_STYLES.MAIN_MODAL.CONTAINER}>
       <div className="bg-[#fffaf0] p-6 rounded-lg w-[400px] shadow-md relative">
 
-        <CloseModalButton onClose={onClose} /> {/* ここで共通閉じるボタンを使う */}
+        <CloseModalButton onClose={onClose} />
 
         <h2 className={MODAL_STYLES.MAIN_MODAL.TITLE}>キーワード検索</h2>
         <input

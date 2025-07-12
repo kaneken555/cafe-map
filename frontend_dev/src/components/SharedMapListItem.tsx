@@ -36,7 +36,6 @@ const SharedMapListItem: React.FC<SharedMapListItemProps> = ({
 
   const [shareUrl, setShareUrl] = useState("");
 
-
   const handleSelect = () => {
     onSelect(map);
     toast.success(`マップ「${map.name}」を選択しました`);
@@ -74,7 +73,6 @@ const SharedMapListItem: React.FC<SharedMapListItemProps> = ({
     console.log("map.uuid:", map.uuid);
     openRegisterModal();
   };
-
 
 
   return (

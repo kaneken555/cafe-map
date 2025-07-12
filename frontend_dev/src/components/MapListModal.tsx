@@ -16,7 +16,6 @@ import { toast } from "react-hot-toast";
 import { extractUuidFromUrl } from "../utils/extractUuid";
 import { searchSharedMap } from "../api/cafe";
 
-// import { useAuth } from "../contexts/AuthContext";
 import { useMap } from "../contexts/MapContext";
 import { useCafe } from "../contexts/CafeContext"; // ✅ カフェコンテキストをインポート
 import { useGroup } from "../contexts/GroupContext"; // ✅ グループコンテキストをインポート
@@ -43,7 +42,6 @@ const MapListModal: React.FC<MapListModalProps> = ({
   selectedMapId, 
   setShareUuid, // ✅ シェアマップのUUIDをセットする関数
 }) => {
-  // const { user } = useAuth();
   const { mapList, sharedMapList, setMapMode } = useMap(); // ✅ コンテキストからマップリストとセット関数を取得
   const { setSharedMapCafeList} = useCafe(); // ✅ シェアマップのカフェリストとセット関数を取得
   const { selectedGroup } = useGroup(); // ✅ グループ情報を取得
@@ -61,8 +59,6 @@ const MapListModal: React.FC<MapListModalProps> = ({
   // const filteredMaps = user
   // ? mockMapData.filter((map) => map.userId === user.id) // ✅ userId一致のみ
   // : []; // 未ログインなら空配列
-
-  if (!isOpen) return null;
 
 
   const handleSearch = async (input: string) => {

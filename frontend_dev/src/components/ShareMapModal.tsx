@@ -23,7 +23,6 @@ const ShareMapModal: React.FC<ShareMapModalProps> = ({
   selectedMap,
 }) => {
 
-
   const qrWrapperRef = useRef<HTMLDivElement>(null);
 
   const handleCreateLink = async () => {
