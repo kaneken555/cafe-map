@@ -25,6 +25,8 @@ const ShareMapModal: React.FC<ShareMapModalProps> = ({
 
   const qrWrapperRef = useRef<HTMLDivElement>(null);
 
+  const baseUrl = import.meta.env.VITE_SHARE_MAP_BASE_URL;
+
   const handleCreateLink = async () => {
     if (!selectedMap) {
       toast.error("マップが選択されていません");
@@ -38,7 +40,7 @@ const ShareMapModal: React.FC<ShareMapModalProps> = ({
         description: "",
       });
   
-      const url = `https://your-domain.com/shared-map/${res.share_uuid}`;
+      const url = `${baseUrl}/api/shared-map/${res.share_uuid}`;
       setShareUrl(url);
       toast.success("シェアリンクを作成しました");
     } catch (error) {
