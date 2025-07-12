@@ -1,5 +1,5 @@
 // components/GroupListModal.tsx
-import React, { useState } from "react";
+import React from "react";
 import BaseModal from "./BaseModal";
 import GroupCreateModal from "./GroupCreateModal";
 import GroupJoinModal from "./GroupJoinModal";
@@ -17,6 +17,7 @@ import { extractUuidFromUrl } from "../utils/extractUuid";
 import { useGroup } from "../contexts/GroupContext";
 
 import { useGroupActions } from "../hooks/useGroupActions"; // ✅ グループアクションフックをインポート
+import { useGroupModals } from "../hooks/useGroupModals";
 
 
 interface GroupListModalProps {
@@ -32,37 +33,27 @@ const GroupListModal: React.FC<GroupListModalProps> = ({
 }) => {
   const { groupList, setGroupList, selectedGroupId } = useGroup(); // グループリストのセット関数をコンテキストから取得  
 
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false); // ✅ 招待モーダル状態
-  const [inviteTargetGroup, setInviteTargetGroup] = useState<Group | null>(null); // ✅ 招待対象
-  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false); // グループ検索モーダル
-  const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);     // グループ参加モーダル
-  const [joiningGroupName, setJoiningGroupName] = useState("");      // 参加対象グループ名
-  const [joiningGroupUuid, setJoiningGroupUuid] = useState<string>("");
+  const {
+    isCreateModalOpen, openCreateModal, closeCreateModal,
+    isInviteModalOpen, inviteTargetGroup, openInviteModal, closeInviteModal,
+    isSearchModalOpen, openSearchModal, closeSearchModal,
+    isJoinModalOpen, joiningGroupUuid, joiningGroupName, openJoinModal, closeJoinModal,
+  } = useGroupModals(); // ✅ グループモーダルの状態とハンドラをフックから取得
+
 
   const { handleGroupSelect, handleGroupClear, handleGroupJoin } = useGroupActions(onSelectGroup);
 
-
-  const handleInviteClick = (group: Group) => {
-    setInviteTargetGroup(group);
-    setIsInviteModalOpen(true);
-  };
-
   const handleGroupSearch = (input: string) => {
-
     const uuid = extractUuidFromUrl(input);
     if (!uuid) {
       toast.error("有効な招待URLを入力してください");
       return;
     }
-    setJoiningGroupUuid(uuid);         // ✅ 後で参加用に保持
-    setJoiningGroupName("グループ名取得予定"); // 任意（APIで取得するならここで）
-
+    openJoinModal("グループ名取得予定", uuid); // モーダルを開く
     console.log("UUID:", uuid); // デバッグ用
 
     // 本来はAPIでグループ情報を取得する
-    setIsSearchModalOpen(false);
-    setIsJoinModalOpen(true);
+    closeSearchModal();
   };
   
 
@@ -70,7 +61,7 @@ const GroupListModal: React.FC<GroupListModalProps> = ({
     <>
       <GroupCreateModal
         isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
+        onClose={closeCreateModal}
         onCreated={async () => {
           const updated = await fetchGroupList();
           setGroupList(updated); // ✅ 一覧を更新
@@ -79,24 +70,24 @@ const GroupListModal: React.FC<GroupListModalProps> = ({
 
       <GroupInvitationModal
         isOpen={isInviteModalOpen}
-        onClose={() => setIsInviteModalOpen(false)}
+        onClose={closeInviteModal}
         groupName={inviteTargetGroup?.name ?? ""}
         inviteUrl={`https://example.com/invite/${inviteTargetGroup?.uuid ?? ""}`}
       />
 
       <GroupSearchModal
         isOpen={isSearchModalOpen}
-        onClose={() => setIsSearchModalOpen(false)}
+        onClose={closeSearchModal}
         onSearch={handleGroupSearch}
       />
 
       <GroupJoinModal
         isOpen={isJoinModalOpen}
-        onClose={() => setIsJoinModalOpen(false)}
+        onClose={closeJoinModal}
         groupName={joiningGroupName}
         // onJoin={handleGroupJoin}
         onJoin={() =>
-          handleGroupJoin(joiningGroupUuid, () => setIsJoinModalOpen(false))
+          handleGroupJoin(joiningGroupUuid, closeJoinModal)
         }
       />
 
@@ -114,7 +105,7 @@ const GroupListModal: React.FC<GroupListModalProps> = ({
               key={group.id}
               group={group}
               onSelect={handleGroupSelect} // ✅ 非同期対応
-              onInvite={handleInviteClick}
+              onInvite={openInviteModal}
             />
           ))}
         </ul>
@@ -122,11 +113,11 @@ const GroupListModal: React.FC<GroupListModalProps> = ({
         <div className="grid grid-cols-2 gap-2 mt-6">
           <ModalActionButton
             label="＋新しいグループを作る"
-            onClick={() => setIsCreateModalOpen(true)}
+            onClick={openCreateModal}
           />
           <ModalActionButton
             label="🔍 グループに参加する"
-            onClick={() => setIsSearchModalOpen(true)}
+            onClick={openSearchModal}
           />
         </div>
 
