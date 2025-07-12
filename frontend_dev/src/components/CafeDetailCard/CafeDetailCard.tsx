@@ -2,43 +2,37 @@
 import React from "react";
 import clsx from "clsx";
 import { Heart, Share2, CirclePlus } from "lucide-react";
-import GoogleMapButton from "./GoogleMapButton";
-import CafeImageCarousel from "./CafeImageCarousel"; 
-import CafeDetailInfoTable from "./CafeDetailInfoTable"; 
-import { toast } from "react-hot-toast";
-import { MapItem } from "../types/map";
-import { Cafe } from "../types/cafe";
-
-import { useCafeActions } from "../hooks/useCafeActions";
+import GoogleMapButton from "../GoogleMapButton";
+import CafeImageCarousel from "../CafeImageCarousel"; 
+import CafeDetailInfoTable from "../CafeDetailInfoTable"; 
+import { Cafe } from "../../types/cafe";
 
 
 interface CafeDetailCardProps {
   cafe: Cafe;
-  selectedMap: MapItem | null; 
   myCafeList?: Cafe[];
-  setMyCafeList: React.Dispatch<React.SetStateAction<Cafe[]>>;
   onAddClick?: () => void; // ✅ 追加ボタン用
+  onAddCafe: (cafe: Cafe) => void;
+  onShareCafe?: (cafe: Cafe) => void;
 }
 
 
 const CafeDetailCard: React.FC<CafeDetailCardProps> = ({ 
   cafe, 
-  selectedMap, 
   myCafeList, 
-  setMyCafeList,
   onAddClick = () => {}, // ✅ デフォルトは何もしない 
+  onAddCafe,
+  onShareCafe,
 }) => {
-  const { addCafe } = useCafeActions(selectedMap, setMyCafeList);
-
   // ✅ このカフェが登録済みか？
   const isRegistered = myCafeList?.some((myCafe) => myCafe.placeId === cafe.placeId) ?? false;
 
   const handleAddCafe = () => {
-    addCafe(cafe);
+    onAddCafe(cafe);
   }
 
   const handleShareCafe = () => {
-    toast("カフェ共有機能は未実装です");
+    onShareCafe?.(cafe);
   }
 
 

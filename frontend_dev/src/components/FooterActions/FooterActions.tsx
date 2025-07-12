@@ -1,10 +1,10 @@
 // components/FooterActions.tsx
 import React from "react";
 import { List as ListIcon, Map as MapIcon, Layers } from "lucide-react";
-import HeaderButton from "./HeaderButton";
-import { ICON_SIZES } from "../constants/ui";
-import { useAuth } from "../contexts/AuthContext";
-import { useMap } from "../contexts/MapContext";
+import HeaderButton from "../HeaderButton";
+import { ICON_SIZES } from "../../constants/ui";
+import { useAuth } from "../../contexts/AuthContext";
+import { useMap } from "../../contexts/MapContext";
 
 
 interface Props {
