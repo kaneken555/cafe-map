@@ -23,6 +23,8 @@ import { useGroup } from "../contexts/GroupContext"; // ✅ グループコン�
 
 import { MAP_MODES } from "../constants/map";
 
+import { useMapModals } from "../hooks/useMapModals";
+
 
 interface MapListModalProps {
   isOpen: boolean;
@@ -46,8 +48,12 @@ const MapListModal: React.FC<MapListModalProps> = ({
   const { setSharedMapCafeList} = useCafe(); // ✅ シェアマップのカフェリストとセット関数を取得
   const { selectedGroup } = useGroup(); // ✅ グループ情報を取得
 
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false); 
-  const [isSharedMapSearchOpen, setIsSharedMapSearchOpen] = useState(false);
+  const mapModals = useMapModals(); // ✅ ここで useMapModals を呼ぶ
+  const { 
+    isCreateModalOpen, openCreateModal, closeCreateModal,
+    isSharedMapSearchOpen, openSharedMapSearch, closeSharedMapSearch,
+  } = mapModals;
+
   const [activeTab, setActiveTab] = useState<'my' | 'shared'>('my');
 
   const filteredMaps = activeTab === "my" ? mapList : sharedMapList;
@@ -79,7 +85,7 @@ const MapListModal: React.FC<MapListModalProps> = ({
       setMapMode(MAP_MODES.search); // ✅ マップモードをシェアに変更
       console.log("✅ 検索結果:", result);
       // TODO: setSelectedMap や setCafeList などに渡す処理を書く
-      setIsSharedMapSearchOpen(false); // ここでモーダルを閉じる
+      closeSharedMapSearch();
       onClose(); // モーダル閉じる
 
     } catch (error) {
@@ -92,13 +98,13 @@ const MapListModal: React.FC<MapListModalProps> = ({
       {/* マップ作成モーダル */}
       <MapCreateModal
         isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
+        onClose={closeCreateModal}
       />
 
       {/* // シェアマップ検索モーダル */}
       <SharedMapSearchModal
         isOpen={isSharedMapSearchOpen}
-        onClose={() => setIsSharedMapSearchOpen(false)}
+        onClose={closeSharedMapSearch}
         onSearch={handleSearch}
       />
 
@@ -141,6 +147,7 @@ const MapListModal: React.FC<MapListModalProps> = ({
                 selectedMapId={selectedMapId}
                 onSelect={onSelectMap}
                 onClose={onClose}
+                mapModals={mapModals}
               />
             ))}
             {activeTab === 'shared' &&
@@ -151,6 +158,7 @@ const MapListModal: React.FC<MapListModalProps> = ({
                   selectedMapId={selectedMapId}
                   onSelect={onSelectSharedMap}
                   onClose={onClose}
+                  mapModals={mapModals}
                 />
               ))}
         </ul>
@@ -158,13 +166,13 @@ const MapListModal: React.FC<MapListModalProps> = ({
         {activeTab === "my" && (
           <ModalActionButton
             label={selectedGroup ? "+ 新しいグループマップをつくる" : "+ 新しいカフェマップをつくる"}
-            onClick={() => setIsCreateModalOpen(true)}
+            onClick={openCreateModal}
           />
         )}
         {activeTab === "shared" && (
           <ModalActionButton
           label="🔍 シェアマップを開く"
-          onClick={() => setIsSharedMapSearchOpen(true)}
+          onClick={openSharedMapSearch}
           />
         )}
 

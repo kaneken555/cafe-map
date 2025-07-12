@@ -8,27 +8,33 @@ import { CheckCircle, Trash2, Share as ShareIcon } from "lucide-react";
 import { SharedMapItem } from "../types/map";
 import { ICON_SIZES } from "../constants/ui";
 
-// import { useMap } from "../contexts/MapContext";
+import { useMapModals } from "../hooks/useMapModals";
+
 
 interface SharedMapListItemProps {
   map: SharedMapItem;
   selectedMapId: number | null;
   onSelect: (map: SharedMapItem) => void;
   onClose: () => void;
+  mapModals: ReturnType<typeof useMapModals>; // ✅ 型は補完から取得 or 別途定義
 }
   
 const SharedMapListItem: React.FC<SharedMapListItemProps> = ({ 
   map, 
   selectedMapId, 
   onSelect, 
-  onClose , 
+  onClose,
+  mapModals, 
 }) => {
   // const { setMapList, setSelectedMap } = useMap(); // コンテキストからマップリストのセット関数を取得
 
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const { 
+    isDeleteModalOpen, openDeleteModal, closeDeleteModal, 
+    isShareModalOpen, closeShareModal,
+    isRegisterModalOpen, openRegisterModal, closeRegisterModal,
+  } = mapModals;
+
   const [shareUrl, setShareUrl] = useState("");
-  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false); // 追加
 
 
   const handleSelect = () => {
@@ -66,7 +72,7 @@ const SharedMapListItem: React.FC<SharedMapListItemProps> = ({
       return;
     }
     console.log("map.uuid:", map.uuid);
-    setIsRegisterModalOpen(true); // モーダルを開く
+    openRegisterModal();
   };
 
 
@@ -76,17 +82,17 @@ const SharedMapListItem: React.FC<SharedMapListItemProps> = ({
       {/* モーダル呼び出し */}
       <MapDeleteModal
         isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
+        onClose={closeDeleteModal}
         onConfirm={async () => {
           await handleDelete();
-          setIsDeleteModalOpen(false);
+          closeDeleteModal();
         }}
         mapName={map.name}
       />
       <ShareMapModal
         isOpen={isShareModalOpen}
         onClose={() => {
-          setIsShareModalOpen(false);
+          closeShareModal();
           setShareUrl(""); // ✅ モーダルを閉じるときにリセット！
         }}
         shareUrl={shareUrl}
@@ -97,7 +103,7 @@ const SharedMapListItem: React.FC<SharedMapListItemProps> = ({
       {/* 新規モーダル（追加） */}
       <SharedMapRegisterModal
         isOpen={isRegisterModalOpen}
-        onClose={() => setIsRegisterModalOpen(false)}
+        onClose={closeRegisterModal}
         initialMapName={map.name}
         map={map}
         // setMapList={setMapList} // マップリストを更新する関数
@@ -121,7 +127,7 @@ const SharedMapListItem: React.FC<SharedMapListItemProps> = ({
           </button>
         )}
           <button
-            onClick={() => setIsDeleteModalOpen(true)}
+            onClick={openDeleteModal}
             className="w-12 flex flex-col items-center text-gray-700 hover:text-red-500 cursor-pointer"
           >
             <Trash2 size={ICON_SIZES.MEDIUM} />  {/* ゴミ箱アイコン */}

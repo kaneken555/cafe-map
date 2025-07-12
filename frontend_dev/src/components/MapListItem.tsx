@@ -12,24 +12,31 @@ import { ICON_SIZES } from "../constants/ui";
 import { useMap } from "../contexts/MapContext";
 import { useGroup } from "../contexts/GroupContext";
 
+import { useMapModals } from "../hooks/useMapModals";
+
 interface MapListItemProps {
   map: MapItem;
   selectedMapId: number | null;
   onSelect: (map: MapItem) => void;
   onClose: () => void;
+  mapModals: ReturnType<typeof useMapModals>; // ✅ 型は補完から取得 or 別途定義
 }
   
 const MapListItem: React.FC<MapListItemProps> = ({ 
   map, 
   selectedMapId, 
   onSelect, 
-  onClose , 
+  onClose,
+  mapModals, 
 }) => {
   const { setMapList, setSelectedMap } = useMap(); // コンテキストからマップリストのセット関数を取得
   const { selectedGroup } = useGroup(); // コンテキストから選択中のグループIDを取得
 
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const { 
+    isDeleteModalOpen, openDeleteModal, closeDeleteModal, 
+    isShareModalOpen, openShareModal, closeShareModal,
+  } = mapModals;
+
   const [shareUrl, setShareUrl] = useState("");
 
 
@@ -65,7 +72,7 @@ const MapListItem: React.FC<MapListItemProps> = ({
       } else {
         setShareUrl(""); // 未作成 → モーダル側で作成可能
       }
-      setIsShareModalOpen(true);
+      openShareModal();
     } catch (error) {
       toast.error("シェア状態の確認に失敗しました");
     }
@@ -77,17 +84,17 @@ const MapListItem: React.FC<MapListItemProps> = ({
       {/* モーダル呼び出し */}
       <MapDeleteModal
         isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
+        onClose={closeDeleteModal}
         onConfirm={async () => {
           await handleDelete();
-          setIsDeleteModalOpen(false);
+          closeDeleteModal();
         }}
         mapName={map.name}
       />
       <ShareMapModal
         isOpen={isShareModalOpen}
         onClose={() => {
-          setIsShareModalOpen(false);
+          closeShareModal();
           setShareUrl(""); // ✅ モーダルを閉じるときにリセット！
         }}
         shareUrl={shareUrl}
@@ -113,7 +120,7 @@ const MapListItem: React.FC<MapListItemProps> = ({
           </button>
         )}
           <button
-            onClick={() => setIsDeleteModalOpen(true)}
+            onClick={openDeleteModal}
             className="w-12 flex flex-col items-center text-gray-700 hover:text-red-500 cursor-pointer"
           >
             <Trash2 size={ICON_SIZES.MEDIUM} />  {/* ゴミ箱アイコン */}
