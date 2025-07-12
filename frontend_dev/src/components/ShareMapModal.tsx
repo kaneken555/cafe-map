@@ -1,6 +1,6 @@
 // components/ShareMapModal.tsx
 import React, { useRef } from "react";
-import BaseModal from "./BaseModal";
+import BaseModal from "./BaseModal/BaseModal";
 import toast from "react-hot-toast";
 import { createSharedMap } from "../api/sharedMap";
 import ShareLinkSection from "./ShareLinkSection";

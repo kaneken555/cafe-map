@@ -1,7 +1,7 @@
 // components/Header.tsx
 import React, { useState } from "react";
 import clsx from "clsx";
-import SideMenu from "./SideMenu";
+import SideMenu from "./SideMenu/SideMenu";
 import HeaderButton from "./HeaderButton";
 import UserMenu from "./UserMenu";
 import GroupListModal from "./GroupListModal";

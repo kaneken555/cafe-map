@@ -1,6 +1,6 @@
 // components/KeywordSearchModal.tsx
 import React, { useState } from "react";
-import BaseModal from "./BaseModal"; // 共通のモーダルコンポーネント
+import BaseModal from "./BaseModal/BaseModal"; // 共通のモーダルコンポーネント
 
 
 interface Props {

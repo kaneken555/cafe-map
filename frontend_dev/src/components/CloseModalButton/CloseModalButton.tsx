@@ -1,13 +1,13 @@
 // components/CloseModalButton.tsx
 import React from 'react';
 import { X } from 'lucide-react';
-import { ICON_SIZES } from '../constants/ui';
+import { ICON_SIZES } from '../../constants/ui';
 
 interface CloseButtonProps {
   onClose: () => void;
 }
 
-const CloseButton: React.FC<CloseButtonProps> = ({ onClose }) => {
+const CloseModalButton: React.FC<CloseButtonProps> = ({ onClose }) => {
   return (
     <button
       onClick={onClose}
@@ -18,4 +18,4 @@ const CloseButton: React.FC<CloseButtonProps> = ({ onClose }) => {
   );
 };
 
-export default CloseButton;
+export default CloseModalButton;

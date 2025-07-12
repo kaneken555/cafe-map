@@ -1,6 +1,6 @@
 // components/GroupJoinModal.tsx
 import React, { useState } from "react";
-import BaseModal from "./BaseModal";
+import BaseModal from "./BaseModal/BaseModal";
 
 
 interface GroupSearchModalProps {

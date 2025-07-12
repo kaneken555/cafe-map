@@ -1,6 +1,6 @@
 // components/GroupListModal.tsx
 import React from "react";
-import BaseModal from "./BaseModal";
+import BaseModal from "./BaseModal/BaseModal";
 import GroupCreateModal from "./GroupCreateModal";
 import GroupJoinModal from "./GroupJoinModal";
 import GroupInvitationModal from "./GroupInvitationModal";

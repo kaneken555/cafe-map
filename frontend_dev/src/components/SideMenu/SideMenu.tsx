@@ -1,7 +1,7 @@
 // components/SideMenu.tsx
 import React from "react";
 import { ChevronsLeft } from "lucide-react";
-import { ICON_SIZES } from "../constants/ui";
+import { ICON_SIZES } from "../../constants/ui";
 
 
 interface SideMenuProps {

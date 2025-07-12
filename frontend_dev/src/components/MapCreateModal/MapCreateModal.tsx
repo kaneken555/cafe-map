@@ -1,21 +1,23 @@
 // components/MapCreateModal.tsx
 import React, { useState } from "react";
-import BaseModal from "./BaseModal";
-import { MODAL_STYLES } from "../constants/ui";  // スタイルをインポート
-import { useMapActions } from "../hooks/useMapActions"; // ✅ 追加
+import BaseModal from "../BaseModal/BaseModal";
+import { MODAL_STYLES } from "../../constants/ui";  // スタイルをインポート
+// import { useMapActions } from "../../hooks/useMapActions"; // ✅ 追加
 
 
 interface MapCreateModalProps {
   isOpen: boolean;
   onClose: () => void;
+  createMap: (mapName: string, onSuccess: () => void) => void; // ← 外部から注入
 }
 
 const MapCreateModal: React.FC<MapCreateModalProps> = ({ 
   isOpen,
   onClose,
+  createMap,
 }) => {
 
-  const { createNewMap } = useMapActions(); // ✅ カスタムフックから取得
+  // const { createNewMap } = useMapActions(); // ✅ カスタムフックから取得
 
   const [mapName, setMapName] = useState("");
 
@@ -38,7 +40,7 @@ const MapCreateModal: React.FC<MapCreateModalProps> = ({
 
       <button 
         className="w-full px-4 py-2 bg-[#FFC800] hover:bg-[#D8A900] cursor-pointer text-black rounded "
-        onClick={() => createNewMap(mapName, handleClose)} // ✅ ここで呼び出し
+        onClick={() => createMap(mapName, handleClose)} // ✅ ここで呼び出し
         >
         作成
       </button>

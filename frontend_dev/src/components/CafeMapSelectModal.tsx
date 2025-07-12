@@ -4,7 +4,7 @@ import { MapIcon } from "lucide-react";
 import { MapItem } from "../types/map";
 import { useMap } from "../contexts/MapContext";
 import { toast } from "react-hot-toast";
-import BaseModal from "./BaseModal";
+import BaseModal from "./BaseModal/BaseModal";
 
 interface CafeMapSelectModalProps {
   isOpen: boolean;

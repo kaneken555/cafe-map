@@ -1,6 +1,6 @@
 // components/SharedMapRegisterModal.tsx
 import React, { useState } from "react";
-import BaseModal from "./BaseModal";
+import BaseModal from "./BaseModal/BaseModal";
 import { SharedMapItem } from "../types/map";
 import { getMapList, copySharedMap } from "../api/map";
 import toast from "react-hot-toast";

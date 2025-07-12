@@ -2,10 +2,10 @@
 import React, { useState } from "react";
 import clsx from "clsx";
 
-import MapCreateModal from "./MapCreateModal"; 
+import MapCreateModal from "./MapCreateModal/MapCreateModal"; 
 // import { mockMapData } from "../api/mockMapData"; 
 import MapListItem from "./MapListItem"; 
-import BaseModal from "./BaseModal";
+import BaseModal from "./BaseModal/BaseModal";
 
 import ModalActionButton from "./ModalActionButton";
 import SharedMapListItem from "./SharedMapListItem"; 
@@ -23,6 +23,7 @@ import { useGroup } from "../contexts/GroupContext"; // ✅ グループコン�
 import { MAP_MODES } from "../constants/map";
 
 import { useMapModals } from "../hooks/useMapModals";
+import { useMapActions } from "..//hooks/useMapActions"; // ✅ 追加
 
 
 interface MapListModalProps {
@@ -51,6 +52,9 @@ const MapListModal: React.FC<MapListModalProps> = ({
     isCreateModalOpen, openCreateModal, closeCreateModal,
     isSharedMapSearchOpen, openSharedMapSearch, closeSharedMapSearch,
   } = mapModals;
+
+  const { createNewMap } = useMapActions(); // ✅ カスタムフックから取得
+
 
   const [activeTab, setActiveTab] = useState<'my' | 'shared'>('my');
 
@@ -95,6 +99,7 @@ const MapListModal: React.FC<MapListModalProps> = ({
       <MapCreateModal
         isOpen={isCreateModalOpen}
         onClose={closeCreateModal}
+        createMap={createNewMap}
       />
 
       {/* // シェアマップ検索モーダル */}
