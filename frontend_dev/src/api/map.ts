@@ -92,7 +92,7 @@ export const getGroupMapList = async (groupUuid: string): Promise<any> => {
 
 export const getSharedMapList = async (): Promise<any> => {
   try {
-      const response = await axios.get(`/api/shared_maps/`, 
+      const response = await axios.get(`/api/shared-maps/`, 
         {
             withCredentials: true,
         }
