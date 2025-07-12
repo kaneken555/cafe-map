@@ -5,12 +5,11 @@ import { Heart, Share2, CirclePlus } from "lucide-react";
 import GoogleMapButton from "./GoogleMapButton";
 import CafeImageCarousel from "./CafeImageCarousel"; 
 import CafeDetailInfoTable from "./CafeDetailInfoTable"; 
-import { addCafeToMyCafe } from "../api/cafe"; 
 import { toast } from "react-hot-toast";
 import { MapItem } from "../types/map";
 import { Cafe } from "../types/cafe";
 
-import ReactGA from "react-ga4";
+import { useCafeActions } from "../hooks/useCafeActions";
 
 
 interface CafeDetailCardProps {
@@ -29,17 +28,13 @@ const CafeDetailCard: React.FC<CafeDetailCardProps> = ({
   setMyCafeList,
   onAddClick = () => {}, // ✅ デフォルトは何もしない 
 }) => {
+  const { addCafe } = useCafeActions(selectedMap, setMyCafeList);
+
   // ✅ このカフェが登録済みか？
   const isRegistered = myCafeList?.some((myCafe) => myCafe.placeId === cafe.placeId) ?? false;
 
   const handleAddCafe = () => {
-    if (!selectedMap) return toast.error("マップを選択してください");
-    addCafeToMyCafe(selectedMap.id, cafe);
-    setMyCafeList(prev => [...prev, cafe]); // ✅ ここでmyCafeListを更新する！
-
-    ReactGA.gtag("event", "cafe_add", {
-      cafe_name: cafe.name,
-    });
+    addCafe(cafe);
   }
 
   const handleShareCafe = () => {
