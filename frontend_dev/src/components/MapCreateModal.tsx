@@ -3,8 +3,8 @@ import React, { useState } from "react";
 import { createMap } from "../api/map"; 
 import { getMapList } from "../api/map";
 import { toast } from "react-hot-toast";
+import BaseModal from "./BaseModal";
 import { getGroupMapList, createGroupMap } from "../api/map"; // グループマップ取得API
-import CloseModalButton from "./CloseModalButton";
 import { MODAL_STYLES } from "../constants/ui";  // スタイルをインポート
 
 import { useMap } from "../contexts/MapContext"; // マップコンテキストをインポート
@@ -72,17 +72,7 @@ const MapCreateModal: React.FC<MapCreateModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div
-      className={MODAL_STYLES.SUB_MODAL.CONTAINER}
-      onClick={handleClose}
-    >
-      <div
-        className="bg-[#fffaf0] w-96 max-w-full rounded-lg p-6 shadow-xl relative"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <CloseModalButton onClose={handleClose} /> {/* ここで共通閉じるボタンを使う */}
-
-        <h2 className={MODAL_STYLES.SUB_MODAL.TITLE}>新規マップを作成</h2>
+    <BaseModal isOpen={isOpen} onClose={handleClose} title="新規マップを作成" size="sm">
 
         <input
           type="text"
@@ -98,8 +88,8 @@ const MapCreateModal: React.FC<MapCreateModalProps> = ({
           >
           作成
         </button>
-      </div>
-    </div>
+
+    </BaseModal>
   );
 };
 

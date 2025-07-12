@@ -1,6 +1,7 @@
 // components/MapDeleteModal.tsx
 import React from "react";
-import { MODAL_STYLES } from "../constants/ui";
+import BaseModal from "./BaseModal";
+
 
 interface MapDeleteModalProps {
   isOpen: boolean;
@@ -13,9 +14,8 @@ const MapDeleteModal: React.FC<MapDeleteModalProps> = ({ isOpen, onClose, onConf
   if (!isOpen) return null;
 
   return (
-    <div className={MODAL_STYLES.SUB_MODAL.CONTAINER}>
-      <div className="bg-[#fffaf0] p-6 rounded-lg shadow-lg w-80">
-        <h2 className={MODAL_STYLES.SUB_MODAL.TITLE}>マップ削除確認</h2>
+    <BaseModal isOpen={isOpen} onClose={onClose} title="マップ削除確認" size="sm">
+
         <p className="mb-6 text-sm">「{mapName}」を削除してもよろしいですか？</p>
         <div className="flex justify-end space-x-4">
           <button
@@ -31,8 +31,8 @@ const MapDeleteModal: React.FC<MapDeleteModalProps> = ({ isOpen, onClose, onConf
             削除する
           </button>
         </div>
-      </div>
-    </div>
+
+    </BaseModal>
   );
 };
 
