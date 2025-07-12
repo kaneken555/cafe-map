@@ -3,7 +3,6 @@ import axios from "axios";
 import { getCsrfToken } from "./auth";
 
 
-
 interface CreateSharedMapRequest {
   mapId: number;
   title: string;

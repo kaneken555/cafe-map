@@ -81,22 +81,22 @@ export const useMapActions = () => {
     }
   };
 
-    /** シェアマップ登録処理 */
-    const registerSharedMap = async (shareUuid: string | null) => {
-      if (!shareUuid) {
-        toast.error("シェアマップのUUIDがありません");
-        return;
-      }
-  
-      try {
-        await registerSharedMapApi(shareUuid);
-        console.log("シェアマップ登録成功");
-        toast.success("シェアマップが登録されました");
-      } catch (error) {
-        console.error("シェアマップ登録エラー:", error);
-        toast.error("シェアマップ登録に失敗しました");
-      }
-    };
+  /** シェアマップ登録処理 */
+  const registerSharedMap = async (shareUuid: string | null) => {
+    if (!shareUuid) {
+      toast.error("シェアマップのUUIDがありません");
+      return;
+    }
+
+    try {
+      await registerSharedMapApi(shareUuid);
+      console.log("シェアマップ登録成功");
+      toast.success("シェアマップが登録されました");
+    } catch (error) {
+      console.error("シェアマップ登録エラー:", error);
+      toast.error("シェアマップ登録に失敗しました");
+    }
+  };
 
   return {
     createNewMap,
