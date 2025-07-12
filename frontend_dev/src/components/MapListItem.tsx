@@ -1,18 +1,14 @@
 // components/MapListItem.tsx
 import React, { useState } from "react";
-import { getMapList, deleteMap, getGroupMapList } from "../api/map";
-import { checkSharedMap } from "../api/sharedMap";
 import MapDeleteModal from "./MapDeleteModal";
 import ShareMapModal from "./ShareMapModal";
-import { toast } from "react-hot-toast";
 import { CheckCircle, Trash2, Share as ShareIcon } from "lucide-react";
 import { MapItem } from "../types/map";
 import { ICON_SIZES } from "../constants/ui";
 
-import { useMap } from "../contexts/MapContext";
-import { useGroup } from "../contexts/GroupContext";
-
 import { useMapModals } from "../hooks/useMapModals";
+import { useMapActions } from "../hooks/useMapActions";
+
 
 interface MapListItemProps {
   map: MapItem;
@@ -29,52 +25,30 @@ const MapListItem: React.FC<MapListItemProps> = ({
   onClose,
   mapModals, 
 }) => {
-  const { setMapList, setSelectedMap } = useMap(); // コンテキストからマップリストのセット関数を取得
-  const { selectedGroup } = useGroup(); // コンテキストから選択中のグループIDを取得
 
   const { 
     isDeleteModalOpen, openDeleteModal, closeDeleteModal, 
     isShareModalOpen, openShareModal, closeShareModal,
   } = mapModals;
 
+  const { deleteMapById, checkShareStatus, selectMap } = useMapActions();
+  
   const [shareUrl, setShareUrl] = useState("");
 
 
   const handleSelect = () => {
-    onSelect(map);
-    toast.success(`マップ「${map.name}」を選択しました`);
-    onClose();
+    selectMap(map, onSelect, onClose);
   };
 
   const handleDelete = async () => {
-    try {
-      await deleteMap(map.id);
-      const maps = selectedGroup
-      ? await getGroupMapList(selectedGroup.uuid)
-      : await getMapList();
-
-      setMapList(maps);
-      setSelectedMap(null); // マップ削除後に選択マップをリセット
-      console.log("取得したマップ一覧:", maps); // 開発用ログ
-      toast.success(`マップ「${map.name}」を削除しました`);
-    } catch (error) {
-      console.error("マップ削除エラー:", error);
-      toast.error("マップの削除に失敗しました");
-    }
+    await deleteMapById(map.id, map.name);
   };
 
   const handleShare = async () => {
-    try {
-      const result = await checkSharedMap(map.id);
-      if (result) {
-        const url = `https://your-domain.com/shared-map/${result.share_uuid}`;
-        setShareUrl(url);
-      } else {
-        setShareUrl(""); // 未作成 → モーダル側で作成可能
-      }
+    const url = await checkShareStatus(map.id);
+    if (url !== null) {
+      setShareUrl(url);
       openShareModal();
-    } catch (error) {
-      toast.error("シェア状態の確認に失敗しました");
     }
   };
 

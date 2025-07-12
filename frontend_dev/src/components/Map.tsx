@@ -6,13 +6,13 @@ import CafeOverlayIcon from "./CafeOverlayIcon"; // ✅ 切り出したカフェ
 import KeywordSearchModal from "./KeywordSearchModal"; // ✅ キーワード検索モーダルをインポート
 import LoadingOverlay from "./LoadingOverlay"; // ✅ ローディングオーバーレイコンポーネントをインポート
 import { searchCafe, searchCafeByKeyword } from "../api/cafe"; // ✅ カフェ検索APIをインポート
-import { registerSharedMap } from "../api/map"; // ✅ シェアマップ登録APIをインポート
 import { Cafe } from "../types/cafe";
 
 import { DEFAULT_CENTER, MAP_CONTAINER_STYLE, MAP_MODES } from "../constants/map";
 import toast from "react-hot-toast";
 
 import { useMap } from "../contexts/MapContext";
+import { useMapActions } from "../hooks/useMapActions";
 
 import ReactGA from "react-ga4";
 
@@ -36,7 +36,8 @@ const Map: React.FC<MapProps> = ({
   shareUuid 
 }) => {
   const { mapMode, setMapMode } = useMap(); // マップリストのセット関数をコンテキストから取得
-
+  const { registerSharedMap } = useMapActions();
+  
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   const [isMapLoading, setIsMapLoading] = useState(true);
   const mapRef = useRef<google.maps.Map | null>(null);
@@ -79,7 +80,6 @@ const Map: React.FC<MapProps> = ({
     });
   };
 
-
   const handleKeywordSearchClick = async (keyword: string) => {
     console.log("📡 キーワード検索実行:", keyword);
     const center = getMapCenter();
@@ -98,17 +98,7 @@ const Map: React.FC<MapProps> = ({
   };
 
   const handleRegisterSharedMap = async () => {
-    if (!shareUuid) {
-      toast.error("シェアマップのUUIDがありません");
-      return;
-    }
-    try {
-      registerSharedMap(shareUuid);
-      console.log("シェアマップ登録成功");
-      toast.success("シェアマップが登録されました");
-    } catch (error) {
-      console.error("シェアマップ登録エラー:", error);
-    }
+    await registerSharedMap(shareUuid);
   }
 
   return (
