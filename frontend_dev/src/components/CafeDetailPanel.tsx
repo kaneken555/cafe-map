@@ -1,7 +1,7 @@
 // components/CafeDetailPanel.tsx
 import React, { useState } from "react";
 import { addCafeToMyCafe } from "../api/cafe";
-import CafeDetailCard from "./CafeDetailCard";
+import CafeDetailCard from "./CafeDetailCard/CafeDetailCard";
 import CloseButton from "./CloseButton";
 import CafeMapSelectModal from "./CafeMapSelectModal"; // ✅ 追加
 import { Cafe } from "../types/cafe";
@@ -9,6 +9,9 @@ import { MapItem } from "../types/map";
 
 import { useMap } from "../contexts/MapContext";
 import { useCafe } from "../contexts/CafeContext";
+import { useCafeActions } from "../hooks/useCafeActions";
+
+import { toast } from "react-hot-toast";
 
 interface CafeDetailPanelProps {
   cafe: Cafe | null;
@@ -19,10 +22,12 @@ const CafeDetailPanel: React.FC<CafeDetailPanelProps> = ({
   cafe, 
   onClose, 
 }) => {
+  
   const { selectedMap } = useMap(); // マップコンテキストからselectedMapを取得
   const { myCafeList, setMyCafeList } = useCafe();
   const [isCafeMapSelectModalOpen, setIsCafeMapSelectModalOpen] = useState(false); // ✅ モーダル開閉
   const [selectedCafe, setSelectedCafe] = useState<Cafe | null>(null); // ✅ 選択中カフェ
+  const { addCafe } = useCafeActions(selectedMap, setMyCafeList);
 
 
   const renderCafeDetailCard = () => {
@@ -30,10 +35,12 @@ const CafeDetailPanel: React.FC<CafeDetailPanelProps> = ({
     return (
       <CafeDetailCard
         cafe={cafe}
-        selectedMap={selectedMap}
+        // selectedMap={selectedMap}
         myCafeList={myCafeList}
-        setMyCafeList={setMyCafeList}
+        // setMyCafeList={setMyCafeList}
         onAddClick={handleAddClick} // ✅ ボタン用コールバック追加
+        onAddCafe={addCafe} // ✅ 追加
+        onShareCafe={() => toast("カフェ共有機能は未実装です")} // ✅ 追加
       />
     );
   };

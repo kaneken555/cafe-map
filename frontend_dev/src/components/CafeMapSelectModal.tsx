@@ -4,7 +4,7 @@ import { MapIcon } from "lucide-react";
 import { MapItem } from "../types/map";
 import { useMap } from "../contexts/MapContext";
 import { toast } from "react-hot-toast";
-import BaseModal from "./BaseModal";
+import BaseModal from "./BaseModal/BaseModal";
 
 interface CafeMapSelectModalProps {
   isOpen: boolean;
@@ -62,30 +62,30 @@ const CafeMapSelectModal: React.FC<CafeMapSelectModalProps> = ({
       size="lg"
     >
 
-        <ul className="space-y-2 mb-6 max-h-[400px] overflow-y-auto">
-          {mapList.map((map) => {
-            const isSelected = selectedMaps.some((m) => m.id === map.id);
-            return (
-              <li
-                key={map.id}
-                className={`flex justify-between items-center p-2 border rounded cursor-pointer ${
-                  isSelected ? "bg-green-100" : "hover:bg-gray-100"
-                }`}
-                onClick={() => toggleMapSelection(map)}
-              >
-                <span>{map.name}</span>
-                {isSelected && <span>✅</span>}
-              </li>
-            );
-          })}
-        </ul>
+      <ul className="space-y-2 mb-6 max-h-[400px] overflow-y-auto">
+        {mapList.map((map) => {
+          const isSelected = selectedMaps.some((m) => m.id === map.id);
+          return (
+            <li
+              key={map.id}
+              className={`flex justify-between items-center p-2 border rounded cursor-pointer ${
+                isSelected ? "bg-green-100" : "hover:bg-gray-100"
+              }`}
+              onClick={() => toggleMapSelection(map)}
+            >
+              <span>{map.name}</span>
+              {isSelected && <span>✅</span>}
+            </li>
+          );
+        })}
+      </ul>
 
-        <button
-          className="w-full px-4 py-2 bg-[#FFC800] hover:bg-[#D8A900] text-black rounded cursor-pointer"
-          onClick={handleAdd}
-        >
-          追加
-        </button>
+      <button
+        className="w-full px-4 py-2 bg-[#FFC800] hover:bg-[#D8A900] text-black rounded cursor-pointer"
+        onClick={handleAdd}
+      >
+        追加
+      </button>
         
     </BaseModal>
   );

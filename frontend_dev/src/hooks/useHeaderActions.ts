@@ -9,6 +9,7 @@ import { getMapList, getSharedMapList } from "../api/map";
 import { fetchGroupList } from "../api/group";
 import { toast } from "react-hot-toast";
 import { MapItem, SharedMapItem } from "../types/map";
+import { MAP_MODES } from "../constants/map";
 
 
 interface UseHeaderActionsParams {
@@ -56,7 +57,7 @@ export const useHeaderActions = ({ closeCafeListPanel }: UseHeaderActionsParams)
     closeCafeListPanel();
     setCafeList([]);
     setMyCafeList([]);
-    setMapMode("search");
+    setMapMode(MAP_MODES.search);
   };
 
 

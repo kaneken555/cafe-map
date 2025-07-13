@@ -1,6 +1,6 @@
 import React from "react";
-import { MODAL_STYLES } from "../constants/ui";
-import CloseModalButton from "./CloseModalButton";
+import { MODAL_STYLES } from "../../constants/ui";
+import CloseModalButton from "../CloseModalButton/CloseModalButton";
 
 type ModalSize = "lg" | "md" | "sm";
 

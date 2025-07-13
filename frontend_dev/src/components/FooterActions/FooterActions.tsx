@@ -1,24 +1,27 @@
 // components/FooterActions.tsx
 import React from "react";
 import { List as ListIcon, Map as MapIcon, Layers } from "lucide-react";
-import HeaderButton from "./HeaderButton";
-import { ICON_SIZES } from "../constants/ui";
-import { useAuth } from "../contexts/AuthContext";
-import { useMap } from "../contexts/MapContext";
+import HeaderButton from "../HeaderButton";
+import { ICON_SIZES } from "../../constants/ui";
+import { useAuth } from "../../contexts/AuthContext";
+import { useMap } from "../../contexts/MapContext";
+
 
 interface Props {
   onOpenCafeList: () => void;
   onOpenMapList: () => void;
+  onShowMyCafeMap: () => void;
   isMyCafeListOpen: boolean;
 }
 
 const FooterActions: React.FC<Props> = ({
   onOpenCafeList,
   onOpenMapList,
+  onShowMyCafeMap,
   isMyCafeListOpen,
 }) => {
   const { user } = useAuth();
-  const { mapMode, setMapMode, selectedMap } = useMap();
+  const { mapMode, selectedMap } = useMap();
 
   if (!user) return null;
 
@@ -33,7 +36,7 @@ const FooterActions: React.FC<Props> = ({
         active={isMyCafeListOpen}
       />
       <HeaderButton
-        onClick={() => setMapMode("mycafe")}
+        onClick={onShowMyCafeMap}
         disabled={!user}
         icon={<MapIcon size={ICON_SIZES.MEDIUM} />}
         label="My Café Map"

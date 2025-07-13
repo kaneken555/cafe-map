@@ -9,7 +9,10 @@ done
 echo "Database started"
 
 # マイグレーションを実行
-python manage.py makemigrations
+if [ "$ENV" = "development" ]; then
+  echo "Running makemigrations (development only)..."
+  python manage.py makemigrations
+fi
 python manage.py migrate
 
 # staticファイルを収集

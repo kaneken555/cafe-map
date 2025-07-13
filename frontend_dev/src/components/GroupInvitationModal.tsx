@@ -1,6 +1,6 @@
 // components/GroupInvitationModal.tsx
 import React from "react";
-import BaseModal from "./BaseModal";
+import BaseModal from "./BaseModal/BaseModal";
 import ShareLinkSection from "./ShareLinkSection";
 
 
@@ -20,12 +20,7 @@ const GroupInvitationModal: React.FC<GroupInvitationModalProps> = ({
 
 
   return (
-    <BaseModal
-    isOpen={isOpen}
-    onClose={onClose}
-    title="グループ招待"
-    size="md"
-    >
+    <BaseModal isOpen={isOpen} onClose={onClose} title="グループ招待" size="md">
 
       {/* グループ名 */}
       <div className="text-md mb-2 font-semibold">{groupName}</div>

@@ -1,6 +1,6 @@
 // components/ShareMapModal.tsx
 import React, { useRef } from "react";
-import BaseModal from "./BaseModal";
+import BaseModal from "./BaseModal/BaseModal";
 import toast from "react-hot-toast";
 import { createSharedMap } from "../api/sharedMap";
 import ShareLinkSection from "./ShareLinkSection";
@@ -23,8 +23,9 @@ const ShareMapModal: React.FC<ShareMapModalProps> = ({
   selectedMap,
 }) => {
 
-
   const qrWrapperRef = useRef<HTMLDivElement>(null);
+
+  const baseUrl = import.meta.env.VITE_SHARE_MAP_BASE_URL;
 
   const handleCreateLink = async () => {
     if (!selectedMap) {
@@ -39,7 +40,7 @@ const ShareMapModal: React.FC<ShareMapModalProps> = ({
         description: "",
       });
   
-      const url = `https://your-domain.com/shared-map/${res.share_uuid}`;
+      const url = `${baseUrl}/api/shared-map/${res.share_uuid}`;
       setShareUrl(url);
       toast.success("シェアリンクを作成しました");
     } catch (error) {
@@ -51,23 +52,23 @@ const ShareMapModal: React.FC<ShareMapModalProps> = ({
   return (
     <BaseModal isOpen={isOpen} onClose={onClose} title="シェアマップ" size="md">
 
-        {/* シェアリンクを作成するボタン */}
-        {!shareUrl && (
-          <button
-            onClick={handleCreateLink}
-            className="w-full px-4 py-2 bg-[#FFC800] hover:bg-[#D8A900] cursor-pointer text-black rounded"
-            >
-            シェアリンクを作成する
-          </button>
-        )}
+      {/* シェアリンクを作成するボタン */}
+      {!shareUrl && (
+        <button
+          onClick={handleCreateLink}
+          className="w-full px-4 py-2 bg-[#FFC800] hover:bg-[#D8A900] cursor-pointer text-black rounded"
+          >
+          シェアリンクを作成する
+        </button>
+      )}
 
-        {/* URL + QRコード 表示（リンク作成後のみ表示） */}
-        {shareUrl && (
-          <>
-            <ShareLinkSection shareUrl={shareUrl} />
-            <QRCodeSection qrWrapperRef={qrWrapperRef} shareUrl={shareUrl} />
-          </>
-        )}
+      {/* URL + QRコード 表示（リンク作成後のみ表示） */}
+      {shareUrl && (
+        <>
+          <ShareLinkSection shareUrl={shareUrl} />
+          <QRCodeSection qrWrapperRef={qrWrapperRef} shareUrl={shareUrl} />
+        </>
+      )}
 
     </BaseModal>
   );
