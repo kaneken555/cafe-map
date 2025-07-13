@@ -1,8 +1,8 @@
 // components/MyCafeListPanel.tsx
 import React from "react";
-import CafeListItem from "./CafeListItem";
-import SidePanelLayout from "./SidePanelLayout";
-import { Cafe } from "../types/cafe";
+import CafeListItem from "../CafeListItem";
+import SidePanelLayout from "../SidePanelLayout";
+import { Cafe } from "../../types/cafe";
 
 
 interface MyCafeListPanelProps {

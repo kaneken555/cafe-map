@@ -1,13 +1,11 @@
 // components/MapListItem.tsx
 import React, { useState } from "react";
-import MapDeleteModal from "./MapDeleteModal";
-import ShareMapModal from "./ShareMapModal";
+import ShareMapModal from "../ShareMapModal";
 import { CheckCircle, Trash2, Share as ShareIcon } from "lucide-react";
-import { MapItem } from "../types/map";
-import { ICON_SIZES } from "../constants/ui";
+import { MapItem } from "../../types/map";
+import { ICON_SIZES } from "../../constants/ui";
 
-import { useMapModals } from "../hooks/useMapModals";
-import { useMapActions } from "../hooks/useMapActions";
+import { useMapModals } from "../../hooks/useMapModals";
 
 
 interface MapListItemProps {
@@ -15,37 +13,37 @@ interface MapListItemProps {
   selectedMapId: number | null;
   onSelect: (map: MapItem) => void;
   onClose: () => void;
+  onDeleteClick: (map: MapItem) => void;
   mapModals: ReturnType<typeof useMapModals>; // ✅ 型は補完から取得 or 別途定義
+
+  onShare: (id: number) => Promise<string | null>;
+  onSelectMap: (map: MapItem, onSelect: any, onClose: any) => void;
 }
   
 const MapListItem: React.FC<MapListItemProps> = ({ 
   map, 
-  selectedMapId, 
-  onSelect, 
+  selectedMapId,
+  onSelect,
   onClose,
-  mapModals, 
+  onDeleteClick,
+  mapModals,
+  onShare,
+  onSelectMap,
 }) => {
 
   const { 
-    isDeleteModalOpen, openDeleteModal, closeDeleteModal, 
     isShareModalOpen, openShareModal, closeShareModal,
   } = mapModals;
-
-  const { deleteMapById, checkShareStatus, selectMap } = useMapActions();
   
   const [shareUrl, setShareUrl] = useState("");
 
-
   const handleSelect = () => {
-    selectMap(map, onSelect, onClose);
+    onSelectMap(map, onSelect, onClose);
   };
 
-  const handleDelete = async () => {
-    await deleteMapById(map.id, map.name);
-  };
 
   const handleShare = async () => {
-    const url = await checkShareStatus(map.id);
+    const url = await onShare(map.id);
     if (url !== null) {
       setShareUrl(url);
       openShareModal();
@@ -56,15 +54,6 @@ const MapListItem: React.FC<MapListItemProps> = ({
   return (
     <>
       {/* モーダル呼び出し */}
-      <MapDeleteModal
-        isOpen={isDeleteModalOpen}
-        onClose={closeDeleteModal}
-        onConfirm={async () => {
-          await handleDelete();
-          closeDeleteModal();
-        }}
-        mapName={map.name}
-      />
       <ShareMapModal
         isOpen={isShareModalOpen}
         onClose={() => {
@@ -94,7 +83,7 @@ const MapListItem: React.FC<MapListItemProps> = ({
           </button>
         )}
           <button
-            onClick={openDeleteModal}
+            onClick={() => onDeleteClick(map)}
             className="w-12 flex flex-col items-center text-gray-700 hover:text-red-500 cursor-pointer"
           >
             <Trash2 size={ICON_SIZES.MEDIUM} />  {/* ゴミ箱アイコン */}
