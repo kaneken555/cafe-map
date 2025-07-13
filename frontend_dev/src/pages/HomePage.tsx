@@ -7,7 +7,7 @@ import FooterActions from "../components/FooterActions/FooterActions"; // ✅ �
 import Header from "../components/Header";
 import Map from "../components/Map";
 import MapListModal from "../components//MapListModal";
-import MyCafeListPanel from "../components/MyCafeListPanel"; // ✅ カフェ一覧パネル
+import MyCafeListPanel from "../components/MyCafeListPanel/MyCafeListPanel"; // ✅ カフェ一覧パネル
 import SearchResultPanel from "../components/SearchResultPanel";
 
 import { Cafe, mockSearchResults } from "../api/mockCafeData"; // ✅ Cafe型をインポート

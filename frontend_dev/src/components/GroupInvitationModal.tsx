@@ -1,7 +1,7 @@
 // components/GroupInvitationModal.tsx
 import React from "react";
 import BaseModal from "./BaseModal/BaseModal";
-import ShareLinkSection from "./ShareLinkSection";
+import ShareLinkSection from "./ShareLinkSection/ShareLinkSection";
 
 
 interface GroupInvitationModalProps {
