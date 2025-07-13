@@ -17,9 +17,6 @@ from .views import (
 )
 
 urlpatterns = [
-    # ヘルスチェックエンドポイント
-    path("health/", lambda request: JsonResponse({"status": "ok"})),
-
     # TODO: エンドポイントを修正(RESTful APIの設計に従う)
     path('api/google-maps-key/', views.get_google_maps_api_key, name='google_maps_key'),
     path('api/fetch-cafes/', views.get_cafes, name='cafes'),

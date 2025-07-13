@@ -20,6 +20,12 @@ http {
         listen 80;
         server_name ${NGINX_SERVER_NAME};
 
+        location = /health/ {
+            allow all;
+            add_header Content-Type text/plain;
+            return 200 "OK";
+        }
+
         # 静的ファイル（admin画面のCSSなど）
         location /static/ {
             alias /app/staticfiles/;
