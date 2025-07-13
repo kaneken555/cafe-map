@@ -30,6 +30,7 @@ const HomePage: React.FC = () => {
   // 状態管理
   const [selectedCafe, setSelectedCafe] = useState<Cafe | null>(null); // ✅ カフェ詳細
   const [selectedCafeId, setSelectedCafeId] = useState<number | null>(null);
+  const [selectedMapId, setSelectedMapId] = useState<number | null>(selectedMap?.id ?? null);
   const [isMyCafeListOpen, setIsMyCafeListOpen] = useState(false); // ✅ カフェ一覧パネルの表示
   const [searchResultCafes, setSearchResultCafes] = useState<Cafe[]>(mockSearchResults); // 検索結果
   const [isSearchResultOpen, setIsSearchResultOpen] = useState(false); // ✅ 検索パネル表示用
@@ -93,7 +94,8 @@ const HomePage: React.FC = () => {
           onClose={() => setIsMapListOpen(false)}
           onSelectMap={handleMapSelect}
           onSelectSharedMap={handleSharedMapSelect} // ✅ シェアマップ選択ハンドラを追加
-          selectedMapId={selectedMap?.id ?? null} 
+          selectedMapId={selectedMapId} 
+          setSelectedMapId={setSelectedMapId}
           setShareUuid={setShareUuid} // ✅ シェアマップのUUIDをセットする関数
         />
 
