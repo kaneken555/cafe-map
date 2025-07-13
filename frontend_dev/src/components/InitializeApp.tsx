@@ -5,8 +5,10 @@ import { useMap } from "../contexts/MapContext";
 import { useGroup } from "../contexts/GroupContext";
 import { getMapList, getSharedMapList } from "../api/map";
 import { fetchGroupList } from "../api/group";
+import ReactGA from "react-ga4";
 
 
+const gaId = import.meta.env.VITE_GA_MEASUREMENT_ID;
 
 const InitializeApp = () => {
   const { setUser } = useAuth();
@@ -16,6 +18,13 @@ const InitializeApp = () => {
   useEffect(() => {
     const init = async () => {
       try {
+
+        // ✅ GAの初期化（本番環境のみ）
+        if (gaId) {
+          ReactGA.initialize(gaId);
+          ReactGA.send("pageview"); // 初期ページビュー送信
+        }
+
         const res = await fetch(`/api/auth/login/success/`, 
           {
             credentials: "include",

@@ -1,7 +1,7 @@
 // components/SideMenu.tsx
 import React from "react";
 import { ChevronsLeft } from "lucide-react";
-import { ICON_SIZES } from "../constants/ui";
+import { ICON_SIZES } from "../../constants/ui";
 
 
 interface SideMenuProps {
@@ -30,7 +30,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
           target="_blank"
           rel="noopener noreferrer"
         >
-          アプリの使い方・よくある質問
+          アプリの使い方・よくある質問・お問い合わせ
         </a>
         <a href="#">運営会社について</a>
         <a
@@ -48,7 +48,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
           利用規約
         </a>
         <a href="#">フィードバック・ご要望</a>
-        <a href="#">お問い合わせ</a>
+        {/* <a href="#">お問い合わせ</a> */}
       </nav>
     </div>
   );

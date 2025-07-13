@@ -1,5 +1,6 @@
 // components/SidePanelLayout.tsx
 import React from "react";
+import clsx from "clsx";
 import CloseButton from "./CloseButton";
 
 
@@ -18,9 +19,15 @@ const SidePanelLayout: React.FC<SidePanelLayoutProps> = ({
 }) => {
   return (
     <div
-      className={`fixed top-16 left-0 h-[calc(100vh-4rem)] w-[400px] bg-white shadow-lg z-40 transform transition-transform duration-300 ease-in-out ${
-        isOpen ? "translate-x-0" : "-translate-x-full"
-      }`}
+      className={clsx(
+        "fixed top-16 left-0 z-40 w-[400px] h-[calc(100vh-4rem)]",
+        "bg-white shadow-lg",
+        "transform transition-transform duration-300 ease-in-out",
+        {
+          "translate-x-0": isOpen,
+          "-translate-x-full": !isOpen,
+        }
+      )}
     >
       <div className="h-full p-3 relative flex flex-col">
         {/* 閉じるボタン（右上） */}

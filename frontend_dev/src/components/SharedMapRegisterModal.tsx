@@ -1,6 +1,6 @@
 // components/SharedMapRegisterModal.tsx
 import React, { useState } from "react";
-import BaseModal from "./BaseModal";
+import BaseModal from "./BaseModal/BaseModal";
 import { SharedMapItem } from "../types/map";
 import { getMapList, copySharedMap } from "../api/map";
 import toast from "react-hot-toast";
@@ -24,8 +24,6 @@ const SharedMapRegisterModal: React.FC<SharedMapRegisterModalProps> = ({
   const { setMapList } = useMap(); // マップリストのセット関数をコンテキストから取得
 
   const [mapName, setMapName] = useState(initialMapName);
-
-  // if (!isOpen) return null;
 
   const handleClose = () => {
     setMapName(initialMapName); // 初期化
@@ -54,23 +52,23 @@ const SharedMapRegisterModal: React.FC<SharedMapRegisterModalProps> = ({
   return (
     <BaseModal isOpen={isOpen} onClose={handleClose} title="マイマップ登録" size="md">
 
-        <input
-          type="text"
-          value={mapName}
-          onChange={(e) => setMapName(e.target.value)}
-          placeholder="シェアマップ名"
-          className="w-full px-4 py-2 border rounded mb-4 text-gray-700"
-        />
+      <input
+        type="text"
+        value={mapName}
+        onChange={(e) => setMapName(e.target.value)}
+        placeholder="シェアマップ名"
+        className="w-full px-4 py-2 border rounded mb-4 text-gray-700"
+      />
 
-        <button
-          onClick={handleRegister}
-          className={`w-full px-4 py-2 text-black text-lg rounded cursor-pointer ${
-            mapName.trim() ? "bg-[#FFC800] hover:bg-[#D8A900]" : "bg-gray-300 cursor-not-allowed"
-          }`}
-          disabled={!mapName.trim()}
-        >
-          登録
-        </button>
+      <button
+        onClick={handleRegister}
+        className={`w-full px-4 py-2 text-black text-lg rounded cursor-pointer ${
+          mapName.trim() ? "bg-[#FFC800] hover:bg-[#D8A900]" : "bg-gray-300 cursor-not-allowed"
+        }`}
+        disabled={!mapName.trim()}
+      >
+        登録
+      </button>
 
     </BaseModal>
   );
