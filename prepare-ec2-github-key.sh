@@ -19,10 +19,14 @@ if [ ! -f "$GITHUB_KEY_PATH" ]; then
 fi
 
 echo "📤 GitHub用秘密鍵をEC2に転送中..."
-scp -i "$EC2_KEY_PATH" "$GITHUB_KEY_PATH" $EC2_USER@$EC2_HOST:/home/$EC2_USER/.ssh/id_rsa
+# scp -i "$EC2_KEY_PATH" -o ProxyJump="$BASTION_USER@$BASTION_HOST" \
+#   "$GITHUB_KEY_PATH" "$EC2_USER@$EC2_HOST:/home/$EC2_USER/.ssh/id_rsa"
+scp "$GITHUB_KEY_PATH" private-ec2:/home/ec2-user/.ssh/id_rsa
+
 
 echo "🔧 パーミッションとSSH設定を整備中..."
-ssh -i "$EC2_KEY_PATH" "$EC2_USER@$EC2_HOST" << 'EOF'
+# ssh -i "$EC2_KEY_PATH" -J "$BASTION_USER@$BASTION_HOST" "$EC2_USER@$EC2_HOST" << 'EOF'
+ssh private-ec2 << 'EOF'
 chmod 600 ~/.ssh/id_rsa
 
 # SSH設定が未設定なら追記

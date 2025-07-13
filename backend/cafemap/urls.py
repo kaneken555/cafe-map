@@ -17,6 +17,9 @@ from .views import (
 )
 
 urlpatterns = [
+    # ヘルスチェックエンドポイント
+    path("health/", lambda request: JsonResponse({"status": "ok"})),
+
     # TODO: エンドポイントを修正(RESTful APIの設計に従う)
     path('api/google-maps-key/', views.get_google_maps_api_key, name='google_maps_key'),
     path('api/fetch-cafes/', views.get_cafes, name='cafes'),
@@ -52,7 +55,7 @@ urlpatterns = [
     # シェアマップ関連のルーティング
     path("api/shared-maps/", SharedMapAPIView.as_view(), name="shared-map"),
     path("api/shared-maps/check/", SharedMapAPIView.as_view(), name="shared-map-check"),
-    path('api/shared-maps/', UserSharedMapListAPIView.as_view(), name='user-shared-map-list'),
+    path('api/shared_maps/', UserSharedMapListAPIView.as_view(), name='user-shared-map-list'),
     path('api/shared-maps/<uuid:uuid>/', SharedMapDetailAPIView.as_view(), name='shared_map_detail'),
     path('api/shared-maps/<uuid:uuid>/register/', RegisterSharedMapAPIView.as_view(), name='register_shared_map'),
     path("api/shared-maps/<uuid:uuid>/copy/", CopySharedMapAPIView.as_view(), name="copy_shared_map"),
