@@ -4,7 +4,8 @@ import clsx from "clsx";
 
 import MapCreateModal from "./MapCreateModal/MapCreateModal"; 
 // import { mockMapData } from "../api/mockMapData"; 
-import MapListItem from "./MapListItem"; 
+import MapListItem from "./MapListItem/MapListItem"; 
+import MapDeleteModal from "./MapDeleteModal";
 import BaseModal from "./BaseModal/BaseModal";
 
 import ModalActionButton from "./ModalActionButton";
@@ -32,6 +33,7 @@ interface MapListModalProps {
   onSelectMap: (map: MapItem) => void;
   onSelectSharedMap: (map: SharedMapItem) => void; // ✅ シェアマップ選択時のコールバック
   selectedMapId: number | null;
+  setSelectedMapId: (id: number | null) => void; // ✅ これを追加
   setShareUuid: React.Dispatch<React.SetStateAction<string | null>>; // ✅ シェアマップのUUIDをセットする関数
 }
 
@@ -41,6 +43,7 @@ const MapListModal: React.FC<MapListModalProps> = ({
   onSelectMap, 
   onSelectSharedMap, // ✅ シェアマップ選択時のコールバック
   selectedMapId, 
+  setSelectedMapId, // ✅ これを追加
   setShareUuid, // ✅ シェアマップのUUIDをセットする関数
 }) => {
   const { mapList, sharedMapList, setMapMode } = useMap(); // ✅ コンテキストからマップリストとセット関数を取得
@@ -51,11 +54,12 @@ const MapListModal: React.FC<MapListModalProps> = ({
   const { 
     isCreateModalOpen, openCreateModal, closeCreateModal,
     isSharedMapSearchOpen, openSharedMapSearch, closeSharedMapSearch,
+    isDeleteModalOpen, openDeleteModal, closeDeleteModal,
   } = mapModals;
 
-  const { createNewMap } = useMapActions(); // ✅ カスタムフックから取得
+  const { createNewMap, deleteMapById, checkShareStatus, selectMap  } = useMapActions(); // ✅ カスタムフックから取得
 
-
+  const [selectedMapForDelete, setSelectedMapForDelete] = useState<MapItem | null>(null);
   const [activeTab, setActiveTab] = useState<'my' | 'shared'>('my');
 
   const filteredMaps = activeTab === "my" ? mapList : sharedMapList;
@@ -93,6 +97,23 @@ const MapListModal: React.FC<MapListModalProps> = ({
     }
   };
 
+  const handleDelete = async (id: number, name: string) => {
+    await deleteMapById(id, name);
+  };
+  
+  const handleShare = async (id: number): Promise<string | null> => {
+    return await checkShareStatus(id);
+  };
+  
+  const handleSelectMap = (map: MapItem, onSelect: any, onClose: any) => {
+    selectMap(map, onSelect, onClose);
+  };
+
+  const handleDeleteClick = (map: MapItem) => {
+    setSelectedMapForDelete(map);
+    openDeleteModal();
+  };
+
   return (
     <>
       {/* マップ作成モーダル */}
@@ -100,6 +121,23 @@ const MapListModal: React.FC<MapListModalProps> = ({
         isOpen={isCreateModalOpen}
         onClose={closeCreateModal}
         createMap={createNewMap}
+      />
+
+      <MapDeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          closeDeleteModal();
+          setSelectedMapForDelete(null);
+        }}
+        onConfirm={async () => {
+          if (selectedMapForDelete) {
+            await handleDelete(selectedMapForDelete.id, selectedMapForDelete.name);
+            setSelectedMapId(null); // ✅ 削除後に id をリセット
+          }
+          setSelectedMapForDelete(null);
+          closeDeleteModal();
+        }}
+        mapName={selectedMapForDelete?.name ?? ""}
       />
 
       {/* // シェアマップ検索モーダル */}
@@ -148,7 +186,10 @@ const MapListModal: React.FC<MapListModalProps> = ({
                 selectedMapId={selectedMapId}
                 onSelect={onSelectMap}
                 onClose={onClose}
+                onDeleteClick={handleDeleteClick}
                 mapModals={mapModals}
+                onShare={handleShare}
+                onSelectMap={handleSelectMap}
               />
             ))}
             {activeTab === 'shared' &&

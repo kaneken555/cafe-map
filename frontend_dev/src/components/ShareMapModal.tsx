@@ -3,8 +3,8 @@ import React, { useRef } from "react";
 import BaseModal from "./BaseModal/BaseModal";
 import toast from "react-hot-toast";
 import { createSharedMap } from "../api/sharedMap";
-import ShareLinkSection from "./ShareLinkSection";
-import QRCodeSection from "./QRCodeSection";
+import ShareLinkSection from "./ShareLinkSection/ShareLinkSection";
+import QRCodeSection from "./QRCodeSection/QRCodeSection";
 
 
 interface ShareMapModalProps {

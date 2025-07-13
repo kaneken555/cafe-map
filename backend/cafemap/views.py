@@ -305,7 +305,7 @@ class MapDetailAPIView(APIView):
             MapUserRelation.objects.filter(map=map_obj).delete()
             map_obj.delete()
 
-            return Response({"message": "Map deleted"}, status=status.HTTP_204_NO_CONTENT)
+            return Response(status=status.HTTP_204_NO_CONTENT)
         except Map.DoesNotExist:
             return Response({"error": "Map not found"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:

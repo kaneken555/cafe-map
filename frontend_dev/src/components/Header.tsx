@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import clsx from "clsx";
 import SideMenu from "./SideMenu/SideMenu";
-import HeaderButton from "./HeaderButton";
+import HeaderButton from "./HeaderButton/HeaderButton";
 import UserMenu from "./UserMenu";
 import GroupListModal from "./GroupListModal";
 import { Coffee, Map as MapIcon, List as ListIcon, Layers, Menu } from "lucide-react";
