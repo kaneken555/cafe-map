@@ -5,7 +5,6 @@ import { toast } from "react-hot-toast";
 import { Group } from "../types/group";
 
 
-
 /**
  * ログイン中のユーザーが所属するグループ一覧を取得
  */

@@ -1,9 +1,11 @@
 // components/MapListModal.tsx
 import React, { useState } from "react";
-import MapCreateModal from "./MapCreateModal"; 
+import clsx from "clsx";
+
+import MapCreateModal from "./MapCreateModal/MapCreateModal"; 
 // import { mockMapData } from "../api/mockMapData"; 
 import MapListItem from "./MapListItem"; 
-import BaseModal from "./BaseModal";
+import BaseModal from "./BaseModal/BaseModal";
 
 import ModalActionButton from "./ModalActionButton";
 import SharedMapListItem from "./SharedMapListItem"; 
@@ -14,12 +16,14 @@ import { toast } from "react-hot-toast";
 import { extractUuidFromUrl } from "../utils/extractUuid";
 import { searchSharedMap } from "../api/cafe";
 
-// import { useAuth } from "../contexts/AuthContext";
 import { useMap } from "../contexts/MapContext";
 import { useCafe } from "../contexts/CafeContext"; // ✅ カフェコンテキストをインポート
 import { useGroup } from "../contexts/GroupContext"; // ✅ グループコンテキストをインポート
 
 import { MAP_MODES } from "../constants/map";
+
+import { useMapModals } from "../hooks/useMapModals";
+import { useMapActions } from "..//hooks/useMapActions"; // ✅ 追加
 
 
 interface MapListModalProps {
@@ -39,13 +43,19 @@ const MapListModal: React.FC<MapListModalProps> = ({
   selectedMapId, 
   setShareUuid, // ✅ シェアマップのUUIDをセットする関数
 }) => {
-  // const { user } = useAuth();
   const { mapList, sharedMapList, setMapMode } = useMap(); // ✅ コンテキストからマップリストとセット関数を取得
   const { setSharedMapCafeList} = useCafe(); // ✅ シェアマップのカフェリストとセット関数を取得
   const { selectedGroup } = useGroup(); // ✅ グループ情報を取得
 
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false); 
-  const [isSharedMapSearchOpen, setIsSharedMapSearchOpen] = useState(false);
+  const mapModals = useMapModals(); // ✅ ここで useMapModals を呼ぶ
+  const { 
+    isCreateModalOpen, openCreateModal, closeCreateModal,
+    isSharedMapSearchOpen, openSharedMapSearch, closeSharedMapSearch,
+  } = mapModals;
+
+  const { createNewMap } = useMapActions(); // ✅ カスタムフックから取得
+
+
   const [activeTab, setActiveTab] = useState<'my' | 'shared'>('my');
 
   const filteredMaps = activeTab === "my" ? mapList : sharedMapList;
@@ -53,8 +63,6 @@ const MapListModal: React.FC<MapListModalProps> = ({
   // const filteredMaps = user
   // ? mockMapData.filter((map) => map.userId === user.id) // ✅ userId一致のみ
   // : []; // 未ログインなら空配列
-
-  if (!isOpen) return null;
 
 
   const handleSearch = async (input: string) => {
@@ -77,7 +85,7 @@ const MapListModal: React.FC<MapListModalProps> = ({
       setMapMode(MAP_MODES.search); // ✅ マップモードをシェアに変更
       console.log("✅ 検索結果:", result);
       // TODO: setSelectedMap や setCafeList などに渡す処理を書く
-      setIsSharedMapSearchOpen(false); // ここでモーダルを閉じる
+      closeSharedMapSearch();
       onClose(); // モーダル閉じる
 
     } catch (error) {
@@ -90,13 +98,14 @@ const MapListModal: React.FC<MapListModalProps> = ({
       {/* マップ作成モーダル */}
       <MapCreateModal
         isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
+        onClose={closeCreateModal}
+        createMap={createNewMap}
       />
 
       {/* // シェアマップ検索モーダル */}
       <SharedMapSearchModal
         isOpen={isSharedMapSearchOpen}
-        onClose={() => setIsSharedMapSearchOpen(false)}
+        onClose={closeSharedMapSearch}
         onSearch={handleSearch}
       />
 
@@ -111,13 +120,19 @@ const MapListModal: React.FC<MapListModalProps> = ({
         {/* タブ切り替え */}
         <div className="flex space-x-2 mb-4">
           <button
-            className={`px-3 py-1 rounded cursor-pointer ${activeTab === 'my' ? 'bg-green-100' : 'bg-gray-100'}`}
+            className={clsx(
+              "px-3 py-1 rounded cursor-pointer",
+              activeTab === "my" ? "bg-green-100" : "bg-gray-100"
+            )}
             onClick={() => setActiveTab('my')}
           >
             マイマップ
           </button>
           <button
-            className={`px-3 py-1 rounded cursor-pointer ${activeTab === 'shared' ? 'bg-green-100' : 'bg-gray-100'}`}
+            className={clsx(
+              "px-3 py-1 rounded cursor-pointer",
+              activeTab === "shared" ? "bg-green-100" : "bg-gray-100"
+            )}
             onClick={() => setActiveTab('shared')}
           >
             シェアマップ
@@ -133,6 +148,7 @@ const MapListModal: React.FC<MapListModalProps> = ({
                 selectedMapId={selectedMapId}
                 onSelect={onSelectMap}
                 onClose={onClose}
+                mapModals={mapModals}
               />
             ))}
             {activeTab === 'shared' &&
@@ -143,6 +159,7 @@ const MapListModal: React.FC<MapListModalProps> = ({
                   selectedMapId={selectedMapId}
                   onSelect={onSelectSharedMap}
                   onClose={onClose}
+                  mapModals={mapModals}
                 />
               ))}
         </ul>
@@ -150,13 +167,13 @@ const MapListModal: React.FC<MapListModalProps> = ({
         {activeTab === "my" && (
           <ModalActionButton
             label={selectedGroup ? "+ 新しいグループマップをつくる" : "+ 新しいカフェマップをつくる"}
-            onClick={() => setIsCreateModalOpen(true)}
+            onClick={openCreateModal}
           />
         )}
         {activeTab === "shared" && (
           <ModalActionButton
           label="🔍 シェアマップを開く"
-          onClick={() => setIsSharedMapSearchOpen(true)}
+          onClick={openSharedMapSearch}
           />
         )}
 

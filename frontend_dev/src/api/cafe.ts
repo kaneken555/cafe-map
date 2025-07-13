@@ -177,7 +177,7 @@ export const searchSharedMap = async (groupUuid: string): Promise<Cafe[]> => {
 
   const csrfToken = await getCsrfToken(); // CSRF トークンを取得
   try {
-    const response = await axios.get(`/api/shared_maps/${groupUuid}/`, 
+    const response = await axios.get(`/api/shared-maps/${groupUuid}/`, 
       { 
         headers: {
           "X-CSRFToken": csrfToken,
@@ -214,7 +214,7 @@ export const searchSharedMap = async (groupUuid: string): Promise<Cafe[]> => {
 export const getSharedMapCafeList = async (mapUuid: string): Promise<Cafe[]> => {
   const csrfToken = await getCsrfToken();
   try {
-    const response = await axios.get(`/api/shared_maps/${mapUuid}/`,
+    const response = await axios.get(`/api/shared-maps/${mapUuid}/`,
       { 
         headers: {
           "X-CSRFToken": csrfToken,

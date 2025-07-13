@@ -1,8 +1,10 @@
 // components/GroupCreateModal.tsx
 import React, { useState } from "react";
+import clsx from "clsx";
 import { createGroup } from "../api/group";
 import { MODAL_STYLES } from "../constants/ui";  // スタイルをインポート
-import CloseModalButton from "./CloseModalButton"; // 共通の閉じるボタンコンポーネント
+import BaseModal from "./BaseModal/BaseModal"; // 共通のモーダルコンポーネント
+
 
 interface GroupCreateModalProps {
   isOpen: boolean;
@@ -16,8 +18,6 @@ const GroupCreateModal: React.FC<GroupCreateModalProps> = ({
   onCreated 
 }) => {
   const [groupName, setGroupName] = useState("");
-
-  if (!isOpen) return null;
 
   const handleClose = () => {
     setGroupName(""); // 入力内容をリセット
@@ -36,38 +36,30 @@ const GroupCreateModal: React.FC<GroupCreateModalProps> = ({
   };
 
   return (
-    <div 
-      className={MODAL_STYLES.SUB_MODAL.CONTAINER}
-      onClick={handleClose} 
-    >
-      <div
-        className="bg-[#fffaf0] w-96 max-w-full rounded-lg p-6 shadow-xl relative"
-        onClick={(e) => e.stopPropagation()}
+    <BaseModal isOpen={isOpen} onClose={handleClose} title="新規グループを作成" size="sm">
+
+      <input
+        type="text"
+        value={groupName}
+        onChange={(e) => setGroupName(e.target.value)}
+        placeholder="グループ名を入力"
+        className={MODAL_STYLES.SUB_MODAL.INPUT}
+      />
+
+      <button
+        className={clsx(
+          "w-full py-2 text-black text-lg rounded cursor-pointer",
+          groupName
+            ? "bg-[#FFC800] hover:bg-[#D8A900]"
+            : "bg-gray-300 cursor-not-allowed"
+        )}
+        disabled={!groupName}
+        onClick={handleCreate}
       >
+        作成
+      </button>
 
-        <CloseModalButton onClose={handleClose} /> {/* ここで共通閉じるボタンを使う */}
-
-        <h2 className={MODAL_STYLES.SUB_MODAL.TITLE}>新規グループを作成</h2>
-
-        <input
-          type="text"
-          value={groupName}
-          onChange={(e) => setGroupName(e.target.value)}
-          placeholder="グループ名を入力"
-          className={MODAL_STYLES.SUB_MODAL.INPUT}
-        />
-
-        <button
-          className={`w-full py-3 text-black text-lg rounded cursor-pointer ${
-            groupName ? "bg-[#FFC800] hover:bg-[#D8A900]" : "bg-gray-300 cursor-not-allowed"
-          }`}
-          disabled={!groupName}
-          onClick={handleCreate}
-        >
-          作成
-        </button>
-      </div>
-    </div>
+    </BaseModal>
   );
 };
 

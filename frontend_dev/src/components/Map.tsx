@@ -5,16 +5,12 @@ import MapButton from "./MapButton";
 import CafeOverlayIcon from "./CafeOverlayIcon"; // ✅ 切り出したカフェアイコン表示用コンポーネント
 import KeywordSearchModal from "./KeywordSearchModal"; // ✅ キーワード検索モーダルをインポート
 import LoadingOverlay from "./LoadingOverlay"; // ✅ ローディングオーバーレイコンポーネントをインポート
-import { searchCafe, searchCafeByKeyword } from "../api/cafe"; // ✅ カフェ検索APIをインポート
-import { registerSharedMap } from "../api/map"; // ✅ シェアマップ登録APIをインポート
 import { Cafe } from "../types/cafe";
-
 import { DEFAULT_CENTER, MAP_CONTAINER_STYLE, MAP_MODES } from "../constants/map";
-import toast from "react-hot-toast";
 
 import { useMap } from "../contexts/MapContext";
-
-import ReactGA from "react-ga4";
+import { useMapActions } from "../hooks/useMapActions";
+import { useCafeSearch } from "../hooks/useCafeSearch"; // ✅ カフェ検索フックをインポート
 
 
 interface MapProps {
@@ -35,8 +31,10 @@ const Map: React.FC<MapProps> = ({
   setSearchResultCafes, 
   shareUuid 
 }) => {
-  const { mapMode, setMapMode } = useMap(); // マップリストのセット関数をコンテキストから取得
-
+  const { mapMode } = useMap(); // マップリストのセット関数をコンテキストから取得
+  const { registerSharedMap } = useMapActions();
+  const { fetchCafes } = useCafeSearch(setSearchResultCafes);
+  
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   const [isMapLoading, setIsMapLoading] = useState(true);
   const mapRef = useRef<google.maps.Map | null>(null);
@@ -54,43 +52,20 @@ const Map: React.FC<MapProps> = ({
     };
   };
 
-  // 共通の検索処理をまとめる
-  const searchCafes = async (center: { lat: number; lng: number }, keyword?: string) => {
-    try {
-      const cafes = keyword 
-        ? await searchCafeByKeyword(keyword, center.lat, center.lng)
-        : await searchCafe(center.lat, center.lng);
-      setSearchResultCafes(cafes);
-      setMapMode(MAP_MODES.search); // ✅ 検索モードに切り替え
-    } catch (error) {
-      console.error("検索エラー:", error);
-      toast.error("カフェの検索に失敗しました");
-    }
-  };
 
   const handleSearchClick = async () => {
     const center = getMapCenter();
     if (!center) return;
-    console.log("📡 検索実行: 中心座標 =", center.lat, center.lng);
-    await searchCafes(center);
+    await fetchCafes(center); // 通常検索
 
-    ReactGA.gtag("event", "map_search", {
-      search_type: "default",
-    });
   };
-
 
   const handleKeywordSearchClick = async (keyword: string) => {
     console.log("📡 キーワード検索実行:", keyword);
     const center = getMapCenter();
     if (!center) return;
-    await searchCafes(center, keyword);
+    await fetchCafes(center, keyword); // キーワード検索
     setIsKeywordSearchOpen(false);
-
-    ReactGA.gtag("event", "cafe_search", {
-      search_type: "keyword",
-      keyword: keyword.trim(),
-    });
   };
   
   const handleMapLoad = (map: google.maps.Map) => {
@@ -98,17 +73,7 @@ const Map: React.FC<MapProps> = ({
   };
 
   const handleRegisterSharedMap = async () => {
-    if (!shareUuid) {
-      toast.error("シェアマップのUUIDがありません");
-      return;
-    }
-    try {
-      registerSharedMap(shareUuid);
-      console.log("シェアマップ登録成功");
-      toast.success("シェアマップが登録されました");
-    } catch (error) {
-      console.error("シェアマップ登録エラー:", error);
-    }
+    await registerSharedMap(shareUuid);
   }
 
   return (

@@ -1,6 +1,5 @@
 // components/MyCafeListPanel.tsx
 import React from "react";
-// import { Cafe } from "../api/mockCafeData";
 import CafeListItem from "./CafeListItem";
 import SidePanelLayout from "./SidePanelLayout";
 import { Cafe } from "../types/cafe";

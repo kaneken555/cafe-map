@@ -1,73 +1,54 @@
 // components/MapListItem.tsx
 import React, { useState } from "react";
-import { getMapList, deleteMap, getGroupMapList } from "../api/map";
-import { checkSharedMap } from "../api/sharedMap";
 import MapDeleteModal from "./MapDeleteModal";
 import ShareMapModal from "./ShareMapModal";
-import { toast } from "react-hot-toast";
 import { CheckCircle, Trash2, Share as ShareIcon } from "lucide-react";
 import { MapItem } from "../types/map";
 import { ICON_SIZES } from "../constants/ui";
 
-import { useMap } from "../contexts/MapContext";
-import { useGroup } from "../contexts/GroupContext";
+import { useMapModals } from "../hooks/useMapModals";
+import { useMapActions } from "../hooks/useMapActions";
+
 
 interface MapListItemProps {
   map: MapItem;
   selectedMapId: number | null;
   onSelect: (map: MapItem) => void;
   onClose: () => void;
+  mapModals: ReturnType<typeof useMapModals>; // ✅ 型は補完から取得 or 別途定義
 }
   
 const MapListItem: React.FC<MapListItemProps> = ({ 
   map, 
   selectedMapId, 
   onSelect, 
-  onClose , 
+  onClose,
+  mapModals, 
 }) => {
-  const { setMapList, setSelectedMap } = useMap(); // コンテキストからマップリストのセット関数を取得
-  const { selectedGroup } = useGroup(); // コンテキストから選択中のグループIDを取得
 
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const { 
+    isDeleteModalOpen, openDeleteModal, closeDeleteModal, 
+    isShareModalOpen, openShareModal, closeShareModal,
+  } = mapModals;
+
+  const { deleteMapById, checkShareStatus, selectMap } = useMapActions();
+  
   const [shareUrl, setShareUrl] = useState("");
 
 
   const handleSelect = () => {
-    onSelect(map);
-    toast.success(`マップ「${map.name}」を選択しました`);
-    onClose();
+    selectMap(map, onSelect, onClose);
   };
 
   const handleDelete = async () => {
-    try {
-      await deleteMap(map.id);
-      const maps = selectedGroup
-      ? await getGroupMapList(selectedGroup.uuid)
-      : await getMapList();
-
-      setMapList(maps);
-      setSelectedMap(null); // マップ削除後に選択マップをリセット
-      console.log("取得したマップ一覧:", maps); // 開発用ログ
-      toast.success(`マップ「${map.name}」を削除しました`);
-    } catch (error) {
-      console.error("マップ削除エラー:", error);
-      toast.error("マップの削除に失敗しました");
-    }
+    await deleteMapById(map.id, map.name);
   };
 
   const handleShare = async () => {
-    try {
-      const result = await checkSharedMap(map.id);
-      if (result) {
-        const url = `https://your-domain.com/shared-map/${result.share_uuid}`;
-        setShareUrl(url);
-      } else {
-        setShareUrl(""); // 未作成 → モーダル側で作成可能
-      }
-      setIsShareModalOpen(true);
-    } catch (error) {
-      toast.error("シェア状態の確認に失敗しました");
+    const url = await checkShareStatus(map.id);
+    if (url !== null) {
+      setShareUrl(url);
+      openShareModal();
     }
   };
 
@@ -77,17 +58,17 @@ const MapListItem: React.FC<MapListItemProps> = ({
       {/* モーダル呼び出し */}
       <MapDeleteModal
         isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
+        onClose={closeDeleteModal}
         onConfirm={async () => {
           await handleDelete();
-          setIsDeleteModalOpen(false);
+          closeDeleteModal();
         }}
         mapName={map.name}
       />
       <ShareMapModal
         isOpen={isShareModalOpen}
         onClose={() => {
-          setIsShareModalOpen(false);
+          closeShareModal();
           setShareUrl(""); // ✅ モーダルを閉じるときにリセット！
         }}
         shareUrl={shareUrl}
@@ -113,7 +94,7 @@ const MapListItem: React.FC<MapListItemProps> = ({
           </button>
         )}
           <button
-            onClick={() => setIsDeleteModalOpen(true)}
+            onClick={openDeleteModal}
             className="w-12 flex flex-col items-center text-gray-700 hover:text-red-500 cursor-pointer"
           >
             <Trash2 size={ICON_SIZES.MEDIUM} />  {/* ゴミ箱アイコン */}

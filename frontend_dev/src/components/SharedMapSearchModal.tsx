@@ -1,6 +1,6 @@
 // components/SharedMapSearchModal.tsx
 import React, { useState } from "react";
-import BaseModal from "./BaseModal";
+import BaseModal from "./BaseModal/BaseModal";
 
 
 interface SharedMapSearchModalProps {
@@ -16,7 +16,6 @@ const SharedMapSearchModal: React.FC<SharedMapSearchModalProps> = ({
 }) => {
   const [input, setInput] = useState("");
 
-  if (!isOpen) return null;
 
   return (
     <BaseModal isOpen={isOpen} onClose={onClose} title="シェアマップを開く" size="md">

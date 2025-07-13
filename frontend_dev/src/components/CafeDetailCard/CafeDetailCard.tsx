@@ -1,48 +1,38 @@
 // components/CafeDetailCard.tsx
 import React from "react";
+import clsx from "clsx";
 import { Heart, Share2, CirclePlus } from "lucide-react";
-import GoogleMapButton from "./GoogleMapButton";
-import CafeImageCarousel from "./CafeImageCarousel"; 
-import CafeDetailInfoTable from "./CafeDetailInfoTable"; 
-import { addCafeToMyCafe } from "../api/cafe"; 
-import { toast } from "react-hot-toast";
-import { MapItem } from "../types/map";
-import { Cafe } from "../types/cafe";
-
-import ReactGA from "react-ga4";
+import GoogleMapButton from "../GoogleMapButton";
+import CafeImageCarousel from "../CafeImageCarousel"; 
+import CafeDetailInfoTable from "../CafeDetailInfoTable"; 
+import { Cafe } from "../../types/cafe";
 
 
 interface CafeDetailCardProps {
   cafe: Cafe;
-  selectedMap: MapItem | null; 
   myCafeList?: Cafe[];
-  setMyCafeList: React.Dispatch<React.SetStateAction<Cafe[]>>;
   onAddClick?: () => void; // ✅ 追加ボタン用
+  onAddCafe: (cafe: Cafe) => void;
+  onShareCafe?: (cafe: Cafe) => void;
 }
 
 
 const CafeDetailCard: React.FC<CafeDetailCardProps> = ({ 
   cafe, 
-  selectedMap, 
   myCafeList, 
-  setMyCafeList,
   onAddClick = () => {}, // ✅ デフォルトは何もしない 
+  onAddCafe,
+  onShareCafe,
 }) => {
   // ✅ このカフェが登録済みか？
   const isRegistered = myCafeList?.some((myCafe) => myCafe.placeId === cafe.placeId) ?? false;
 
   const handleAddCafe = () => {
-    if (!selectedMap) return toast.error("マップを選択してください");
-    addCafeToMyCafe(selectedMap.id, cafe);
-    setMyCafeList(prev => [...prev, cafe]); // ✅ ここでmyCafeListを更新する！
-
-    ReactGA.gtag("event", "cafe_add", {
-      cafe_name: cafe.name,
-    });
+    onAddCafe(cafe);
   }
 
   const handleShareCafe = () => {
-    toast("カフェ共有機能は未実装です");
+    onShareCafe?.(cafe);
   }
 
 
@@ -81,7 +71,10 @@ const CafeDetailCard: React.FC<CafeDetailCardProps> = ({
         <div className="flex space-x-2 mt-1">
           {onAddClick && (
             <button
-              className="text-gray-600 hover:text-black cursor-pointer"
+              className={clsx(
+                "hover:text-black cursor-pointer",
+                "text-gray-600"
+              )}
               onClick={onAddClick}
             >
               <CirclePlus size={20} />
@@ -89,15 +82,19 @@ const CafeDetailCard: React.FC<CafeDetailCardProps> = ({
           )}
 
           <button 
-            className={`${
+            className={clsx(
+              "hover:text-black cursor-pointer",
               isRegistered ? "text-red-500" : "text-gray-600"
-            } hover:text-black cursor-pointer`}
+            )}
             onClick={handleAddCafe}
           >
             <Heart size={20} />
           </button>
           <button 
-            className="text-gray-600 hover:text-black cursor-pointer"
+            className={clsx(
+              "hover:text-black cursor-pointer",
+              "text-gray-600"
+            )}
             onClick={handleShareCafe}
           >
             <Share2 size={20} />
