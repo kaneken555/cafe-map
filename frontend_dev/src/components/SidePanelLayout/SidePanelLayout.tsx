@@ -1,7 +1,7 @@
 // components/SidePanelLayout.tsx
 import React from "react";
 import clsx from "clsx";
-import CloseButton from "./CloseButton";
+import CloseButton from "../CloseButton";
 
 
 interface SidePanelLayoutProps {

@@ -8,7 +8,7 @@ import Header from "../components/Header";
 import Map from "../components/Map";
 import MapListModal from "../components//MapListModal";
 import MyCafeListPanel from "../components/MyCafeListPanel/MyCafeListPanel"; // ✅ カフェ一覧パネル
-import SearchResultPanel from "../components/SearchResultPanel";
+import SearchResultPanel from "../components/SearchResultPanel/SearchResultPanel";
 
 import { Cafe, mockSearchResults } from "../api/mockCafeData"; // ✅ Cafe型をインポート
 import { MAP_MODES } from "../constants/map";

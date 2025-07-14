@@ -1,6 +1,6 @@
 // components/MapDeleteModal.tsx
 import React from "react";
-import BaseModal from "./BaseModal/BaseModal";
+import BaseModal from "../BaseModal/BaseModal";
 
 
 interface MapDeleteModalProps {

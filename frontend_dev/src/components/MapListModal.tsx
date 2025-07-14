@@ -5,12 +5,12 @@ import clsx from "clsx";
 import MapCreateModal from "./MapCreateModal/MapCreateModal"; 
 // import { mockMapData } from "../api/mockMapData"; 
 import MapListItem from "./MapListItem/MapListItem"; 
-import MapDeleteModal from "./MapDeleteModal";
+import MapDeleteModal from "./MapDeleteModal/MapDeleteModal";
 import BaseModal from "./BaseModal/BaseModal";
 
 import ModalActionButton from "./ModalActionButton";
 import SharedMapListItem from "./SharedMapListItem"; 
-import SharedMapSearchModal from "./SharedMapSearchModal";
+import SharedMapSearchModal from "./SharedMapSearchModal/SharedMapSearchModal";
 import { Coffee } from "lucide-react";
 import { MapItem, SharedMapItem } from "../types/map";
 import { toast } from "react-hot-toast";

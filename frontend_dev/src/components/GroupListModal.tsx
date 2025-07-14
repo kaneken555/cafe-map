@@ -5,7 +5,7 @@ import GroupCreateModal from "./GroupCreateModal";
 import GroupJoinModal from "./GroupJoinModal";
 import GroupInvitationModal from "./GroupInvitationModal";
 import GroupListItem from "./GroupListItem"; 
-import GroupSearchModal from "./GroupSearchModal";
+import GroupSearchModal from "./GroupSearchModal/GroupSearchModal";
 import ModalActionButton from "./ModalActionButton";
 
 import { Users } from "lucide-react";

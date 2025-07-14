@@ -1,32 +1,32 @@
-// components/SharedMapSearchModal.tsx
+// components/GroupJoinModal.tsx
 import React, { useState } from "react";
-import BaseModal from "./BaseModal/BaseModal";
+import BaseModal from "../BaseModal/BaseModal";
 
 
-interface SharedMapSearchModalProps {
+interface GroupSearchModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSearch: (input: string) => void;
 }
 
-const SharedMapSearchModal: React.FC<SharedMapSearchModalProps> = ({
-  isOpen,
-  onClose,
-  onSearch,
+const GroupSearchModal: React.FC<GroupSearchModalProps> = ({ 
+  isOpen, 
+  onClose, 
+  onSearch 
 }) => {
   const [input, setInput] = useState("");
 
 
   return (
-    <BaseModal isOpen={isOpen} onClose={onClose} title="シェアマップを開く" size="md">
+    <BaseModal isOpen={isOpen} onClose={onClose} title="グループ参加" size="md">
 
-      <p className="text-sm text-gray-700 mb-2">シェアマップのURLまたはIDを入力してください</p>
+      <p className="text-sm text-gray-700 mb-2">参加コードまたはURLを入力してください</p>
       <input
         type="text"
         value={input}
         onChange={(e) => setInput(e.target.value)}
         className="w-full border px-2 py-1 rounded mb-4"
-        placeholder="https://example.com/shared-map/xxxxx"
+        placeholder="https://example.com/invite/xxxxx"
       />
       <button
         onClick={() => onSearch(input)}
@@ -34,9 +34,10 @@ const SharedMapSearchModal: React.FC<SharedMapSearchModalProps> = ({
       >
         検索
       </button>
-        
+
     </BaseModal>
   );
 };
 
-export default SharedMapSearchModal;
+export default GroupSearchModal;
+

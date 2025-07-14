@@ -1,6 +1,6 @@
 // components/SharedMapListItem.tsx
 import React, { useState } from "react";
-import MapDeleteModal from "./MapDeleteModal";
+import MapDeleteModal from "./MapDeleteModal/MapDeleteModal";
 import ShareMapModal from "./ShareMapModal";
 import SharedMapRegisterModal from "./SharedMapRegisterModal";
 import { toast } from "react-hot-toast";
