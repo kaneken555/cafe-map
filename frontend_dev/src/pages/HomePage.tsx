@@ -3,6 +3,7 @@ import React, { useState } from "react";
 
 // Components
 import CafeDetailPanel from "../components/CafeDetailPanel";
+import CafeMapAssignModal from "../components/CafeMapAssignModal"; // ✅ カフェマップアサインモーダル
 import FooterActions from "../components/FooterActions/FooterActions"; // ✅ 追加
 import Header from "../components/Header";
 import Map from "../components/Map";
@@ -10,6 +11,7 @@ import MapListModal from "../components//MapListModal";
 import MyCafeListPanel from "../components/MyCafeListPanel/MyCafeListPanel"; // ✅ カフェ一覧パネル
 import SearchResultPanel from "../components/SearchResultPanel/SearchResultPanel";
 
+import { addCafeToMyCafe } from "../api/cafe";
 import { Cafe, mockSearchResults } from "../api/mockCafeData"; // ✅ Cafe型をインポート
 import { MAP_MODES } from "../constants/map";
 import { MapItem, SharedMapItem } from "../types/map";
@@ -18,14 +20,19 @@ import { useCafe } from "../contexts/CafeContext";
 import { useMap } from "../contexts/MapContext";
 // Hooks
 import { useHeaderActions } from "../hooks/useHeaderActions"; // ✅ ヘッダーアクションフックをインポート
+import { useCafeMapModals } from "../hooks/useCafeMapModals"; // ✅ カフェマップモーダルフックをインポート
 // Utils
 import { requireMapSelected } from "../utils/mapUtils";
 
 
 const HomePage: React.FC = () => {
   // コンテキストから必要な値を取得
-  const { cafeList, myCafeList, sharedMapCafeList } = useCafe(); // カフェコンテキストからcafeListとsetCafeListを取得
+  const { cafeList, myCafeList, setMyCafeList, sharedMapCafeList } = useCafe(); // カフェコンテキストからcafeListとsetCafeListを取得
   const { selectedMap, mapMode, setMapMode } = useMap(); // マップコンテキストからmapModeとsetMapModeを取得
+
+  const {
+    isCafeMapAssignModalOpen, openCafeMapAssignModal, closeCafeMapAssignModal,
+  } = useCafeMapModals();
   
   // 状態管理
   const [selectedCafe, setSelectedCafe] = useState<Cafe | null>(null); // ✅ カフェ詳細
@@ -66,6 +73,19 @@ const HomePage: React.FC = () => {
   
   const handleShowMyCafeMap = () =>
     requireMapSelected(selectedMap, () => setMapMode(MAP_MODES.mycafe));
+
+  const handleAddToMaps = (maps: MapItem[]) => {
+    if (!selectedCafe) return;
+    maps.forEach((map) => {
+      addCafeToMyCafe(map.id, selectedCafe)
+      console.log(`カフェ「${selectedCafe.name}」をマップ「${map.name}」に追加`);
+    });
+    // TODO: MyCafeListに追加するか検討
+    setMyCafeList((prev) => {
+      const isAlready = prev.some((c) => c.placeId === selectedCafe.placeId);
+      return isAlready ? prev : [...prev, selectedCafe];
+    });    
+  };
 
 
   return (
@@ -117,6 +137,14 @@ const HomePage: React.FC = () => {
           setSelectedCafe(null);
           setSelectedCafeId(null);
         }}
+        onAddCafeToMapClick={openCafeMapAssignModal} // ✅ useCafeMapModalsから取得した関数
+      />
+
+      <CafeMapAssignModal
+        isOpen={isCafeMapAssignModalOpen}
+        onClose={closeCafeMapAssignModal}
+        initialSelectedMap={selectedMap}
+        onAdd={handleAddToMaps}
       />
 
       {/* Map */}

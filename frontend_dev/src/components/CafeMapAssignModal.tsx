@@ -1,4 +1,4 @@
-// components/CafeMapSelectModal.tsx
+// components/CafeMapAssignModal.tsx
 import React, { useEffect, useState } from "react";
 import { MapIcon } from "lucide-react";
 import { MapItem } from "../types/map";
@@ -6,14 +6,14 @@ import { useMap } from "../contexts/MapContext";
 import { toast } from "react-hot-toast";
 import BaseModal from "./BaseModal/BaseModal";
 
-interface CafeMapSelectModalProps {
+interface CafeMapAssignModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialSelectedMap: MapItem | null;
   onAdd: (selectedMaps: MapItem[]) => void;
 }
 
-const CafeMapSelectModal: React.FC<CafeMapSelectModalProps> = ({
+const CafeMapAssignModal: React.FC<CafeMapAssignModalProps> = ({
   isOpen,
   onClose,
   initialSelectedMap,
@@ -91,4 +91,4 @@ const CafeMapSelectModal: React.FC<CafeMapSelectModalProps> = ({
   );
 };
 
-export default CafeMapSelectModal;
+export default CafeMapAssignModal;
