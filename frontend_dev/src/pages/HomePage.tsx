@@ -11,7 +11,6 @@ import MapListModal from "../components//MapListModal";
 import MyCafeListPanel from "../components/MyCafeListPanel/MyCafeListPanel"; // ✅ カフェ一覧パネル
 import SearchResultPanel from "../components/SearchResultPanel/SearchResultPanel";
 
-import { addCafeToMyCafe } from "../api/cafe";
 import { Cafe, mockSearchResults } from "../api/mockCafeData"; // ✅ Cafe型をインポート
 import { MAP_MODES } from "../constants/map";
 import { MapItem, SharedMapItem } from "../types/map";
@@ -21,6 +20,7 @@ import { useMap } from "../contexts/MapContext";
 // Hooks
 import { useHeaderActions } from "../hooks/useHeaderActions"; // ✅ ヘッダーアクションフックをインポート
 import { useCafeMapModals } from "../hooks/useCafeMapModals"; // ✅ カフェマップモーダルフックをインポート
+import { useCafeMapAssign } from "../hooks/useCafeMapAssign"; // ✅ カフェマップアサインフックをインポート
 // Utils
 import { requireMapSelected } from "../utils/mapUtils";
 
@@ -43,6 +43,8 @@ const HomePage: React.FC = () => {
   const [isSearchResultOpen, setIsSearchResultOpen] = useState(false); // ✅ 検索パネル表示用
   const [shareUuid, setShareUuid] = useState<string | null>(null);
   const [isMapListOpen, setIsMapListOpen] = useState(false); // ✅ mapモーダル状態
+
+  const { handleAddToMaps } = useCafeMapAssign(selectedCafe, setMyCafeList);
 
   const closeCafeListPanel = () => {
     setIsMyCafeListOpen(false)
@@ -73,19 +75,6 @@ const HomePage: React.FC = () => {
   
   const handleShowMyCafeMap = () =>
     requireMapSelected(selectedMap, () => setMapMode(MAP_MODES.mycafe));
-
-  const handleAddToMaps = (maps: MapItem[]) => {
-    if (!selectedCafe) return;
-    maps.forEach((map) => {
-      addCafeToMyCafe(map.id, selectedCafe)
-      console.log(`カフェ「${selectedCafe.name}」をマップ「${map.name}」に追加`);
-    });
-    // TODO: MyCafeListに追加するか検討
-    setMyCafeList((prev) => {
-      const isAlready = prev.some((c) => c.placeId === selectedCafe.placeId);
-      return isAlready ? prev : [...prev, selectedCafe];
-    });    
-  };
 
 
   return (
