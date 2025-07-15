@@ -1,7 +1,7 @@
 // components/GroupJoinModal.tsx
 import React from "react";
-import BaseModal from "./BaseModal/BaseModal";
-import ModalActionButton from "./ModalActionButton/ModalActionButton";
+import BaseModal from "../BaseModal/BaseModal";
+import ModalActionButton from "../ModalActionButton/ModalActionButton";
 
 
 interface GroupJoinModalProps {
