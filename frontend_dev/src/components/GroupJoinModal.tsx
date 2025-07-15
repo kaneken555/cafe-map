@@ -1,6 +1,7 @@
 // components/GroupJoinModal.tsx
 import React from "react";
 import BaseModal from "./BaseModal/BaseModal";
+import ModalActionButton from "./ModalActionButton/ModalActionButton";
 
 
 interface GroupJoinModalProps {
@@ -21,12 +22,12 @@ const GroupJoinModal: React.FC<GroupJoinModalProps> = ({
     <BaseModal isOpen={isOpen} onClose={onClose} title="グループ参加" size="md">
 
       <p className="text-center text-lg mb-6">{groupName}</p>
-      <button
+
+      <ModalActionButton
+        label="参加"
         onClick={onJoin}
-        className="w-full py-2 bg-[#FFC800] hover:bg-[#D8A900] text-black rounded font-medium"
-      >
-        参加
-      </button>
+        size="md"
+      />
 
     </BaseModal>
   );

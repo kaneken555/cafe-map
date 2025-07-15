@@ -5,6 +5,8 @@ import { MapItem } from "../types/map";
 import { useMap } from "../contexts/MapContext";
 import { toast } from "react-hot-toast";
 import BaseModal from "./BaseModal/BaseModal";
+import ModalActionButton from "./ModalActionButton/ModalActionButton";
+import { PlusCircle } from "lucide-react"; // 任意のアイコン
 
 interface CafeMapAssignModalProps {
   isOpen: boolean;
@@ -80,12 +82,12 @@ const CafeMapAssignModal: React.FC<CafeMapAssignModalProps> = ({
         })}
       </ul>
 
-      <button
-        className="w-full px-4 py-2 bg-[#FFC800] hover:bg-[#D8A900] text-black rounded cursor-pointer"
+      <ModalActionButton
+        label="追加"
         onClick={handleAdd}
-      >
-        追加
-      </button>
+        icon={<PlusCircle className="w-5 h-5" />}
+        size="lg"
+      />
         
     </BaseModal>
   );

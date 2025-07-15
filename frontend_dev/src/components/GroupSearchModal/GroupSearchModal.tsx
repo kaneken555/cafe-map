@@ -1,6 +1,7 @@
 // components/GroupJoinModal.tsx
 import React, { useState } from "react";
 import BaseModal from "../BaseModal/BaseModal";
+import ModalActionButton from "./../ModalActionButton/ModalActionButton";
 
 
 interface GroupSearchModalProps {
@@ -28,12 +29,12 @@ const GroupSearchModal: React.FC<GroupSearchModalProps> = ({
         className="w-full border px-2 py-1 rounded mb-4"
         placeholder="https://example.com/invite/xxxxx"
       />
-      <button
+
+      <ModalActionButton
+        label="検索"
         onClick={() => onSearch(input)}
-        className="w-full py-2 bg-[#FFC800] hover:bg-[#D8A900] text-black rounded font-medium cursor-pointer"
-      >
-        検索
-      </button>
+        size="md" // ← BaseModalと同じサイズを渡す
+      />
 
     </BaseModal>
   );
