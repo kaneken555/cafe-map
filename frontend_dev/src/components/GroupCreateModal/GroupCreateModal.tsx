@@ -1,9 +1,9 @@
 // components/GroupCreateModal.tsx
 import React, { useState } from "react";
 import clsx from "clsx";
-import { createGroup } from "../api/group";
-import { MODAL_STYLES } from "../constants/ui";  // スタイルをインポート
-import BaseModal from "./BaseModal/BaseModal"; // 共通のモーダルコンポーネント
+import { createGroup } from "../../api/group";
+import { MODAL_STYLES } from "../../constants/ui";  // スタイルをインポート
+import BaseModal from "../BaseModal/BaseModal"; // 共通のモーダルコンポーネント
 
 
 interface GroupCreateModalProps {

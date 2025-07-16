@@ -1,11 +1,11 @@
 // components/GroupListItem.tsx
 import React from "react";
 import { CheckCircle, Info, UserPlus } from "lucide-react";
-import { Group } from "../types/group";
+import { Group } from "../../types/group";
 import toast from "react-hot-toast";
-import { ICON_SIZES } from "../constants/ui";
+import { ICON_SIZES } from "../../constants/ui";
 
-import { useGroup } from "../contexts/GroupContext";
+import { useGroup } from "../../contexts/GroupContext";
 
 interface GroupListItemProps {
   group: Group;
