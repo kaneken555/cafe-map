@@ -1,8 +1,10 @@
 // components/ShareMapModal.tsx
 import React, { useRef } from "react";
+import { Share2 } from "lucide-react";
 import BaseModal from "./BaseModal/BaseModal";
 import toast from "react-hot-toast";
 import { createSharedMap } from "../api/sharedMap";
+import ModalActionButton from "./ModalActionButton/ModalActionButton";
 import ShareLinkSection from "./ShareLinkSection/ShareLinkSection";
 import QRCodeSection from "./QRCodeSection/QRCodeSection";
 
@@ -54,12 +56,12 @@ const ShareMapModal: React.FC<ShareMapModalProps> = ({
 
       {/* シェアリンクを作成するボタン */}
       {!shareUrl && (
-        <button
+        <ModalActionButton
+          label="シェアリンクを作成する"
           onClick={handleCreateLink}
-          className="w-full px-4 py-2 bg-[#FFC800] hover:bg-[#D8A900] cursor-pointer text-black rounded"
-          >
-          シェアリンクを作成する
-        </button>
+          icon={<Share2 className="w-5 h-5" />}
+          size="md"
+        />
       )}
 
       {/* URL + QRコード 表示（リンク作成後のみ表示） */}
