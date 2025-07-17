@@ -4,7 +4,7 @@ import { Meta, StoryObj } from "@storybook/react";
 import MapDeleteModal from "./MapDeleteModal";
 
 const meta: Meta<typeof MapDeleteModal> = {
-  title: "Components/MapDeleteModal",
+  title: "Modals/MapDeleteModal",
   component: MapDeleteModal,
   tags: ["autodocs"],
 };

@@ -1,13 +1,13 @@
 // components/CafeDetailPanel.tsx
 import React from "react";
 // import { addCafeToMyCafe } from "../api/cafe";
-import CafeDetailCard from "./CafeDetailCard/CafeDetailCard";
-import CloseButton from "./CloseButton";
-import { Cafe } from "../types/cafe";
+import CafeDetailCard from "../CafeDetailCard/CafeDetailCard";
+import CloseButton from "../CloseButton";
+import { Cafe } from "../../types/cafe";
 
-import { useMap } from "../contexts/MapContext";
-import { useCafe } from "../contexts/CafeContext";
-import { useCafeActions } from "../hooks/useCafeActions";
+import { useMap } from "../../contexts/MapContext";
+import { useCafe } from "../../contexts/CafeContext";
+import { useCafeActions } from "../../hooks/useCafeActions";
 
 import { toast } from "react-hot-toast";
 

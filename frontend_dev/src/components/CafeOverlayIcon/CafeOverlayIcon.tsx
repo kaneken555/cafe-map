@@ -1,7 +1,7 @@
 // components/CafeOverlayIcon.tsx
 import React from "react";
 import { OverlayView } from "@react-google-maps/api";
-import { Cafe } from "../types/cafe";
+import { Cafe } from "../../types/cafe";
 
 
 interface Props {

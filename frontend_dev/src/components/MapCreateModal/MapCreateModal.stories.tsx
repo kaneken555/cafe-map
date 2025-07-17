@@ -5,7 +5,7 @@ import { useState } from 'react';
 import MapCreateModal from './MapCreateModal';
 
 const meta: Meta<typeof MapCreateModal> = {
-  title: 'Components/MapCreateModal',
+  title: 'Modals/MapCreateModal',
   component: MapCreateModal,
   tags: ['autodocs'],
 };

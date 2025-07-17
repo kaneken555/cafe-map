@@ -1,13 +1,13 @@
 // components/ShareMapModal.tsx
 import React, { useRef } from "react";
 import { Share2 } from "lucide-react";
-import BaseModal from "./BaseModal/BaseModal";
+import BaseModal from "../BaseModal/BaseModal";
 import toast from "react-hot-toast";
-import { createSharedMap } from "../api/sharedMap";
-import ModalActionButton from "./ModalActionButton/ModalActionButton";
-import ShareLinkSection from "./ShareLinkSection/ShareLinkSection";
-import QRCodeSection from "./QRCodeSection/QRCodeSection";
-import { API_BASE_URL } from "../constants/api";
+import { createSharedMap } from "../../api/sharedMap";
+import ModalActionButton from "../ModalActionButton/ModalActionButton";
+import ShareLinkSection from "../ShareLinkSection/ShareLinkSection";
+import QRCodeSection from "../QRCodeSection/QRCodeSection";
+import { API_BASE_URL } from "../../constants/api";
 
 
 interface ShareMapModalProps {
