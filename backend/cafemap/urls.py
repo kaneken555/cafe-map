@@ -5,16 +5,15 @@ from django.contrib.auth import logout
 from . import views
 from .views import (
     MapAPIView, MapDetailAPIView, CafeAPIView, CafeDetailAPIView, TagAPIView, TagDetailAPIView, CafeTagAPIView, CafeTagDetailAPIView, CafeMemoAPIView,
-      # 👇 グループ関連のビューをインポート
-    GroupListCreateAPIView,
-    GroupJoinAPIView,
-    GroupMapListAPIView,
+    GroupListCreateAPIView, GroupJoinAPIView, GroupMapListAPIView,
     SharedMapAPIView,
     UserSharedMapListAPIView,
     SharedMapDetailAPIView,
     RegisterSharedMapAPIView,
     CopySharedMapAPIView,
 )
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
+
 
 urlpatterns = [
     # TODO: エンドポイントを修正(RESTful APIの設計に従う)
@@ -57,5 +56,10 @@ urlpatterns = [
     path('api/shared-maps/<uuid:uuid>/register/', RegisterSharedMapAPIView.as_view(), name='register_shared_map'),
     path("api/shared-maps/<uuid:uuid>/copy/", CopySharedMapAPIView.as_view(), name="copy_shared_map"),
 
-
+    # OpenAPIスキーマ(JSON形式)
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    # Swagger UI（OpenAPIスキーマをもとにAPIドキュメントを表示）
+    path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    # ReDoc（別のUIスタイル）
+    path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 ]
