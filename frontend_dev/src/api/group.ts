@@ -3,6 +3,7 @@ import axios from "axios";
 import { getCsrfToken } from "./auth";
 import { toast } from "react-hot-toast";
 import { Group } from "../types/group";
+import { API_BASE_PATH } from "../constants/api";
 
 
 /**
@@ -10,7 +11,7 @@ import { Group } from "../types/group";
  */
 export const fetchGroupList = async (): Promise<Group[]> => {
   try {
-    const res = await axios.get(`/api/v1/groups/`, 
+    const res = await axios.get(`${API_BASE_PATH}/groups/`, 
       {
         withCredentials: true,
       }
@@ -31,7 +32,7 @@ export const createGroup = async (name: string, description = ""): Promise<Group
 
   try {
     const res = await axios.post(
-      `/api/v1/groups/`,
+      `${API_BASE_PATH}/groups/`,
       { name, description },
       {
         headers: {
@@ -58,7 +59,7 @@ export const joinGroup = async (groupUuid: string): Promise<void> => {
 
   try {
     const res = await axios.post(
-      `/api/v1/groups/${groupUuid}/join/`,
+      `${API_BASE_PATH}/groups/${groupUuid}/join/`,
       {},
       {
         headers: {
@@ -81,7 +82,7 @@ export const joinGroup = async (groupUuid: string): Promise<void> => {
  */
 export const fetchGroupMaps = async (groupUuid: number): Promise<{ id: number; name: string }[]> => {
   try {
-    const res = await axios.get(`/api/v1/groups/${groupUuid}/maps/`, 
+    const res = await axios.get(`${API_BASE_PATH}/groups/${groupUuid}/maps/`, 
       {
         withCredentials: true,
       }

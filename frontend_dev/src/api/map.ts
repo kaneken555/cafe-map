@@ -1,6 +1,7 @@
 // src/api/map.ts
 import axios from "axios";
 import { getCsrfToken } from "./auth";
+import { API_BASE_PATH } from "../constants/api";
 
 
 interface CreateMapRequest {
@@ -18,7 +19,7 @@ export const createMap = async (params: CreateMapRequest): Promise<void> => {
   const csrfToken = await getCsrfToken(); // CSRF トークンを取得
 
   try {
-      const response = await axios.post(`/api/maps/`, 
+      const response = await axios.post(`${API_BASE_PATH}/maps/`, 
           { name: params.name }, 
           { 
               headers: {
@@ -43,7 +44,7 @@ export const createGroupMap = async (
   
     try {
       const response = await axios.post(
-        `/api/groups/${params.groupUuid}/maps/`,
+        `${API_BASE_PATH}/groups/${params.groupUuid}/maps/`,
         { name: params.name },
         {
           headers: {
@@ -63,7 +64,7 @@ export const createGroupMap = async (
 
 export const getMapList = async (): Promise<any> => {
   try {
-      const response = await axios.get(`/api/maps/`, {
+      const response = await axios.get(`${API_BASE_PATH}/maps/`, {
           withCredentials: true,
       }
     );
@@ -77,7 +78,7 @@ export const getMapList = async (): Promise<any> => {
 
 export const getGroupMapList = async (groupUuid: string): Promise<any> => {
   try {
-    const response = await axios.get(`/api/groups/${groupUuid}/maps/`, 
+    const response = await axios.get(`${API_BASE_PATH}/groups/${groupUuid}/maps/`, 
       {
         withCredentials: true,
       }
@@ -92,7 +93,7 @@ export const getGroupMapList = async (groupUuid: string): Promise<any> => {
 
 export const getSharedMapList = async (): Promise<any> => {
   try {
-      const response = await axios.get(`/api/shared-maps/`, 
+      const response = await axios.get(`${API_BASE_PATH}/shared_maps/`, 
         {
             withCredentials: true,
         }
@@ -111,7 +112,7 @@ export const deleteMap = async (mapId: number): Promise<void> => {
   const csrfToken = await getCsrfToken(); // CSRF トークンを取得
 
   try {
-    const response = await axios.delete(`/api/maps/${mapId}/`, 
+    const response = await axios.delete(`${API_BASE_PATH}/maps/${mapId}/`, 
       { 
         headers: {
             "X-CSRFToken": csrfToken,
@@ -133,7 +134,7 @@ export const registerSharedMap = async (uuid: string): Promise<void> => {
 
   try {
     const response = await axios.post(
-      `/api/shared-maps/${uuid}/register/`,
+      `${API_BASE_PATH}/shared-maps/${uuid}/register/`,
       {}, // ボディは空で送信
       {
         headers: { "X-CSRFToken": csrfToken },
@@ -154,7 +155,7 @@ export const copySharedMap = async (uuid: string, name: string): Promise<void> =
 
   try {
     const response = await axios.post(
-      `/api/shared-maps/${uuid}/copy/`,
+      `${API_BASE_PATH}/shared-maps/${uuid}/copy/`,
       { name },
       {
         headers: {

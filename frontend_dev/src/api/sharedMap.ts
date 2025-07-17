@@ -1,6 +1,7 @@
 // src/api/sharedMap.ts
 import axios from "axios";
 import { getCsrfToken } from "./auth";
+import { API_BASE_PATH } from "../constants/api";
 
 
 interface CreateSharedMapRequest {
@@ -28,7 +29,7 @@ export const createSharedMap = async (
 
   try {
     const response = await axios.post(
-      `/api/shared-maps/`,
+      `${API_BASE_PATH}/shared-maps/`,
       {
         map_id: params.mapId,
         title: params.title,
@@ -60,7 +61,7 @@ export const checkSharedMap = async (
   mapId: number
 ): Promise<CheckSharedMapResponse | null> => {
   try {
-    const response = await axios.get(`/api/v1/shared-maps/check/`, 
+    const response = await axios.get(`${API_BASE_PATH}/shared-maps/check/`, 
       {
         params: { map_id: mapId },
         withCredentials: true,

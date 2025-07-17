@@ -1,9 +1,10 @@
 // src/api/auth.ts
 import toast from "react-hot-toast";
+import { API_BASE_PATH } from "../constants/api";
 
 
 export const getCsrfToken = async () => {
-  const response = await fetch(`/api/v1/csrf/`, 
+  const response = await fetch(`${API_BASE_PATH}/csrf/`, 
     {
       credentials: "include",
     }
@@ -17,7 +18,7 @@ export const guestLogin = async () => {
   try {
     const csrfToken = await getCsrfToken(); // CSRF トークンを取得
 
-    const response = await fetch(`/api/v1/guest-login/`, 
+    const response = await fetch(`${API_BASE_PATH}/guest-login/`, 
       {
         method: "POST",
         credentials: "include", // クッキーを送信
@@ -43,7 +44,7 @@ export const guestLogin = async () => {
 export const googleLoginWithPopup = (): Promise<{ id: number; name: string } | null> => {
   return new Promise((resolve) => {
     const popup = window.open(
-      `/api/auth/login/google-oauth2/?state=popup`,
+      `${API_BASE_PATH}/auth/login/google-oauth2/?state=popup`,
       "GoogleLogin",
       "width=500,height=600"
     );
@@ -60,7 +61,7 @@ export const googleLoginWithPopup = (): Promise<{ id: number; name: string } | n
 
     const checkSession = async () => {
       try {
-        const res = await fetch(`/api/v1/auth/login/success/`, 
+        const res = await fetch(`${API_BASE_PATH}/auth/login/success/`, 
           {
             credentials: "include",
           }
@@ -98,7 +99,7 @@ export const logout = async () => {
   try {
     const csrfToken = await getCsrfToken(); // ✅ CSRFトークンを取得
 
-    const response = await fetch(`/api/v1/auth/logout/`, 
+    const response = await fetch(`${API_BASE_PATH}/auth/logout/`, 
       {
         method: "POST",
         credentials: "include",

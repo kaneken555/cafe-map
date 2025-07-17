@@ -6,6 +6,7 @@ import { useGroup } from "../contexts/GroupContext";
 import { getMapList, getSharedMapList } from "../api/map";
 import { fetchGroupList } from "../api/group";
 import ReactGA from "react-ga4";
+import { API_BASE_PATH } from "../constants/api";
 
 
 const gaId = import.meta.env.VITE_GA_MEASUREMENT_ID;
@@ -25,7 +26,7 @@ const InitializeApp = () => {
           ReactGA.send("pageview"); // 初期ページビュー送信
         }
 
-        const res = await fetch(`/api/v1/auth/login/success/`, 
+        const res = await fetch(`${API_BASE_PATH}/auth/login/success/`, 
           {
             credentials: "include",
           }
