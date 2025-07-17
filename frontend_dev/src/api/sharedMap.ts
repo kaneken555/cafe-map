@@ -60,7 +60,7 @@ export const checkSharedMap = async (
   mapId: number
 ): Promise<CheckSharedMapResponse | null> => {
   try {
-    const response = await axios.get(`/api/shared-maps/check/`, 
+    const response = await axios.get(`/api/v1/shared-maps/check/`, 
       {
         params: { map_id: mapId },
         withCredentials: true,

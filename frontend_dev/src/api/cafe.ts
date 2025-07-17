@@ -10,7 +10,7 @@ import { toast } from "react-hot-toast";
 export const getCafeList = async (mapId: number): Promise<Cafe[]> => {
   const csrfToken = await getCsrfToken();
   try {
-    const response = await axios.get(`/api/maps/${mapId}/`,
+    const response = await axios.get(`/api/v1/maps/${mapId}/`,
       { 
         headers: {
           "X-CSRFToken": csrfToken,
@@ -52,7 +52,7 @@ export const addCafeToMyCafe = async (mapId: number ,cafe: Cafe): Promise<void> 
 
   try {
     console.log("addCafe", cafe);
-    const response = await axios.post(`/api/maps/${mapId}/cafes/`, cafe,
+    const response = await axios.post(`/api/v1/maps/${mapId}/cafes/`, cafe,
       { 
         headers: {
           "X-CSRFToken": csrfToken,
@@ -75,7 +75,7 @@ export const searchCafe = async (lat: number, lng: number): Promise<Cafe[]> => {
 
   try {
     // 1. 検索APIからplace_id一覧を取得
-    const baseRes = await axios.get(`/api/fetch-cafes/?lat=${lat}&lng=${lng}`,
+    const baseRes = await axios.get(`/api/v1/fetch-cafes/?lat=${lat}&lng=${lng}`,
       {
         headers: { "X-CSRFToken": csrfToken },
         withCredentials: true,
@@ -107,7 +107,7 @@ export const searchCafeByKeyword = async (
   try {
     // 1. 検索APIからplace_id一覧を取得
     const res = await axios.get(
-      `/api/fetch-cafes/keyword/?q=${encodeURIComponent(keyword)}&lat=${lat}&lng=${lng}`,
+      `/api/v1/fetch-cafes/keyword/?q=${encodeURIComponent(keyword)}&lat=${lat}&lng=${lng}`,
       {
         headers: { "X-CSRFToken": csrfToken },
         withCredentials: true,
@@ -137,7 +137,7 @@ export const fetchCafeDetailsByPlaceIds = async (placeIds: string[]): Promise<Ca
 
   const detailPromises = placeIds.map(async (placeId, index) => {
     const detailRes = await axios.get(
-      `/api/fetch-cafe-detail/?place_id=${placeId}`,
+      `/api/v1/fetch-cafe-detail/?place_id=${placeId}`,
       {
         headers: { "X-CSRFToken": csrfToken },
         withCredentials: true,
@@ -177,7 +177,7 @@ export const searchSharedMap = async (groupUuid: string): Promise<Cafe[]> => {
 
   const csrfToken = await getCsrfToken(); // CSRF トークンを取得
   try {
-    const response = await axios.get(`/api/shared-maps/${groupUuid}/`, 
+    const response = await axios.get(`/api/v1/shared-maps/${groupUuid}/`, 
       { 
         headers: {
           "X-CSRFToken": csrfToken,
@@ -214,7 +214,7 @@ export const searchSharedMap = async (groupUuid: string): Promise<Cafe[]> => {
 export const getSharedMapCafeList = async (mapUuid: string): Promise<Cafe[]> => {
   const csrfToken = await getCsrfToken();
   try {
-    const response = await axios.get(`/api/shared-maps/${mapUuid}/`,
+    const response = await axios.get(`/api/v1/shared-maps/${mapUuid}/`,
       { 
         headers: {
           "X-CSRFToken": csrfToken,

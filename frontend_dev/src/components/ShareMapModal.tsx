@@ -42,7 +42,7 @@ const ShareMapModal: React.FC<ShareMapModalProps> = ({
         description: "",
       });
   
-      const url = `${baseUrl}/api/shared-map/${res.share_uuid}`;
+      const url = `${baseUrl}/api/v1/shared-map/${res.share_uuid}`;
       setShareUrl(url);
       toast.success("シェアリンクを作成しました");
     } catch (error) {

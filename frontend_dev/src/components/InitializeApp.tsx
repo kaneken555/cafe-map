@@ -25,7 +25,7 @@ const InitializeApp = () => {
           ReactGA.send("pageview"); // 初期ページビュー送信
         }
 
-        const res = await fetch(`/api/auth/login/success/`, 
+        const res = await fetch(`/api/v1/auth/login/success/`, 
           {
             credentials: "include",
           }

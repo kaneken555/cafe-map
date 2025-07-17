@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
-from .models import User, Map, Cafe, Tag, MapUserRelation, CafeMapRelation, Group, UserGroupRelation, GroupMapRelation, SharedMap, CafeSharedMapRelation, UserSharedMapRelation
+from ...models import User, Map, Cafe, Tag, MapUserRelation, CafeMapRelation, Group, UserGroupRelation, GroupMapRelation, SharedMap, CafeSharedMapRelation, UserSharedMapRelation
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.middleware.csrf import get_token

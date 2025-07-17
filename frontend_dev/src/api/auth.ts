@@ -3,7 +3,7 @@ import toast from "react-hot-toast";
 
 
 export const getCsrfToken = async () => {
-  const response = await fetch(`/api/csrf/`, 
+  const response = await fetch(`/api/v1/csrf/`, 
     {
       credentials: "include",
     }
@@ -17,7 +17,7 @@ export const guestLogin = async () => {
   try {
     const csrfToken = await getCsrfToken(); // CSRF トークンを取得
 
-    const response = await fetch(`/api/guest-login/`, 
+    const response = await fetch(`/api/v1/guest-login/`, 
       {
         method: "POST",
         credentials: "include", // クッキーを送信
@@ -60,7 +60,7 @@ export const googleLoginWithPopup = (): Promise<{ id: number; name: string } | n
 
     const checkSession = async () => {
       try {
-        const res = await fetch(`/api/auth/login/success/`, 
+        const res = await fetch(`/api/v1/auth/login/success/`, 
           {
             credentials: "include",
           }
@@ -98,7 +98,7 @@ export const logout = async () => {
   try {
     const csrfToken = await getCsrfToken(); // ✅ CSRFトークンを取得
 
-    const response = await fetch(`/api/auth/logout/`, 
+    const response = await fetch(`/api/v1/auth/logout/`, 
       {
         method: "POST",
         credentials: "include",
