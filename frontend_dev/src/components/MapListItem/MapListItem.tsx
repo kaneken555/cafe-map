@@ -1,6 +1,6 @@
 // components/MapListItem.tsx
 import React, { useState } from "react";
-import ShareMapModal from "../ShareMapModal";
+import ShareMapModal from "../ShareMapModal/ShareMapModal";
 import { CheckCircle, Trash2, Share as ShareIcon } from "lucide-react";
 import { MapItem } from "../../types/map";
 import { ICON_SIZES } from "../../constants/ui";

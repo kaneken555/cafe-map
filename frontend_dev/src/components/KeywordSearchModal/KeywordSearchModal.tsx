@@ -1,7 +1,8 @@
 // components/KeywordSearchModal.tsx
 import React, { useState } from "react";
 import BaseModal from "../BaseModal/BaseModal"; // 共通のモーダルコンポーネント
-
+import ModalActionButton from "../ModalActionButton/ModalActionButton";
+import { Search } from "lucide-react"; // 任意のアイコン
 
 interface Props {
   onClose: () => void;
@@ -29,12 +30,13 @@ const KeywordSearchModal: React.FC<Props> = ({
         onChange={(e) => setKeyword(e.target.value)}
         className="w-full px-3 py-2 border rounded mb-4"
       />
-      <button
+
+      <ModalActionButton
+        label="検索"
         onClick={handleSearch}
-        className="w-full bg-[#FFC800] text-black py-2 rounded hover:bg-[#D8A900] cursor-pointer"
-      >
-        検索
-      </button>
+        icon={<Search className="w-5 h-5" />}
+        size="md"
+      />
 
     </BaseModal>
   );

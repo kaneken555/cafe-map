@@ -1,7 +1,7 @@
 // components/MyCafeListPanel.tsx
 import React from "react";
-import CafeListItem from "../CafeListItem";
-import SidePanelLayout from "../SidePanelLayout";
+import CafeListItem from "../CafeListItem/CafeListItem";
+import SidePanelLayout from "../SidePanelLayout/SidePanelLayout";
 import { Cafe } from "../../types/cafe";
 
 

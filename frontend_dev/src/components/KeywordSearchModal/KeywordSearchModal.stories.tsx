@@ -4,7 +4,7 @@ import KeywordSearchModal from "./KeywordSearchModal";
 
 
 const meta: Meta<typeof KeywordSearchModal> = {
-  title: "Components/KeywordSearchModal",
+  title: "Modals/KeywordSearchModal",
   component: KeywordSearchModal,
 };
 export default meta;
