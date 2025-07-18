@@ -1,6 +1,5 @@
 // src/api/cafeApiClient.ts
 import axios from "axios";
-import { toast } from "react-hot-toast";
 import { getCsrfToken } from "./auth";
 import { API_BASE_PATH } from "../constants/api";
 import { Cafe } from "../types/cafe";
