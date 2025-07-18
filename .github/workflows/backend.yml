@@ -19,29 +19,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Deploy to EC2 via SSH
+      - name: SSH to Bastion and Run deploy.sh
         uses: appleboy/ssh-action@v1.0.0
         with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
+          host: ${{ secrets.BASTION_HOST }}
+          username: ${{ secrets.BASTION_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            echo "🔁 ディレクトリ移動"
-            cd ${{ secrets.DEPLOY_DIR }}
-
-            echo "📦 最新コード取得"
-            git pull origin main
-
-            echo "🧹 古いコンテナ停止"
-            docker-compose -f docker-compose.prod.yml down
-
-            echo "🐳 再ビルド & 起動"
-            docker-compose -f docker-compose.prod.yml up -d --build
-
-            echo "🧹 静的ファイル収集中..."
-            docker-compose -f docker-compose.prod.yml exec -T backend python manage.py collectstatic --noinput
-
-            echo "📦 DBマイグレーション中..."
-            docker-compose -f docker-compose.prod.yml exec -T backend python manage.py migrate
-
-            echo "✅ デプロイ完了"
+            echo "🚀 deploy.sh を実行中..."
+            cd /home/${{ secrets.BASTION_USER }}
+            chmod +x ./deploy.sh
+            ./deploy.sh
