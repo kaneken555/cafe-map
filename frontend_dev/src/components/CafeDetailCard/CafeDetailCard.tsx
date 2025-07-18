@@ -2,9 +2,9 @@
 import React from "react";
 import clsx from "clsx";
 import { Heart, Share2, CirclePlus } from "lucide-react";
-import GoogleMapButton from "../GoogleMapButton";
-import CafeImageCarousel from "../CafeImageCarousel"; 
-import CafeDetailInfoTable from "../CafeDetailInfoTable"; 
+import GoogleMapButton from "../GoogleMapButton/GoogleMapButton";
+import CafeImageCarousel from "../CafeImageCarousel/CafeImageCarousel"; 
+import CafeDetailInfoTable from "../CafeDetailInfoTable/CafeDetailInfoTable"; 
 import { Cafe } from "../../types/cafe";
 
 
