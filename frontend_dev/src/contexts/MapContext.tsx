@@ -18,29 +18,32 @@ interface MapContextProps {
 
 const MapContext = createContext<MapContextProps | undefined>(undefined);
 
-export const MapProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [mapList, setMapList] = useState<MapItem[]>([]);
-  const [selectedMap, setSelectedMap] = useState<MapItem | null>(null);
-  const [sharedMapList, setSharedMapList] = useState<SharedMapItem[]>([]);
-  const [mapMode, setMapMode] = useState<MapMode>(MAP_MODES.search); // 初期値を "mycafe" に設定
+export const MapProvider: React.FC<{
+  children: React.ReactNode; 
+  valueOverride?: Partial<MapContextProps>; // ✅ 追加
+}> = ({ children, valueOverride }) => {
+  const [mapList, setMapList] = useState<MapItem[]>(valueOverride?.mapList ?? []);
+  const [selectedMap, setSelectedMap] = useState<MapItem | null>(valueOverride?.selectedMap ?? null);
+  const [sharedMapList, setSharedMapList] = useState<SharedMapItem[]>(valueOverride?.sharedMapList ?? []);
+  const [mapMode, setMapMode] = useState<MapMode>(valueOverride?.mapMode ?? MAP_MODES.search);
 
-  const resetMapContext = () => {
+  const resetMapContext = valueOverride?.resetMapContext ?? (() => {
     setMapList([]);
     setSelectedMap(null);
     setSharedMapList([]);
     setMapMode(MAP_MODES.search); // 初期値にリセット
-  };
+  });
 
   const value = useMemo(
     () => ({
       mapList,
-      setMapList,
+      setMapList: valueOverride?.setMapList ?? setMapList,
       selectedMap,
-      setSelectedMap,
+      setSelectedMap: valueOverride?.setSelectedMap ?? setSelectedMap,
       sharedMapList,
-      setSharedMapList,
+      setSharedMapList: valueOverride?.setSharedMapList ?? setSharedMapList,
       mapMode,
-      setMapMode,
+      setMapMode: valueOverride?.setMapMode ?? setMapMode,
       resetMapContext,
     }),
     [mapList, selectedMap, sharedMapList, mapMode]

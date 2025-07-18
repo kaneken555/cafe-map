@@ -1,14 +1,14 @@
 // components/SharedMapListItem.tsx
 import React, { useState } from "react";
-import MapDeleteModal from "./MapDeleteModal/MapDeleteModal";
-import ShareMapModal from "./ShareMapModal/ShareMapModal";
-import SharedMapRegisterModal from "./SharedMapRegisterModal";
+import MapDeleteModal from "../MapDeleteModal/MapDeleteModal";
+import ShareMapModal from "../ShareMapModal/ShareMapModal";
+import SharedMapRegisterModal from "../SharedMapRegisterModal";
 import { toast } from "react-hot-toast";
 import { CheckCircle, Trash2, Share as ShareIcon } from "lucide-react";
-import { SharedMapItem } from "../types/map";
-import { ICON_SIZES } from "../constants/ui";
+import { SharedMapItem } from "../../types/map";
+import { ICON_SIZES } from "../../constants/ui";
 
-import { useMapModals } from "../hooks/useMapModals";
+import { useMapModals } from "../../hooks/useMapModals";
 
 
 interface SharedMapListItemProps {

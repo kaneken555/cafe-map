@@ -4,7 +4,7 @@ import clsx from "clsx";
 
 import { ArrowRightToLine, User as UserIcon, LogIn, Users } from "lucide-react";
 
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface LoginMenuProps {
   isOpen: boolean;

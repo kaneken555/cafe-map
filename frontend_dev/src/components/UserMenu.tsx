@@ -3,7 +3,7 @@ import React from "react";
 import clsx from "clsx";
 
 import { LogIn, User as UserIcon } from "lucide-react";
-import LoginMenu from "./LoginMenu";
+import LoginMenu from "./LoginMenu/LoginMenu";
 import { googleLoginWithPopup } from "../api/auth";
 import { getMapList, getSharedMapList } from "../api/map";
 import { fetchGroupList } from "../api/group";

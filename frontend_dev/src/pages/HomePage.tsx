@@ -3,7 +3,7 @@ import React, { useState } from "react";
 
 // Components
 import CafeDetailPanel from "../components/CafeDetailPanel/CafeDetailPanel";
-import CafeMapAssignModal from "../components/CafeMapAssignModal"; // ✅ カフェマップアサインモーダル
+import CafeMapAssignModal from "../components/CafeMapAssignModal/CafeMapAssignModal"; // ✅ カフェマップアサインモーダル
 import FooterActions from "../components/FooterActions/FooterActions"; // ✅ 追加
 import Header from "../components/Header";
 import Map from "../components/Map";

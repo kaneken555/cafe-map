@@ -1,11 +1,11 @@
 // components/CafeMapAssignModal.tsx
 import React, { useEffect, useState } from "react";
 import { MapIcon } from "lucide-react";
-import { MapItem } from "../types/map";
-import { useMap } from "../contexts/MapContext";
+import { MapItem } from "../../types/map";
+import { useMap } from "../../contexts/MapContext";
 import { toast } from "react-hot-toast";
-import BaseModal from "./BaseModal/BaseModal";
-import ModalActionButton from "./ModalActionButton/ModalActionButton";
+import BaseModal from "../BaseModal/BaseModal";
+import ModalActionButton from "../ModalActionButton/ModalActionButton";
 import { PlusCircle } from "lucide-react"; // 任意のアイコン
 
 interface CafeMapAssignModalProps {

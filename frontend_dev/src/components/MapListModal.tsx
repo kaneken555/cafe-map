@@ -9,7 +9,7 @@ import MapDeleteModal from "./MapDeleteModal/MapDeleteModal";
 import BaseModal from "./BaseModal/BaseModal";
 
 import ModalActionButton from "./ModalActionButton/ModalActionButton";
-import SharedMapListItem from "./SharedMapListItem"; 
+import SharedMapListItem from "./SharedMapListItem/SharedMapListItem"; 
 import SharedMapSearchModal from "./SharedMapSearchModal/SharedMapSearchModal";
 import { Coffee } from "lucide-react";
 import { MapItem, SharedMapItem } from "../types/map";

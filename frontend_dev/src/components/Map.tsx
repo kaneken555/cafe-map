@@ -4,7 +4,7 @@ import { GoogleMap, LoadScript } from "@react-google-maps/api";
 import MapButton from "./MapButton/MapButton"; 
 import CafeOverlayIcon from "./CafeOverlayIcon/CafeOverlayIcon"; // ✅ 切り出したカフェアイコン表示用コンポーネント
 import KeywordSearchModal from "./KeywordSearchModal/KeywordSearchModal"; // ✅ キーワード検索モーダルをインポート
-import LoadingOverlay from "./LoadingOverlay"; // ✅ ローディングオーバーレイコンポーネントをインポート
+import LoadingOverlay from "./LoadingOverlay/LoadingOverlay"; // ✅ ローディングオーバーレイコンポーネントをインポート
 import { Cafe } from "../types/cafe";
 import { DEFAULT_CENTER, MAP_CONTAINER_STYLE, MAP_MODES } from "../constants/map";
 
