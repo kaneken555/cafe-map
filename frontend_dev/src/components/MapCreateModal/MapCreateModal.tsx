@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import BaseModal from "../BaseModal/BaseModal";
 import { MODAL_STYLES } from "../../constants/ui";  // スタイルをインポート
+import ModalActionButton from "./../ModalActionButton/ModalActionButton";
 // import { useMapActions } from "../../hooks/useMapActions"; // ✅ 追加
 
 
@@ -38,12 +39,11 @@ const MapCreateModal: React.FC<MapCreateModalProps> = ({
         onChange={(e) => setMapName(e.target.value)}
       />
 
-      <button 
-        className="w-full px-4 py-2 bg-[#FFC800] hover:bg-[#D8A900] cursor-pointer text-black rounded "
-        onClick={() => createMap(mapName, handleClose)} // ✅ ここで呼び出し
-        >
-        作成
-      </button>
+      <ModalActionButton
+        label="作成"
+        onClick={() => createMap(mapName, handleClose)}
+        size="sm"
+      />
 
     </BaseModal>
   );

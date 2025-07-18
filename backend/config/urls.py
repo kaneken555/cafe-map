@@ -19,6 +19,7 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('cafemap.urls')),  # API のルーティング
+    path("api/v1/", include("cafemap.api.v1.urls")),
+
 
 ]

@@ -70,9 +70,10 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',  # セッション認証
         'rest_framework.authentication.BasicAuthentication',  # BASIC認証
     ),
-        'DEFAULT_PERMISSION_CLASSES': [
+    'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',  # 認証が必須
     ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',  # スキーマ自動生成を有効化
 }
 
 
@@ -89,6 +90,8 @@ INSTALLED_APPS = [
     "corsheaders",
     'social_django',
     'cafemap',
+    'drf_spectacular',
+    # 'drf_spectacular_sidecar',  # ✅ 追加！
 
 ]
 
@@ -261,3 +264,11 @@ if not DEBUG:
         send_default_pii=True,
         traces_sample_rate=1.0,
     )
+
+# DRF Spectacular 設定
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'CafeMap API',
+    'DESCRIPTION': 'マップ＆カフェ共有アプリのAPI仕様書',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+}
