@@ -1,6 +1,6 @@
 // src/api/sharedMap.ts
 import axios from "axios";
-import { getCsrfToken } from "./auth";
+import { getCsrfToken } from "../services/authService";
 import { API_BASE_PATH } from "../constants/api";
 
 

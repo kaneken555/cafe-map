@@ -1,6 +1,6 @@
-// src/api/auth.ts
+// src/api/authService.ts
 import toast from "react-hot-toast";
-import { AuthApiClient } from "./authApiClient";
+import { AuthApiClient } from "../api/authApiClient";
 
 
 export const getCsrfToken = async () => {

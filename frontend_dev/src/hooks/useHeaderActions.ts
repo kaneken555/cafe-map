@@ -4,7 +4,7 @@ import { useMap } from "../contexts/MapContext";
 import { useCafe } from "../contexts/CafeContext";
 import { useGroup } from "../contexts/GroupContext";
 import { getCafeList, getSharedMapCafeList } from "../services/cafeService";
-import { guestLogin, logout } from "../api/auth";
+import { guestLogin, logout } from "../services/authService";
 import { getMapList, getSharedMapList } from "../services/mapService";
 import { fetchGroupList } from "../services/groupService";
 import { toast } from "react-hot-toast";

@@ -1,6 +1,6 @@
 // src/api/cafeApiClient.ts
 import axios from "axios";
-import { getCsrfToken } from "./auth";
+import { getCsrfToken } from "../services/authService";
 import { API_BASE_PATH } from "../constants/api";
 import { Cafe } from "../types/cafe";
 
