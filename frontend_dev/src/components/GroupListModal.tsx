@@ -10,7 +10,7 @@ import ModalActionButton from "./ModalActionButton/ModalActionButton";
 
 import { Users } from "lucide-react";
 import { Group } from "../types/group";
-import { fetchGroupList } from "../api/group";
+import { fetchGroupList } from "../services/groupService";
 import { toast } from "react-hot-toast";
 import { extractUuidFromUrl } from "../utils/extractUuid";
 

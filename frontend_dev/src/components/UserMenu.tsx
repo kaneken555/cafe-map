@@ -5,8 +5,8 @@ import clsx from "clsx";
 import { LogIn, User as UserIcon } from "lucide-react";
 import LoginMenu from "./LoginMenu/LoginMenu";
 import { googleLoginWithPopup } from "../api/auth";
-import { getMapList, getSharedMapList } from "../api/map";
-import { fetchGroupList } from "../api/group";
+import { getMapList, getSharedMapList } from "../services/mapService";
+import { fetchGroupList } from "../services/groupService";
 import { toast } from "react-hot-toast";
 import { ICON_SIZES } from "../constants/ui";
 

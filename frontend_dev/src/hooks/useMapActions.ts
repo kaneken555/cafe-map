@@ -7,9 +7,9 @@ import {
   getMapList,
   getGroupMapList,
   deleteMap,
-} from "../api/map";
+} from "../services/mapService";
 import { checkSharedMap } from "../api/sharedMap";
-import { registerSharedMap as registerSharedMapApi } from "../api/map";
+import { registerSharedMap as registerSharedMapApi } from "../services/mapService";
 import { MapItem } from "../types/map";
 import { toast } from "react-hot-toast";
 import ReactGA from "react-ga4";

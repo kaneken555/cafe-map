@@ -1,5 +1,5 @@
-// src/api/map.ts
-import { MapApiClient, CreateMapRequest, CreateGroupMapRequest } from "./mapApiClient";
+// src/api/mapService.ts
+import { MapApiClient, CreateMapRequest, CreateGroupMapRequest } from "../api/mapApiClient";
 
 
 export const createMap = async (params: CreateMapRequest): Promise<void> => {

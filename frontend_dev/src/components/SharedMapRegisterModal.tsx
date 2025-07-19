@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import BaseModal from "./BaseModal/BaseModal";
 import { SharedMapItem } from "../types/map";
-import { getMapList, copySharedMap } from "../api/map";
+import { getMapList, copySharedMap } from "../services/mapService";
 import toast from "react-hot-toast";
 
 import { useMap } from "../contexts/MapContext"; // マップコンテキストをインポート

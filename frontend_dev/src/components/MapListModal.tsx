@@ -15,7 +15,7 @@ import { Coffee } from "lucide-react";
 import { MapItem, SharedMapItem } from "../types/map";
 import { toast } from "react-hot-toast";
 import { extractUuidFromUrl } from "../utils/extractUuid";
-import { searchSharedMap } from "../api/cafe";
+import { searchSharedMap } from "../services/cafeService";
 
 import { useMap } from "../contexts/MapContext";
 import { useCafe } from "../contexts/CafeContext"; // ✅ カフェコンテキストをインポート

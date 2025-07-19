@@ -3,8 +3,8 @@ import { useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useMap } from "../contexts/MapContext";
 import { useGroup } from "../contexts/GroupContext";
-import { getMapList, getSharedMapList } from "../api/map";
-import { fetchGroupList } from "../api/group";
+import { getMapList, getSharedMapList } from "../services/mapService";
+import { fetchGroupList } from "../services/groupService";
 import ReactGA from "react-ga4";
 import { API_BASE_PATH } from "../constants/api";
 
