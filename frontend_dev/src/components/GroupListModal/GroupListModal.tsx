@@ -1,23 +1,23 @@
 // components/GroupListModal.tsx
 import React from "react";
-import BaseModal from "./BaseModal/BaseModal";
-import GroupCreateModal from "./GroupCreateModal/GroupCreateModal";
-import GroupJoinModal from "./GroupJoinModal/GroupJoinModal";
-import GroupInvitationModal from "./GroupInvitationModal/GroupInvitationModal";
-import GroupListItem from "./GroupListItem/GroupListItem"; 
-import GroupSearchModal from "./GroupSearchModal/GroupSearchModal";
-import ModalActionButton from "./ModalActionButton/ModalActionButton";
+import BaseModal from "../BaseModal/BaseModal";
+import GroupCreateModal from "../GroupCreateModal/GroupCreateModal";
+import GroupJoinModal from "../GroupJoinModal/GroupJoinModal";
+import GroupInvitationModal from "../GroupInvitationModal/GroupInvitationModal";
+import GroupListItem from "../GroupListItem/GroupListItem"; 
+import GroupSearchModal from "../GroupSearchModal/GroupSearchModal";
+import ModalActionButton from "../ModalActionButton/ModalActionButton";
 
 import { Users } from "lucide-react";
-import { Group } from "../types/group";
-import { fetchGroupList } from "../services/groupService";
+import { Group } from "../../types/group";
+import { fetchGroupList } from "../../services/groupService";
 import { toast } from "react-hot-toast";
-import { extractUuidFromUrl } from "../utils/extractUuid";
+import { extractUuidFromUrl } from "../../utils/extractUuid";
 
-import { useGroup } from "../contexts/GroupContext";
+import { useGroup } from "../../contexts/GroupContext";
 
-import { useGroupActions } from "../hooks/useGroupActions"; // ✅ グループアクションフックをインポート
-import { useGroupModals } from "../hooks/useGroupModals";
+import { useGroupActions } from "../../hooks/useGroupActions"; // ✅ グループアクションフックをインポート
+import { useGroupModals } from "../../hooks/useGroupModals";
 
 
 interface GroupListModalProps {

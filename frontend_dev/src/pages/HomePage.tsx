@@ -7,7 +7,7 @@ import CafeMapAssignModal from "../components/CafeMapAssignModal/CafeMapAssignMo
 import FooterActions from "../components/FooterActions/FooterActions"; // ✅ 追加
 import Header from "../components/Header";
 import Map from "../components/Map";
-import MapListModal from "../components//MapListModal";
+import MapListModal from "../components/MapListModal/MapListModal";
 import MyCafeListPanel from "../components/MyCafeListPanel/MyCafeListPanel"; // ✅ カフェ一覧パネル
 import SearchResultPanel from "../components/SearchResultPanel/SearchResultPanel";
 

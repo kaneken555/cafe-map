@@ -4,7 +4,7 @@ import clsx from "clsx";
 import SideMenu from "./SideMenu/SideMenu";
 import HeaderButton from "./HeaderButton/HeaderButton";
 import UserMenu from "./UserMenu";
-import GroupListModal from "./GroupListModal";
+import GroupListModal from "./GroupListModal/GroupListModal";
 import { Coffee, Map as MapIcon, List as ListIcon, Layers, Menu } from "lucide-react";
 // import { MapItem, SharedMapItem } from "../types/map";
 import { APP_TITLE } from "../constants/app"; // アプリタイトルをインポート
