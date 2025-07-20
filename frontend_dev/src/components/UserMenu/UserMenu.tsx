@@ -3,17 +3,17 @@ import React from "react";
 import clsx from "clsx";
 
 import { LogIn, User as UserIcon } from "lucide-react";
-import LoginMenu from "./LoginMenu/LoginMenu";
-import { googleLoginWithPopup } from "../services/authService";
-import { getMapList, getSharedMapList } from "../services/mapService";
-import { fetchGroupList } from "../services/groupService";
+import LoginMenu from "../LoginMenu/LoginMenu";
+import { googleLoginWithPopup } from "../../services/authService";
+import { getMapList, getSharedMapList } from "../../services/mapService";
+import { fetchGroupList } from "../../services/groupService";
 import { toast } from "react-hot-toast";
-import { ICON_SIZES } from "../constants/ui";
+import { ICON_SIZES } from "../../constants/ui";
 
 // Contexts
-import { useAuth } from "../contexts/AuthContext";
-import { useMap } from "../contexts/MapContext";
-import { useGroup } from "../contexts/GroupContext";
+import { useAuth } from "../../contexts/AuthContext";
+import { useMap } from "../../contexts/MapContext";
+import { useGroup } from "../../contexts/GroupContext";
 
 interface Props {
   isOpen: boolean;
