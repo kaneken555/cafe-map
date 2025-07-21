@@ -14,25 +14,28 @@ interface GroupContextProps {
 
 const GroupContext = createContext<GroupContextProps | undefined>(undefined);
 
-export const GroupProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [groupList, setGroupList] = useState<Group[]>([]);
-  const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
-  const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
+export const GroupProvider: React.FC<{
+  children: React.ReactNode;
+  valueOverride?: Partial<GroupContextProps>; // ✅ 追加
+}> = ({ children, valueOverride }) => {
+  const [groupList, setGroupList] = useState<Group[]>(valueOverride?.groupList ?? []);
+  const [selectedGroup, setSelectedGroup] = useState<Group | null>(valueOverride?.selectedGroup ?? null);
+  const [selectedGroupId, setSelectedGroupId] = useState<number | null>(valueOverride?.selectedGroupId ?? null);
 
-  const resetGroupContext = () => {
+  const resetGroupContext = valueOverride?.resetGroupContext ?? (() => {
     setGroupList([]);
     setSelectedGroup(null);
     setSelectedGroupId(null);
-  };
+  });
 
   const value = useMemo(
     () => ({
       groupList,
-      setGroupList,
+      setGroupList: valueOverride?.setGroupList ?? setGroupList,
       selectedGroup,
-      setSelectedGroup,
+      setSelectedGroup: valueOverride?.setSelectedGroup ?? setSelectedGroup,
       selectedGroupId,
-      setSelectedGroupId,
+      setSelectedGroupId: valueOverride?.setSelectedGroupId ?? setSelectedGroupId,
       resetGroupContext,
     }),
     [groupList, selectedGroup, selectedGroupId]

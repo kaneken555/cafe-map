@@ -1,5 +1,5 @@
-// src/api/cafe.ts
-import { Cafe } from "./mockCafeData";
+// src/api/cafeService.ts
+import { Cafe } from "../types/cafe";
 import { toast } from "react-hot-toast";
 import { CafeApiClient } from "../api/cafeApiClient";
 

@@ -20,6 +20,21 @@ http {
         listen 80;
         server_name ${NGINX_SERVER_NAME};
 
+        # ✅ セキュリティヘッダの追加
+        add_header Content-Security-Policy "
+            default-src 'self';
+            script-src 'self' https://www.googletagmanager.com https://www.google-analytics.com;
+            connect-src 'self' https://www.google-analytics.com;
+            img-src 'self' https://www.google-analytics.com;
+            style-src 'self' 'unsafe-inline';
+            font-src 'self';
+        " always;
+        add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload" always;
+        add_header X-Frame-Options "DENY" always;
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+        add_header Permissions-Policy "geolocation=(), camera=()" always;
+
         location = /health/ {
             allow all;
             add_header Content-Type text/plain;

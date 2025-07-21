@@ -1,5 +1,5 @@
-// src/api/group.ts
-import { GroupApiClient } from "./groupApiClient";
+// src/api/groupService.ts
+import { GroupApiClient } from "../api/groupApiClient";
 import { toast } from "react-hot-toast";
 import { Group } from "../types/group";
 

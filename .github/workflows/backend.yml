@@ -26,6 +26,17 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-1
 
+
+      - name: Zip backend directory
+        run: |
+          zip -r deploy.zip backend nginx docker-compose.prod.yml -x '**/__pycache__/*' -x '**/.DS_Store'
+
+      - name: Save SSH private key
+        run: |
+          echo "${{ secrets.EC2_SSH_KEY }}" > private_key.pem
+          chmod 600 private_key.pem
+  
+
       # 🔹 GitHub Actions のグローバルIPを取得
       - name: Get GitHub Actions IP
         id: myip
@@ -42,25 +53,25 @@ jobs:
             --cidr ${{ env.IP }}/32 \
             --region ap-northeast-1
 
-      # 🔹 デプロイ処理（踏み台経由でターゲットEC2にSSHしてdeploy.sh実行）
-      - name: SSH to Bastion and Run deploy.sh
-        uses: appleboy/ssh-action@v1.0.0
-        with:
-          host: ${{ secrets.BASTION_HOST }}
-          username: ${{ secrets.BASTION_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            echo "🔑 ターゲット用のSSH鍵を保存"
-            echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/target_key.pem
-            chmod 600 ~/.ssh/target_key.pem
+      # 🔹 成果物の転送（SCP経由）
+      - name: Upload via SCP
+        run: |
+          scp -o ProxyJump=${{ secrets.BASTION_USER }}@${{ secrets.BASTION_HOST }} \
+              -i private_key.pem deploy.zip \
+              ec2-user@${{ secrets.TARGET_PRIVATE_IP }}:/home/ec2-user/
 
-            echo "🚀 ターゲットEC2で deploy.sh 実行"
-            ssh -o StrictHostKeyChecking=no -i ~/.ssh/target_key.pem ec2-user@${{ secrets.TARGET_PRIVATE_IP }} << 'EOS'
-              echo "📦 デプロイスクリプトを実行中..."
-              cd /home/ec2-user/
-              chmod +x ./deploy.sh
-              ./deploy.sh
-            EOS
+      # 🔹 SSHして展開・再起動
+      - name: SSH and Deploy
+        run: |
+          ssh -o ProxyJump=${{ secrets.BASTION_USER }}@${{ secrets.BASTION_HOST }} \
+              -i private_key.pem ec2-user@${{ secrets.TARGET_PRIVATE_IP }} << 'EOF'
+            set -e
+            cd /home/ec2-user
+            rm -rf backend nginx
+            unzip -o deploy.zip
+            docker compose -f docker-compose.prod.yml down
+            docker compose -f docker-compose.prod.yml up -d --build
+          EOF
 
       # 🔹 セキュリティグループからIPを削除（常に実行）
       - name: Revoke SSH access

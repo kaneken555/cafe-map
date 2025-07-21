@@ -1,8 +1,8 @@
 // hooks/useGroupActions.ts
 import { useGroup } from "../contexts/GroupContext";
 import { useMap } from "../contexts/MapContext";
-import { fetchGroupList, joinGroup } from "../api/group";
-import { getGroupMapList, getMapList } from "../api/map";
+import { fetchGroupList, joinGroup } from "../services/groupService";
+import { getGroupMapList, getMapList } from "../services/mapService";
 import { toast } from "react-hot-toast";
 import { MAP_MODES } from "../constants/map";
 import { Group } from "../types/group";
