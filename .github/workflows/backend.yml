@@ -26,6 +26,7 @@ jobs:
         with:
           repository: kaneken555/terraform
           path: terraform
+          token: ${{ secrets.TF_REPO_PAT }}  # Privateの場合はトークン必須
 
       # 🔹 3. Terraformで踏み台EC2作成（bastion moduleのみ apply）
       - name: Terraform Apply Bastion
