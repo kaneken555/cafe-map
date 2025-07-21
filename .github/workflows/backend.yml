@@ -79,8 +79,8 @@ jobs:
             set -e
             cd /home/ec2-user
             unzip -o deploy.zip
-            docker compose -f docker-compose.prod.yml down
-            docker compose -f docker-compose.prod.yml up -d --build
+            docker-compose -f docker-compose.prod.yml down
+            docker-compose -f docker-compose.prod.yml up -d --build
           EOF
 
       # 🔹 セキュリティグループからIPを削除（常に実行）
