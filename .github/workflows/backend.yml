@@ -64,20 +64,20 @@ jobs:
           
           
       # 🔹 成果物の転送（SCP経由）
-      - name: Upload via SCP
+      - name: Upload via SCP through Bastion
         run: |
-          scp -o ProxyJump=${{ secrets.BASTION_USER }}@${{ secrets.BASTION_HOST }} \
+          scp -o "ProxyCommand=ssh -i private_key.pem -W %h:%p ec2-user@${{ secrets.BASTION_HOST }}" \
               -i private_key.pem deploy.zip \
               ec2-user@${{ secrets.TARGET_PRIVATE_IP }}:/home/ec2-user/
+    
 
       # 🔹 SSHして展開・再起動
       - name: SSH and Deploy
         run: |
-          ssh -o ProxyJump=${{ secrets.BASTION_USER }}@${{ secrets.BASTION_HOST }} \
+          ssh -o "ProxyCommand=ssh -i private_key.pem -W %h:%p ec2-user@${{ secrets.BASTION_HOST }}" \
               -i private_key.pem ec2-user@${{ secrets.TARGET_PRIVATE_IP }} << 'EOF'
             set -e
             cd /home/ec2-user
-            rm -rf backend nginx
             unzip -o deploy.zip
             docker compose -f docker-compose.prod.yml down
             docker compose -f docker-compose.prod.yml up -d --build
