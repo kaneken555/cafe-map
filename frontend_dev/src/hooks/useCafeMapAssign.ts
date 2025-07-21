@@ -1,7 +1,7 @@
 // hooks/useCafeMapAssign.ts
 import { MapItem } from "../types/map";
 import { Cafe } from "../types/cafe";
-import { addCafeToMyCafe } from "../api/cafe";
+import { addCafeToMyCafe } from "../services/cafeService";
 import { toast } from "react-hot-toast";
 
 export const useCafeMapAssign = (

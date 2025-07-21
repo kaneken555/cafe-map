@@ -1,16 +1,16 @@
 // components/Map.tsx
 import React, { useState, useRef } from "react";
 import { GoogleMap, LoadScript } from "@react-google-maps/api";
-import MapButton from "./MapButton/MapButton"; 
-import CafeOverlayIcon from "./CafeOverlayIcon/CafeOverlayIcon"; // ✅ 切り出したカフェアイコン表示用コンポーネント
-import KeywordSearchModal from "./KeywordSearchModal/KeywordSearchModal"; // ✅ キーワード検索モーダルをインポート
-import LoadingOverlay from "./LoadingOverlay/LoadingOverlay"; // ✅ ローディングオーバーレイコンポーネントをインポート
-import { Cafe } from "../types/cafe";
-import { DEFAULT_CENTER, MAP_CONTAINER_STYLE, MAP_MODES } from "../constants/map";
+import MapButton from "../MapButton/MapButton"; 
+import CafeOverlayIcon from "../CafeOverlayIcon/CafeOverlayIcon"; // ✅ 切り出したカフェアイコン表示用コンポーネント
+import KeywordSearchModal from "../KeywordSearchModal/KeywordSearchModal"; // ✅ キーワード検索モーダルをインポート
+import LoadingOverlay from "../LoadingOverlay/LoadingOverlay"; // ✅ ローディングオーバーレイコンポーネントをインポート
+import { Cafe } from "../../types/cafe";
+import { DEFAULT_CENTER, MAP_CONTAINER_STYLE, MAP_MODES } from "../../constants/map";
 
-import { useMap } from "../contexts/MapContext";
-import { useMapActions } from "../hooks/useMapActions";
-import { useCafeSearch } from "../hooks/useCafeSearch"; // ✅ カフェ検索フックをインポート
+import { useMap } from "../../contexts/MapContext";
+import { useMapActions } from "../../hooks/useMapActions";
+import { useCafeSearch } from "../../hooks/useCafeSearch"; // ✅ カフェ検索フックをインポート
 
 
 interface MapProps {

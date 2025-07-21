@@ -5,7 +5,7 @@ import CloseModalButton from './CloseModalButton';
 
 // Storybook に表示されるメタ情報
 const meta: Meta<typeof CloseModalButton> = {
-  title: 'Components/CloseButton',
+  title: 'Components/CloseModalButton',
   component: CloseModalButton,
   tags: ['autodocs'],
 };

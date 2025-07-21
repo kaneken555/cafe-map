@@ -1,6 +1,6 @@
 import React from "react";
 import { X } from 'lucide-react';
-import { ICON_SIZES } from '../constants/ui';
+import { ICON_SIZES } from '../../constants/ui';
 
 interface CloseButtonProps {
   onClick: () => void;

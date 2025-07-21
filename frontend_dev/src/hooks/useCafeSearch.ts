@@ -1,6 +1,6 @@
 // hooks/useCafeSearch.ts
 import { useCallback } from "react";
-import { searchCafe, searchCafeByKeyword } from "../api/cafe";
+import { searchCafe, searchCafeByKeyword } from "../services/cafeService";
 import { Cafe } from "../types/cafe";
 import { MAP_MODES } from "../constants/map";
 import { toast } from "react-hot-toast";

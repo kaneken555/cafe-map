@@ -2,7 +2,7 @@
 import React from "react";
 // import { addCafeToMyCafe } from "../api/cafe";
 import CafeDetailCard from "../CafeDetailCard/CafeDetailCard";
-import CloseButton from "../CloseButton";
+import CloseButton from "../CloseButton/CloseButton";
 import { Cafe } from "../../types/cafe";
 
 import { useMap } from "../../contexts/MapContext";
