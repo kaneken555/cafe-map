@@ -27,9 +27,26 @@ jobs:
           aws-region: ap-northeast-1
 
 
-      - name: Zip backend directory
+      - name: Build backend image
         run: |
-          zip -r deploy.zip backend nginx docker-compose.prod.yml -x '**/__pycache__/*' -x '**/.DS_Store'
+          docker build -t myapp-backend -f backend/Dockerfile backend
+
+      - name: Build nginx image
+        run: |
+          docker build -t myapp-nginx -f nginx/Dockerfile nginx
+
+      - name: Save images as tar files
+        run: |
+          docker save myapp-backend > backend.tar
+          docker save myapp-nginx > nginx.tar
+          
+
+      - name: Prepare deploy.zip
+        run: |
+          mkdir deploy_files
+          mv backend.tar nginx.tar deploy_files/
+          cp docker-compose.prod.yml deploy_files/
+          zip -r deploy.zip deploy_files
 
       - name: Save SSH private key
         run: |
@@ -78,9 +95,14 @@ jobs:
               -i private_key.pem ec2-user@${{ secrets.TARGET_PRIVATE_IP }} << 'EOF'
             set -e
             cd /home/ec2-user
+            rm -rf deploy_files
             unzip -o deploy.zip
-            docker-compose -f docker-compose.prod.yml down
-            docker-compose -f docker-compose.prod.yml up -d --build
+      
+            docker load < deploy_files/backend.tar
+            docker load < deploy_files/nginx.tar
+      
+            docker-compose -f deploy_files/docker-compose.prod.yml down
+            docker-compose -f deploy_files/docker-compose.prod.yml up -d
           EOF
 
       # 🔹 セキュリティグループからIPを削除（常に実行）
