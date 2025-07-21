@@ -202,8 +202,8 @@ AUTHENTICATION_BACKENDS = (
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv('GOOGLE_CLIENT_ID')
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
 
-LOGIN_REDIRECT_URL = "/api/auth/login/success-popup/"
-LOGIN_URL = '/api/auth/login/google-oauth2/'
+LOGIN_REDIRECT_URL = "/api/v1/auth/login/success-popup/"
+LOGIN_URL = '/api/v1/auth/login/google-oauth2/'
 
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
 

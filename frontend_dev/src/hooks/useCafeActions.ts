@@ -1,5 +1,5 @@
 // hooks/useCafeActions.ts
-import { addCafeToMyCafe } from "../api/cafe";
+import { addCafeToMyCafe } from "../services/cafeService";
 import { Cafe } from "../types/cafe";
 import { MapItem } from "../types/map";
 import { toast } from "react-hot-toast";

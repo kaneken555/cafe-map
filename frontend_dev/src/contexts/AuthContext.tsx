@@ -10,7 +10,12 @@ interface AuthContextProps {
 
 export const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+interface AuthProviderProps {
+  children: React.ReactNode;
+  valueOverride?: Partial<AuthContextProps>; // 🔹 オプションで override を許可
+}
+
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children, valueOverride }) => {
   const [user, setUser] = useState<User | null>(null);
 
   const resetAuthContext = () => {
@@ -19,8 +24,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const value = useMemo(
     () => ({
-      user,
-      setUser,
+      user: valueOverride?.user ?? user,
+      setUser: valueOverride?.setUser ?? setUser,
       resetAuthContext,
     }),
     [user]

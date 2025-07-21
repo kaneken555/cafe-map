@@ -2,29 +2,29 @@
 import React, { useState } from "react";
 import clsx from "clsx";
 
-import MapCreateModal from "./MapCreateModal/MapCreateModal"; 
+import MapCreateModal from "../MapCreateModal/MapCreateModal"; 
 // import { mockMapData } from "../api/mockMapData"; 
-import MapListItem from "./MapListItem/MapListItem"; 
-import MapDeleteModal from "./MapDeleteModal/MapDeleteModal";
-import BaseModal from "./BaseModal/BaseModal";
+import MapListItem from "../MapListItem/MapListItem"; 
+import MapDeleteModal from "../MapDeleteModal/MapDeleteModal";
+import BaseModal from "../BaseModal/BaseModal";
 
-import ModalActionButton from "./ModalActionButton/ModalActionButton";
-import SharedMapListItem from "./SharedMapListItem/SharedMapListItem"; 
-import SharedMapSearchModal from "./SharedMapSearchModal/SharedMapSearchModal";
+import ModalActionButton from "../ModalActionButton/ModalActionButton";
+import SharedMapListItem from "../SharedMapListItem/SharedMapListItem"; 
+import SharedMapSearchModal from "../SharedMapSearchModal/SharedMapSearchModal";
 import { Coffee } from "lucide-react";
-import { MapItem, SharedMapItem } from "../types/map";
+import { MapItem, SharedMapItem } from "../../types/map";
 import { toast } from "react-hot-toast";
-import { extractUuidFromUrl } from "../utils/extractUuid";
-import { searchSharedMap } from "../api/cafe";
+import { extractUuidFromUrl } from "../../utils/extractUuid";
+import { searchSharedMap } from "../../services/cafeService";
 
-import { useMap } from "../contexts/MapContext";
-import { useCafe } from "../contexts/CafeContext"; // ✅ カフェコンテキストをインポート
-import { useGroup } from "../contexts/GroupContext"; // ✅ グループコンテキストをインポート
+import { useMap } from "../../contexts/MapContext";
+import { useCafe } from "../../contexts/CafeContext"; // ✅ カフェコンテキストをインポート
+import { useGroup } from "../../contexts/GroupContext"; // ✅ グループコンテキストをインポート
 
-import { MAP_MODES } from "../constants/map";
+import { MAP_MODES } from "../../constants/map";
 
-import { useMapModals } from "../hooks/useMapModals";
-import { useMapActions } from "..//hooks/useMapActions"; // ✅ 追加
+import { useMapModals } from "../../hooks/useMapModals";
+import { useMapActions } from "../../hooks/useMapActions"; // ✅ 追加
 
 
 interface MapListModalProps {
