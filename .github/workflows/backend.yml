@@ -29,6 +29,11 @@ jobs:
           token: ${{ secrets.TF_REPO_PAT }}  # Privateの場合はトークン必須
 
       # 🔹 3. Terraformで踏み台EC2作成（bastion moduleのみ apply）
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.12.2
+
       - name: Terraform Apply Bastion
         run: |
           cd terraform
