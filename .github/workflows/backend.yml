@@ -16,8 +16,31 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      # 🔹 1. backendリポジトリのチェックアウト
+      - name: Checkout backend repo
         uses: actions/checkout@v3
+
+      # 🔹 2. terraformリポジトリのチェックアウト
+      - name: Checkout terraform repo
+        uses: actions/checkout@v3
+        with:
+          repository: kaneken555/terraform
+          path: terraform
+
+      # 🔹 3. Terraformで踏み台EC2作成（bastion moduleのみ apply）
+      - name: Terraform Apply Bastion
+        run: |
+          cd terraform
+          terraform init
+          terraform apply -auto-approve -target=module.bastion
+
+      # 🔹 4. BastionのPublic IPとSG IDを取得
+      - name: Get Bastion IP and SG ID
+        run: |
+          cd terraform/envs/prod
+          echo "BASTION_IP=$(terraform output -raw bastion_ip)" >> $GITHUB_ENV
+          echo "BASTION_SG_ID=$(terraform output -raw bastion_sg_id)" >> $GITHUB_ENV
+
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -26,7 +49,17 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-1
 
+      # 🔹 5. private EC2のSGにBastion SGを一時許可
+      - name: Authorize Bastion SG in Private EC2 SG
+        run: |
+          aws ec2 authorize-security-group-ingress \
+            --group-id ${{ secrets.PRIVATE_EC2_SG_ID }} \
+            --protocol tcp \
+            --port 22 \
+            --source-group ${{ env.BASTION_SG_ID }} \
+            --region ap-northeast-1          
 
+      # 🔹 6. backend/nginx イメージのビルド
       - name: Build backend image
         run: |
           docker build -t myapp-backend -f backend/Dockerfile backend
@@ -35,12 +68,13 @@ jobs:
         run: |
           docker build -t myapp-nginx -f nginx/Dockerfile nginx
 
+      # 🔹 7. イメージをtarで保存
       - name: Save images as tar files
         run: |
           docker save myapp-backend > backend.tar
           docker save myapp-nginx > nginx.tar
           
-
+      # 🔹 8. デプロイファイルをzipにまとめる          
       - name: Prepare deploy.zip
         run: |
           mkdir deploy_files
@@ -48,12 +82,12 @@ jobs:
           cp docker-compose.prod.yml deploy_files/
           zip -r deploy.zip deploy_files
 
+      # 🔹 9. SSH秘密鍵の保存
       - name: Save SSH private key
         run: |
           echo "${{ secrets.EC2_SSH_KEY }}" > private_key.pem
           chmod 600 private_key.pem
   
-
       # 🔹 GitHub Actions のグローバルIPを取得
       - name: Get GitHub Actions IP
         id: myip
@@ -64,26 +98,26 @@ jobs:
         run: |
           echo "📡 許可するIP: ${{ env.IP }}"
           aws ec2 authorize-security-group-ingress \
-            --group-id ${{ secrets.BASTION_SG_ID }} \
+            --group-id ${{ env.BASTION_SG_ID }} \
             --protocol tcp \
             --port 22 \
-            --cidr ${{ env.IP }}/32 \
+            --cidr ${{ env.BASTION_IP }}/32 \
             --region ap-northeast-1
 
       - name: Add known_hosts entries
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan -H ${{ secrets.BASTION_HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ env.BASTION_IP }} >> ~/.ssh/known_hosts
           ssh -o StrictHostKeyChecking=no \
               -i private_key.pem \
-              ${{ secrets.BASTION_USER }}@${{ secrets.BASTION_HOST }} \
+              ${{ secrets.BASTION_USER }}@${{ env.BASTION_IP }} \
               "ssh-keyscan -H ${{ secrets.TARGET_PRIVATE_IP }}" >> ~/.ssh/known_hosts
           
           
       # 🔹 成果物の転送（SCP経由）
       - name: Upload via SCP through Bastion
         run: |
-          scp -o "ProxyCommand=ssh -i private_key.pem -W %h:%p ec2-user@${{ secrets.BASTION_HOST }}" \
+          scp -o "ProxyCommand=ssh -i private_key.pem -W %h:%p ec2-user@${{ env.BASTION_IP }}" \
               -i private_key.pem deploy.zip \
               ec2-user@${{ secrets.TARGET_PRIVATE_IP }}:/home/ec2-user/
     
@@ -91,7 +125,7 @@ jobs:
       # 🔹 SSHして展開・再起動
       - name: SSH and Deploy
         run: |
-          ssh -o "ProxyCommand=ssh -i private_key.pem -W %h:%p ec2-user@${{ secrets.BASTION_HOST }}" \
+          ssh -o "ProxyCommand=ssh -i private_key.pem -W %h:%p ec2-user@${{ env.BASTION_IP }}" \
               -i private_key.pem ec2-user@${{ secrets.TARGET_PRIVATE_IP }} << 'EOF'
             set -e
             cd /home/ec2-user
@@ -105,13 +139,20 @@ jobs:
             docker-compose -f deploy_files/docker-compose.prod.yml up -d
           EOF
 
-      # 🔹 セキュリティグループからIPを削除（常に実行）
-      - name: Revoke SSH access
+      # 🔹 13. Bastion SG の許可を削除
+      - name: Revoke Bastion SG from Private EC2 SG
         if: always()
         run: |
           aws ec2 revoke-security-group-ingress \
-            --group-id ${{ secrets.BASTION_SG_ID }} \
+            --group-id ${{ secrets.PRIVATE_EC2_SG_ID }} \
             --protocol tcp \
             --port 22 \
-            --cidr ${{ env.IP }}/32 \
+            --source-group ${{ env.BASTION_SG_ID }} \
             --region ap-northeast-1
+
+      # 🔹 Bastion EC2の破棄（常に実行）
+      - name: Destroy Bastion EC2
+        if: always()
+        run: |
+          cd terraform
+          terraform destroy -auto-approve -target=module.bastion
