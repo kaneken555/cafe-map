@@ -1,0 +1,21 @@
+name: Notify Slack/LINE
+
+on:
+  workflow_run:
+    workflows: ["Backend Deploy"]  # deploy.ymlのnameに一致
+    types:
+      - completed
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Slack
+        uses: slackapi/slack-github-action@v1.25.0
+        with:
+          payload: |
+            {
+              "text": "${{ github.event.workflow_run.conclusion == 'success' && '✅ デプロイ成功！' || '❌ デプロイ失敗！' }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
