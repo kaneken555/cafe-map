@@ -1,18 +1,36 @@
-FROM python:3.10
+# ============================
+# ステージ1: ビルドステージ
+# ============================
+FROM python:3.10 AS builder
 
 WORKDIR /app
 
-# 必要なパッケージをインストール
+# PostgreSQLクライアントなどのビルド用パッケージ
 RUN apt-get update && apt-get install -y postgresql-client
 
+# 依存ファイルをコピーしてpip install（--userでローカルにインストール）
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --upgrade pip && pip install --user --no-cache-dir -r requirements.txt
 
+
+# ============================
+# ステージ2: 実行ステージ（軽量）
+# ============================
+FROM python:3.10-slim
+
+WORKDIR /app
+
+# pipでインストールされたパスを環境変数に追加
+ENV PATH="/root/.local/bin:$PATH"
+
+# ビルドステージから必要なパッケージだけをコピー
+COPY --from=builder /root/.local /root/.local
+
+# アプリケーションコードをコピー
 COPY . .
 
-# エントリポイントスクリプトのコピーと実行権限付与
+# entrypoint.sh をコピーし、実行権限を付与
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-# エントリポイントスクリプトを実行
 ENTRYPOINT ["/entrypoint.sh"]
