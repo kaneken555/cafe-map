@@ -48,7 +48,7 @@ const Wrapper: React.FC<{
 // ✅ ログイン状態
 export const LoggedIn: Story = {
   render: () => {
-    const [shareUuid, setShareUuid] = useState<string | null>(null);
+    const [_shareUuid, setShareUuid] = useState<string | null>(null);
     const [isMyCafeListOpen, setIsMyCafeListOpen] = useState(false);
 
     return (
@@ -69,7 +69,7 @@ export const LoggedIn: Story = {
 // ✅ 未ログイン状態（user=null）
 export const NotLoggedIn: Story = {
   render: () => {
-    const [shareUuid, setShareUuid] = useState<string | null>(null);
+    const [_shareUuid, setShareUuid] = useState<string | null>(null);
     const [isMyCafeListOpen, setIsMyCafeListOpen] = useState(false);
 
     return (

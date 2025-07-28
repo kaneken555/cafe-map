@@ -66,7 +66,7 @@ const Wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 export const Default: Story = {
   render: () => {
     const [selectedCafeId, setSelectedCafeId] = useState<number | null>(null);
-    const [searchResultCafes, setSearchResultCafes] = useState<Cafe[]>([]);
+    const [_shareUuidsearchResultCafes, setSearchResultCafes] = useState<Cafe[]>([]);
 
     return (
       <Wrapper>
