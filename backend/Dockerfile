@@ -20,6 +20,9 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
+# 必要なクライアントツールを追加（←重要！）
+RUN apt-get update && apt-get install -y postgresql-client && rm -rf /var/lib/apt/lists/*
+
 # pipでインストールされたパスを環境変数に追加
 ENV PATH="/root/.local/bin:$PATH"
 
