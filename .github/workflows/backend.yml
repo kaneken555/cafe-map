@@ -10,6 +10,7 @@ on:
       - 'backend/**'
       - 'docker/**'
       - '.github/workflows/backend.yml'
+      - '.github/workflows/notify.yml'
 
 jobs:
   deploy-backend:
