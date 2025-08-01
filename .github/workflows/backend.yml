@@ -83,13 +83,16 @@ jobs:
       - name: Get Bastion IP and SG ID
         run: |
           cd terraform/envs/bastion-temp
-      
-          BASTION_IP=$(terraform output -raw bastion_ip 2>/dev/null | head -n 1 | tr -d '\r')
-          BASTION_SG_ID=$(terraform output -raw bastion_sg_id 2>/dev/null | head -n 1 | tr -d '\r')
-      
+
+          terraform output -raw bastion_ip > bastion_ip.txt
+          terraform output -raw bastion_sg_id > bastion_sg_id.txt
+
+          BASTION_IP=$(head -n 1 bastion_ip.txt | tr -d '\r')
+          BASTION_SG_ID=$(head -n 1 bastion_sg_id.txt | tr -d '\r')
+
           echo "BASTION_IP=$BASTION_IP"
           echo "BASTION_SG_ID=$BASTION_SG_ID"
-      
+
           echo "BASTION_IP=$BASTION_IP" >> $GITHUB_ENV
           echo "BASTION_SG_ID=$BASTION_SG_ID" >> $GITHUB_ENV
     
