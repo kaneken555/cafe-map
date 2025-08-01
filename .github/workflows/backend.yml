@@ -33,8 +33,16 @@ jobs:
       - name: Get GitHub Actions IP
         id: myip
         run: echo "IP=$(curl -s https://checkip.amazonaws.com)" >> $GITHUB_ENV      
-          
-      # 🔹 4. Terraformで踏み台EC2作成前に .tfvars を生成
+
+      # 🔹 4. AWS認証
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-1
+
+      # 🔹 5. Terraformで踏み台EC2作成前に .tfvars を生成
       - name: Generate terraform.tfvars for bastion-temp
         run: |
           cat <<EOF > terraform/envs/bastion-temp/terraform.tfvars
@@ -53,26 +61,18 @@ jobs:
           }
           EOF
 
-      # 🔹 5. Terraformで踏み台EC2作成（bastion moduleのみ apply）
+      # 🔹 6. Terraformで踏み台EC2作成（bastion moduleのみ apply）
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.12.2
 
-      # 🔹 6. Bastion作成（envs/bastion-temp）
+      # 🔹 7. Bastion作成（envs/bastion-temp）
       - name: Terraform Apply Bastion
         run: |
           cd terraform/envs/bastion-temp
           terraform init
           terraform apply -auto-approve
-
-      # 🔹 7. AWS認証
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-northeast-1
 
       # 🔹 8. BastionのPublic IPとSG IDを取得
       - name: Get Bastion IP and SG ID
