@@ -79,8 +79,8 @@ jobs:
         run: |
           cd terraform/envs/bastion-temp
       
-          BASTION_IP=$(terraform output -raw bastion_ip | tr -d '\r')
-          BASTION_SG_ID=$(terraform output -raw bastion_sg_id | tr -d '\r')
+          BASTION_IP=$(terraform output -raw bastion_ip 2>/dev/null | head -n 1 | tr -d '\r')
+          BASTION_SG_ID=$(terraform output -raw bastion_sg_id 2>/dev/null | head -n 1 | tr -d '\r')
       
           echo "BASTION_IP=$BASTION_IP"
           echo "BASTION_SG_ID=$BASTION_SG_ID"
@@ -88,7 +88,7 @@ jobs:
           echo "BASTION_IP=$BASTION_IP" >> $GITHUB_ENV
           echo "BASTION_SG_ID=$BASTION_SG_ID" >> $GITHUB_ENV
     
-
+    
       # 🔹 9. プライベートEC2のSGにBastion SGを許可
       - name: Authorize Bastion SG in Private EC2 SG
         run: |
