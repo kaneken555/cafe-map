@@ -2,6 +2,7 @@
 import React from "react";
 import BaseModal from "../BaseModal/BaseModal";
 import GroupCreateModal from "../GroupCreateModal/GroupCreateModal";
+import GroupDetailModal from "../GroupDetailModal/GroupDetailModal";
 import GroupJoinModal from "../GroupJoinModal/GroupJoinModal";
 import GroupInvitationModal from "../GroupInvitationModal/GroupInvitationModal";
 import GroupListItem from "../GroupListItem/GroupListItem"; 
@@ -38,6 +39,7 @@ const GroupListModal: React.FC<GroupListModalProps> = ({
     isInviteModalOpen, inviteTargetGroup, openInviteModal, closeInviteModal,
     isSearchModalOpen, openSearchModal, closeSearchModal,
     isJoinModalOpen, joiningGroupUuid, joiningGroupName, openJoinModal, closeJoinModal,
+    isDetailModalOpen, detailTargetGroup, openDetailModal, closeDetailModal,
   } = useGroupModals(); // ✅ グループモーダルの状態とハンドラをフックから取得
 
 
@@ -90,6 +92,15 @@ const GroupListModal: React.FC<GroupListModalProps> = ({
           handleGroupJoin(joiningGroupUuid, closeJoinModal)
         }
       />
+      <GroupDetailModal
+        isOpen={isDetailModalOpen}
+        onClose={closeDetailModal}
+        group={detailTargetGroup}
+        onUpdateGroup={(updatedGroup) => {
+          // グループ情報更新処理
+          console.log("Updated Group:", updatedGroup);
+        }}
+      />
 
       <BaseModal
         isOpen={isOpen}
@@ -106,6 +117,7 @@ const GroupListModal: React.FC<GroupListModalProps> = ({
               group={group}
               onSelect={handleGroupSelect} // ✅ 非同期対応
               onInvite={openInviteModal}
+              onDetail={openDetailModal} // ✅ 追加
             />
           ))}
         </ul>
