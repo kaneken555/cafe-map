@@ -84,12 +84,18 @@ jobs:
         id: bastion_info
         run: |
           cd terraform/envs/bastion-temp
-
-          terraform output -raw bastion_ip > bastion_ip.txt
-          terraform output -raw bastion_sg_id > bastion_sg_id.txt
-
-          echo "bastion_ip=$(head -n 1 bastion_ip.txt | tr -d '\r')" >> $GITHUB_OUTPUT
-          echo "bastion_sg_id=$(head -n 1 bastion_sg_id.txt | tr -d '\r')" >> $GITHUB_OUTPUT
+      
+          BASTION_IP=$(terraform output -raw bastion_ip)
+          BASTION_SG_ID=$(terraform output -raw bastion_sg_id)
+      
+          echo "bastion_ip=$BASTION_IP" >> $GITHUB_OUTPUT
+          echo "bastion_sg_id=$BASTION_SG_ID" >> $GITHUB_OUTPUT
+          
+      - name: Debug bastion output values
+        run: |
+          echo "Bastion IP: ${{ steps.bastion_info.outputs.bastion_ip }}"
+          echo "Bastion SG ID: ${{ steps.bastion_info.outputs.bastion_sg_id }}"
+        
     
     
       # 🔹 9. プライベートEC2のSGにBastion SGを許可
