@@ -78,6 +78,9 @@ jobs:
         run: |
           cd terraform/envs/bastion-temp
           terraform output
+          terraform output -raw bastion_ip
+          terraform output -raw bastion_sg_id
+          terraform output -json
 
       # 🔹 8. BastionのPublic IPとSG IDを取得
       - name: Get Bastion IP and SG ID  
