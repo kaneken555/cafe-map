@@ -80,21 +80,16 @@ jobs:
           terraform output
 
       # 🔹 8. BastionのPublic IPとSG IDを取得
-      - name: Get Bastion IP and SG ID
+      - name: Get Bastion IP and SG ID  
+        id: bastion_info
         run: |
           cd terraform/envs/bastion-temp
 
           terraform output -raw bastion_ip > bastion_ip.txt
           terraform output -raw bastion_sg_id > bastion_sg_id.txt
 
-          BASTION_IP=$(head -n 1 bastion_ip.txt | tr -d '\r')
-          BASTION_SG_ID=$(head -n 1 bastion_sg_id.txt | tr -d '\r')
-
-          echo "BASTION_IP=$BASTION_IP"
-          echo "BASTION_SG_ID=$BASTION_SG_ID"
-
-          echo "BASTION_IP=$BASTION_IP" >> $GITHUB_ENV
-          echo "BASTION_SG_ID=$BASTION_SG_ID" >> $GITHUB_ENV
+          echo "bastion_ip=$(head -n 1 bastion_ip.txt | tr -d '\r')" >> $GITHUB_OUTPUT
+          echo "bastion_sg_id=$(head -n 1 bastion_sg_id.txt | tr -d '\r')" >> $GITHUB_OUTPUT
     
     
       # 🔹 9. プライベートEC2のSGにBastion SGを許可
@@ -104,7 +99,7 @@ jobs:
             --group-id ${{ secrets.PRIVATE_EC2_SG_ID }} \
             --protocol tcp \
             --port 22 \
-            --source-group ${{ env.BASTION_SG_ID }} \
+            --source-group ${{ steps.bastion_info.outputs.bastion_sg_id }} \
             --region ap-northeast-1          
 
       # 🔹 10. backend/nginxイメージのビルド
@@ -141,23 +136,23 @@ jobs:
       - name: Add known_hosts entries
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan -H ${{ env.BASTION_IP }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ steps.bastion_info.outputs.bastion_ip }} >> ~/.ssh/known_hosts
           ssh -o StrictHostKeyChecking=no \
               -i private_key.pem \
-              ${{ secrets.BASTION_USER }}@${{ env.BASTION_IP }} \
+              ${{ secrets.BASTION_USER }}@${{ steps.bastion_info.outputs.bastion_ip }} \
               "ssh-keyscan -H ${{ secrets.TARGET_PRIVATE_IP }}" >> ~/.ssh/known_hosts
           
       # 🔹 15. SCP転送
       - name: Upload via SCP through Bastion
         run: |
-          scp -o "ProxyCommand=ssh -i private_key.pem -W %h:%p ec2-user@${{ env.BASTION_IP }}" \
+          scp -o "ProxyCommand=ssh -i private_key.pem -W %h:%p ${{ secrets.BASTION_USER }}@${{ steps.bastion_info.outputs.bastion_ip }}" \
               -i private_key.pem deploy.zip \
               ec2-user@${{ secrets.TARGET_PRIVATE_IP }}:/home/ec2-user/
     
       # 🔹 16. SSHして展開・再起動
       - name: SSH and Deploy
         run: |
-          ssh -o "ProxyCommand=ssh -i private_key.pem -W %h:%p ec2-user@${{ env.BASTION_IP }}" \
+          ssh -o "ProxyCommand=ssh -i private_key.pem -W %h:%p ${{ secrets.BASTION_USER }}@${{ steps.bastion_info.outputs.bastion_ip }}" \
               -i private_key.pem ec2-user@${{ secrets.TARGET_PRIVATE_IP }} << 'EOF'
             set -e
             cd /home/ec2-user
@@ -179,7 +174,7 @@ jobs:
             --group-id ${{ secrets.PRIVATE_EC2_SG_ID }} \
             --protocol tcp \
             --port 22 \
-            --source-group ${{ env.BASTION_SG_ID }} \
+            --source-group ${{ steps.bastion_info.outputs.bastion_sg_id }} \
             --region ap-northeast-1
 
       # 🔹 18. Bastion EC2破棄（envs/bastion-temp）
