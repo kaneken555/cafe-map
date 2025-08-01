@@ -66,20 +66,20 @@ jobs:
           terraform init
           terraform apply -auto-approve
 
-      # 🔹 7. BastionのPublic IPとSG IDを取得
-      - name: Get Bastion IP and SG ID
-        run: |
-          cd terraform/envs/bastion-temp
-          echo "BASTION_IP=$(terraform output -raw bastion_ip)" >> $GITHUB_ENV
-          echo "BASTION_SG_ID=$(terraform output -raw bastion_sg_id)" >> $GITHUB_ENV
-
-      # 🔹 8. AWS認証
+      # 🔹 7. AWS認証
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-1
+
+      # 🔹 8. BastionのPublic IPとSG IDを取得
+      - name: Get Bastion IP and SG ID
+        run: |
+          cd terraform/envs/bastion-temp
+          echo "BASTION_IP=$(terraform output -raw bastion_ip)" >> $GITHUB_ENV
+          echo "BASTION_SG_ID=$(terraform output -raw bastion_sg_id)" >> $GITHUB_ENV
 
       # 🔹 9. プライベートEC2のSGにBastion SGを許可
       - name: Authorize Bastion SG in Private EC2 SG
