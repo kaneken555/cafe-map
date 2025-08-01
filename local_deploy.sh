@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # .env.deploy の読み込み
 if [ -f .env.deploy ]; then
@@ -8,25 +9,45 @@ else
   exit 1
 fi
 
-# 🔑 GitHub用秘密鍵の転送処理（外部スクリプトを呼ぶ）
+# 🔑 GitHub鍵転送
 bash prepare-ec2-github-key.sh
 
-# 📤 デプロイスクリプトをEC2に送信（踏み台経由）
-echo "📤 デプロイスクリプトをEC2に送信中..."
-# scp -i "$EC2_KEY_PATH" -o ProxyJump="$BASTION_USER@$BASTION_HOST" \
-#   "$DEPLOY_SCRIPT_NAME" "$EC2_USER@$EC2_HOST:/home/$EC2_USER/"
-scp "$DEPLOY_SCRIPT_NAME" private-ec2:/home/ec2-user/
+# Docker イメージをビルドして保存（※既にビルド済みでもOK）
+echo "🐳 Docker イメージを保存中..."
+docker build -t myapp-backend -f backend/Dockerfile backend
+docker build -t myapp-nginx -f nginx/Dockerfile nginx
 
+# 🔐 Docker Hub にログイン
+echo "🔐 Docker Hub にログイン..."
+echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
 
-# 📤 .env.deploy をEC2に送信（踏み台経由）
-echo "📤 .env をEC2に転送中..."
-# scp -i "$EC2_KEY_PATH" -o ProxyJump="$BASTION_USER@$BASTION_HOST" \
-#   .env.deploy "$EC2_USER@$EC2_HOST:/home/$EC2_USER/.env.deploy"
-scp .env.deploy private-ec2:/home/ec2-user/.env.deploy
+# 🏷️ イメージにタグ付け（Docker Hub 向け）
+docker tag myapp-backend $DOCKERHUB_USERNAME/$DOCKERHUB_REPO_BACKEND:$DOCKERHUB_TAG
+docker tag myapp-nginx $DOCKERHUB_USERNAME/$DOCKERHUB_REPO_NGINX:$DOCKERHUB_TAG
 
+# 🚀 Docker Hub にプッシュ
+echo "🚀 Docker Hub にプッシュ中..."
+docker push $DOCKERHUB_USERNAME/$DOCKERHUB_REPO_BACKEND:$DOCKERHUB_TAG
+docker push $DOCKERHUB_USERNAME/$DOCKERHUB_REPO_NGINX:$DOCKERHUB_TAG
 
-# 🚀 デプロイスクリプト実行（踏み台経由）
-echo "📡 EC2上でデプロイスクリプトを実行中..."
-# ssh -i "$EC2_KEY_PATH" -J "$BASTION_USER@$BASTION_HOST" \
-#   "$EC2_USER@$EC2_HOST" "chmod +x $DEPLOY_SCRIPT_NAME && ./deploy.sh"
+# 🗃️ Docker イメージを tar ファイルに保存
+docker save myapp-backend > backend.tar
+docker save myapp-nginx > nginx.tar
+
+# 📦 zipにまとめる
+mkdir -p deploy_files
+mv backend.tar nginx.tar deploy_files/
+cp docker-compose.prod.yml deploy_files/
+cp .env.deploy deploy_files/
+
+echo "📦 deploy.zip を作成中..."
+zip -r deploy.zip deploy_files
+
+# 📤 EC2 に転送
+echo "📤 EC2に転送中..."
+scp deploy.zip private-ec2:/home/ec2-user/
+scp deploy.sh private-ec2:/home/ec2-user/
+
+# 🚀 デプロイスクリプト実行
+echo "🚀 EC2上でデプロイスクリプトを実行中..."
 ssh private-ec2 "chmod +x $DEPLOY_SCRIPT_NAME && ./deploy.sh"

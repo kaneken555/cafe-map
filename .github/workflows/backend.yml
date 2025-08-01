@@ -29,26 +29,51 @@ jobs:
           path: terraform
           token: ${{ secrets.TF_REPO_PAT }}  # Privateの場合はトークン必須
 
-      # 🔹 3. Terraformで踏み台EC2作成（bastion moduleのみ apply）
+      # 🔹 3. GitHub Actions のグローバルIP取得
+      - name: Get GitHub Actions IP
+        id: myip
+        run: echo "IP=$(curl -s https://checkip.amazonaws.com)" >> $GITHUB_ENV      
+          
+      # 🔹 4. Terraformで踏み台EC2作成前に .tfvars を生成
+      - name: Generate terraform.tfvars for bastion-temp
+        run: |
+          cat <<EOF > terraform/envs/bastion-temp/terraform.tfvars
+          project_name       = "mappin"
+          vpc_id             = "${{ secrets.VPC_ID }}"
+          public_subnet_id   = "${{ secrets.PUBLIC_SUBNET_ID }}"
+          instance_ami       = "${{ secrets.BASTION_AMI }}"
+          instance_type      = "t3.micro"
+          key_name           = "${{ secrets.KEY_PAIR_NAME }}"
+          my_ip_cidr         = "${{ env.IP }}/32"
+
+          common_tags = {
+            Owner     = "GitHubActions"
+            environment = "temp"
+            ManagedBy = "Terraform"
+          }
+          EOF
+
+      # 🔹 5. Terraformで踏み台EC2作成（bastion moduleのみ apply）
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.12.2
 
+      # 🔹 6. Bastion作成（envs/bastion-temp）
       - name: Terraform Apply Bastion
         run: |
-          cd terraform
+          cd terraform/envs/bastion-temp
           terraform init
-          terraform apply -auto-approve -target=module.bastion
+          terraform apply -auto-approve
 
-      # 🔹 4. BastionのPublic IPとSG IDを取得
+      # 🔹 7. BastionのPublic IPとSG IDを取得
       - name: Get Bastion IP and SG ID
         run: |
-          cd terraform/envs/prod
+          cd terraform/envs/bastion-temp
           echo "BASTION_IP=$(terraform output -raw bastion_ip)" >> $GITHUB_ENV
           echo "BASTION_SG_ID=$(terraform output -raw bastion_sg_id)" >> $GITHUB_ENV
 
-
+      # 🔹 8. AWS認証
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -56,7 +81,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-1
 
-      # 🔹 5. private EC2のSGにBastion SGを一時許可
+      # 🔹 9. プライベートEC2のSGにBastion SGを許可
       - name: Authorize Bastion SG in Private EC2 SG
         run: |
           aws ec2 authorize-security-group-ingress \
@@ -66,7 +91,7 @@ jobs:
             --source-group ${{ env.BASTION_SG_ID }} \
             --region ap-northeast-1          
 
-      # 🔹 6. backend/nginx イメージのビルド
+      # 🔹 10. backend/nginxイメージのビルド
       - name: Build backend image
         run: |
           docker build -t myapp-backend -f backend/Dockerfile backend
@@ -75,13 +100,13 @@ jobs:
         run: |
           docker build -t myapp-nginx -f nginx/Dockerfile nginx
 
-      # 🔹 7. イメージをtarで保存
+      # 🔹 11. イメージを保存
       - name: Save images as tar files
         run: |
           docker save myapp-backend > backend.tar
           docker save myapp-nginx > nginx.tar
           
-      # 🔹 8. デプロイファイルをzipにまとめる          
+      # 🔹 12. zipにまとめる
       - name: Prepare deploy.zip
         run: |
           mkdir deploy_files
@@ -89,28 +114,14 @@ jobs:
           cp docker-compose.prod.yml deploy_files/
           zip -r deploy.zip deploy_files
 
-      # 🔹 9. SSH秘密鍵の保存
+
+      # 🔹 13. SSH秘密鍵保存
       - name: Save SSH private key
         run: |
           echo "${{ secrets.EC2_SSH_KEY }}" > private_key.pem
           chmod 600 private_key.pem
   
-      # 🔹 GitHub Actions のグローバルIPを取得
-      - name: Get GitHub Actions IP
-        id: myip
-        run: echo "IP=$(curl -s https://checkip.amazonaws.com)" >> $GITHUB_ENV        
-
-      # 🔹 IPをセキュリティグループに一時許可
-      - name: Allow SSH from GitHub Actions
-        run: |
-          echo "📡 許可するIP: ${{ env.IP }}"
-          aws ec2 authorize-security-group-ingress \
-            --group-id ${{ env.BASTION_SG_ID }} \
-            --protocol tcp \
-            --port 22 \
-            --cidr ${{ env.BASTION_IP }}/32 \
-            --region ap-northeast-1
-
+      # 🔹 14. known_hosts登録
       - name: Add known_hosts entries
         run: |
           mkdir -p ~/.ssh
@@ -120,16 +131,14 @@ jobs:
               ${{ secrets.BASTION_USER }}@${{ env.BASTION_IP }} \
               "ssh-keyscan -H ${{ secrets.TARGET_PRIVATE_IP }}" >> ~/.ssh/known_hosts
           
-          
-      # 🔹 成果物の転送（SCP経由）
+      # 🔹 15. SCP転送
       - name: Upload via SCP through Bastion
         run: |
           scp -o "ProxyCommand=ssh -i private_key.pem -W %h:%p ec2-user@${{ env.BASTION_IP }}" \
               -i private_key.pem deploy.zip \
               ec2-user@${{ secrets.TARGET_PRIVATE_IP }}:/home/ec2-user/
     
-
-      # 🔹 SSHして展開・再起動
+      # 🔹 16. SSHして展開・再起動
       - name: SSH and Deploy
         run: |
           ssh -o "ProxyCommand=ssh -i private_key.pem -W %h:%p ec2-user@${{ env.BASTION_IP }}" \
@@ -146,7 +155,7 @@ jobs:
             docker-compose -f deploy_files/docker-compose.prod.yml up -d
           EOF
 
-      # 🔹 13. Bastion SG の許可を削除
+      # 🔹 17. Bastion SGの許可を削除
       - name: Revoke Bastion SG from Private EC2 SG
         if: always()
         run: |
@@ -157,9 +166,9 @@ jobs:
             --source-group ${{ env.BASTION_SG_ID }} \
             --region ap-northeast-1
 
-      # 🔹 Bastion EC2の破棄（常に実行）
+      # 🔹 18. Bastion EC2破棄（envs/bastion-temp）
       - name: Destroy Bastion EC2
         if: always()
         run: |
-          cd terraform
-          terraform destroy -auto-approve -target=module.bastion
+          cd terraform/envs/bastion-temp
+          terraform destroy -auto-approve

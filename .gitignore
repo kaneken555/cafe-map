@@ -22,3 +22,6 @@ frontend/build/
 
 # 🌟 環境変数
 .env*
+
+deploy_files
+deploy.zip

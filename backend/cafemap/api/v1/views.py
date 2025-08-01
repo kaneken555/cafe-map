@@ -8,11 +8,16 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
-from ...models import User, Map, Cafe, Tag, MapUserRelation, CafeMapRelation, Group, UserGroupRelation, GroupMapRelation, SharedMap, CafeSharedMapRelation, UserSharedMapRelation
+from cafemap.models import User, Map, Cafe, Tag, MapUserRelation, CafeMapRelation, Group, UserGroupRelation, GroupMapRelation, SharedMap, CafeSharedMapRelation, UserSharedMapRelation
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.middleware.csrf import get_token
 from uuid import UUID
+
+from cafemap.services.map_services import get_maps_for_user, create_map_for_user, get_map_with_cafes, delete_map_with_relations, get_maps_for_group, create_map_for_group
+from cafemap.services.cafe_services import get_cafes_for_map_id, create_cafe_and_relation
+from cafemap.services.group_services import get_groups_for_user, create_group_with_user, join_group_by_uuid, user_in_group
+from cafemap.services.shared_map_services import get_shared_map_info, create_or_get_shared_map, get_shared_maps_for_user, get_shared_map_detail, register_shared_map_for_user, copy_shared_map_to_user
 
 import logging
 
@@ -62,7 +67,7 @@ def search_cafes_by_keyword(request):
     lng = request.GET.get("lng")
 
     if not query or not lat or not lng:
-        return JsonResponse({"error": "Missing keyword or location"}, status=400)
+        return JsonResponse({"error": "Missing keyword or location"}, status=status.HTTP_400_BAD_REQUEST)
 
     url = "https://maps.googleapis.com/maps/api/place/textsearch/json"
     params = {
@@ -76,7 +81,7 @@ def search_cafes_by_keyword(request):
 
     response = requests.get(url, params=params)
     if response.status_code != 200:
-        return JsonResponse({"error": "Google API error"}, status=500)
+        return JsonResponse({"error": "Google API error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     results = response.json().get("results", [])
 
@@ -109,13 +114,13 @@ def get_cafe_photo(request):
         # Google Maps API から取得した画像データをそのまま返す
         return HttpResponse(response.content, content_type=response.headers['Content-Type'])
     else:
-        return JsonResponse({"error": "Failed to fetch photo"}, status=500)
+        return JsonResponse({"error": "Failed to fetch photo"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
     
 def get_cafe_detail(request):
     place_id = request.GET.get("place_id")
     if not place_id:
-        return JsonResponse({"error": "place_id is required"}, status=400)
+        return JsonResponse({"error": "place_id is required"}, status=status.HTTP_400_BAD_REQUEST)
 
     url = "https://maps.googleapis.com/maps/api/place/details/json"
     params = {
@@ -163,7 +168,7 @@ def get_cafe_detail(request):
                 "business_status": result.get("business_status", ""),  # ✅ 営業状態
                 "price_level": result.get("price_level", None),        # ✅ 価格帯（0〜4、またはnull）
             })
-    return JsonResponse({"error": "Failed to fetch cafe details"}, status=500)
+    return JsonResponse({"error": "Failed to fetch cafe details"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @api_view(['POST'])
@@ -202,7 +207,7 @@ def logout_view(request):
 
 def login_success_view(request):
     if not request.user.is_authenticated:
-        return JsonResponse({"error": "未ログインです"}, status=401)
+        return JsonResponse({"error": "未ログインです"}, status=status.HTTP_401_UNAUTHORIZED)
 
     return JsonResponse({
         "id": request.user.id,
@@ -223,11 +228,9 @@ class MapAPIView(APIView):
             return Response({"error": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
         try:
             # ログインユーザーに関連するマップのみ取得
-            maps = Map.objects.filter(mapuserrelation__user=request.user)
+            maps = get_maps_for_user(request.user)
             data = [{"id": m.id, "name": m.name} for m in maps]
-            print(f"📌 リクエストユーザー: {request.user}")  # ✅ ユーザーをログに出す
-            print(f"maps: {maps}")  # ✅ マップをログに出す
-            print(f"📌 マップ一覧: {data}")  # ✅ マップ一覧をログに出す
+            print(f"📌 リクエストユーザー: {request.user},maps:{maps},📌 マップ一覧: {data}")
             return Response(data, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": "Internal Server Error", "message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -245,10 +248,7 @@ class MapAPIView(APIView):
                 return Response({"error": "name is required"}, status=status.HTTP_400_BAD_REQUEST)
 
             # マップを作成
-            new_map = Map.objects.create(name=map_name)
-
-            # ユーザーとマップの関連を登録
-            MapUserRelation.objects.create(user=request.user, map=new_map)
+            new_map = create_map_for_user(request.user, map_name)
             return Response({"id": new_map.id, "name": new_map.name}, status=status.HTTP_201_CREATED)
 
         except Exception as e:
@@ -259,30 +259,11 @@ class MapAPIView(APIView):
 class MapDetailAPIView(APIView):
     def get(self, request, *args, **kwargs):
         """ 特定のマップを取得 """
+        print(f"📌 リクエストユーザー: {request.user}")  # ✅ ユーザーをログに出す
+        logging.info(f"📌 リクエストユーザー: {request.user}, マップID: {kwargs.get('map_id')}")  # ログに出力
         try:
             map_id = kwargs.get("map_id")
-            target_map = Map.objects.get(id=map_id)
-            cafe_list = Cafe.objects.filter(cafemaprelation__map=target_map)
-            data = {
-                "id": target_map.id,
-                "name": target_map.name,
-                "cafes": [
-                    {"id": cafe.id, 
-                     "place_id": cafe.place_id, 
-                     "name": cafe.name, 
-                     "photo_urls": cafe.photo_urls,
-                     "rating": cafe.rating,
-                     "phone_number": cafe.phone_number,
-                     "address": cafe.address,
-                     "opening_hours": cafe.opening_hours,
-                     "website": cafe.website,
-                     "latitude": cafe.latitude, 
-                     "longitude": cafe.longitude,
-                     "price_level": cafe.price_level,
-                    } 
-                     for cafe in cafe_list
-                ]
-            }
+            data = get_map_with_cafes(map_id)
             return Response(data, status=status.HTTP_200_OK)
         except Map.DoesNotExist:
             return Response({"error": "Map not found"}, status=status.HTTP_404_NOT_FOUND)
@@ -299,12 +280,7 @@ class MapDetailAPIView(APIView):
         if not map_id:
             return Response({"error": "Map ID is required"}, status=status.HTTP_400_BAD_REQUEST)
         try:
-            map_obj = Map.objects.get(id=map_id)
-
-            # 関連レコード削除
-            MapUserRelation.objects.filter(map=map_obj).delete()
-            map_obj.delete()
-
+            delete_map_with_relations(map_id)
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Map.DoesNotExist:
             return Response({"error": "Map not found"}, status=status.HTTP_404_NOT_FOUND)
@@ -324,13 +300,7 @@ class CafeAPIView(APIView):
         try: 
             # マップが存在するか確認
             map_id = kwargs.get("map_id")
-            target_map = Map.objects.get(id=map_id)
-            
-            # カフェ一覧を取得
-            # cafes = target_map.cafes.all()
-            # ✅ CafeMapRelation を経由してカフェを取得
-            cafes = Cafe.objects.filter(cafemaprelation__map=target_map)
-            data = [{"id": cafe.id, "place_id": cafe.place_id, "name": cafe.name} for cafe in cafes]
+            data = get_cafes_for_map_id(map_id)
             return Response(data, status=status.HTTP_200_OK)
         
         except Map.DoesNotExist:
@@ -342,59 +312,9 @@ class CafeAPIView(APIView):
         """ 新しいカフェを作成 """
         try: 
             # TODO: フィールドの修正
-            # リクエストから必要な情報を取得
             map_id = kwargs.get("map_id")
-            place_id = request.data.get("placeId")
-            name = request.data.get("name")
-            address = request.data.get("address")
-            latitude = request.data.get("lat")
-            longitude = request.data.get("lng")
-            rating = request.data.get("rating")
-            user_ratings_total = request.data.get("user_ratings_total")
-            price_level = request.data.get("priceLevel")
-            photo_reference = request.data.get("photo_reference")
-            photo_url = request.data.get("photo_url")
-            photo_urls = request.data.get("photoUrls")
-            phone_number = request.data.get("phoneNumber")
-            opening_hours = request.data.get("openTime")
-            website = request.data.get("website")
-            
-            # マップが存在するか確認
-            target_map = Map.objects.get(id=map_id)
-            
-            # 1. カフェ本体を作成
-            # ✅ まずカフェが存在するかチェック
-            cafe, created = Cafe.objects.get_or_create(
-                place_id=place_id,
-                defaults={
-                    "name": name,
-                    "address": address,
-                    "latitude": latitude,
-                    "longitude": longitude,
-                    "rating": rating,
-                    "user_ratings_total": user_ratings_total,
-                    "price_level": price_level,
-                    "photo_reference": photo_reference,
-                    "photo_url": photo_url,
-                    "photo_urls": photo_urls,
-                    "phone_number": phone_number,
-                    "opening_hours": opening_hours,
-                    "website": website,
-                    
-                }
-            )
-            # 2. Map と Cafe の関連を作成（中間テーブルへの登録）
-            # ✅ カフェとマップの関連もチェックしてから作成
-            relation, relation_created = CafeMapRelation.objects.get_or_create(
-                map=target_map,
-                cafe=cafe
-            )
-            
-            return Response({
-                "id": cafe.id,
-                "name": cafe.name,
-                "already_existed": not created  # 👈 作ったかどうかをレスポンスで返してもいい
-            }, status=status.HTTP_200_OK)
+            result = create_cafe_and_relation(map_id, request.data)
+            return Response(result, status=status.HTTP_200_OK)
         
         except Map.DoesNotExist:
             return Response({"error": "Map not found"}, status=status.HTTP_404_NOT_FOUND)
@@ -502,8 +422,7 @@ class GroupListCreateAPIView(APIView):
 
     def get(self, request):
         """ログインユーザーが所属するグループ一覧を取得"""
-        groups = Group.objects.filter(usergrouprelation__user=request.user)
-        data = [{"id": g.id, "uuid": str(g.uuid), "name": g.name, "description": g.description} for g in groups]
+        data = get_groups_for_user(request.user)
         return Response(data, status=status.HTTP_200_OK)
 
     def post(self, request):
@@ -514,9 +433,8 @@ class GroupListCreateAPIView(APIView):
         if not name:
             return Response({"error": "name is required"}, status=status.HTTP_400_BAD_REQUEST)
 
-        group = Group.objects.create(name=name, description=description)
-        UserGroupRelation.objects.create(user=request.user, group=group)
-        return Response({"id": group.id, "name": group.name}, status=status.HTTP_201_CREATED)
+        result = create_group_with_user(request.user, name, description)
+        return Response(result, status=status.HTTP_201_CREATED)
 
 
 class GroupJoinAPIView(APIView):
@@ -524,8 +442,7 @@ class GroupJoinAPIView(APIView):
 
     def post(self, request, uuid: UUID):
         """グループに参加（招待URLを経由して）"""
-        group = get_object_or_404(Group, uuid=uuid)
-        UserGroupRelation.objects.get_or_create(user=request.user, group=group)
+        group = join_group_by_uuid(request.user, uuid)
         return Response({"message": f"Joined group {group.name}"}, status=status.HTTP_200_OK)
 
 
@@ -535,32 +452,30 @@ class GroupMapListAPIView(APIView):
     def get(self, request, uuid: UUID):
         """指定したグループに属するマップの一覧を取得"""
         group = get_object_or_404(Group, uuid=uuid)
-        # グループに属していないユーザーがアクセスしないようチェック
-        if not UserGroupRelation.objects.filter(user=request.user, group=group).exists():
+        if not group:
+            return Response({"error": "Group not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        if not user_in_group(request.user, group):
             return Response({"error": "Access denied"}, status=status.HTTP_403_FORBIDDEN)
 
-        maps = Map.objects.filter(groupmaprelation__group=group)
-        data = [{"id": m.id, "name": m.name} for m in maps]
+        data = get_maps_for_group(group)
         return Response(data, status=status.HTTP_200_OK)
-
 
     def post(self, request, uuid: UUID):
         """指定グループにマップを作成して紐付け"""
         group = get_object_or_404(Group, uuid=uuid)
+        if not group:
+            return Response({"error": "Group not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        if not UserGroupRelation.objects.filter(user=request.user, group=group).exists():
+        if not user_in_group(request.user, group):
             return Response({"error": "Access denied"}, status=status.HTTP_403_FORBIDDEN)
 
         name = request.data.get("name")
         if not name:
             return Response({"error": "name is required"}, status=status.HTTP_400_BAD_REQUEST)
-
-        # マップ作成
-        map_obj = Map.objects.create(name=name)
-        # 中間テーブル登録
-        GroupMapRelation.objects.create(group=group, map=map_obj)
-
-        return Response({"id": map_obj.id, "name": map_obj.name}, status=status.HTTP_201_CREATED)
+        
+        result = create_map_for_group(group, name)
+        return Response(result, status=status.HTTP_201_CREATED)
 
 
 class SharedMapAPIView(APIView):
@@ -576,19 +491,8 @@ class SharedMapAPIView(APIView):
             return Response({"error": "map_id is required"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            shared_map = SharedMap.objects.filter(
-                original_map__id=map_id,
-                creator=request.user
-            ).first()
-
-            if shared_map:
-                return Response({
-                    "shared": True,
-                    "share_uuid": str(shared_map.share_uuid),
-                    "title": shared_map.title
-                }, status=status.HTTP_200_OK)
-            else:
-                return Response({"shared": False}, status=status.HTTP_200_OK)
+            result = get_shared_map_info(map_id, request.user)
+            return Response(result, status=status.HTTP_200_OK)
 
         except Exception as e:
             return Response({"error": "Internal Server Error", "message": str(e)},
@@ -608,45 +512,16 @@ class SharedMapAPIView(APIView):
             return Response({"error": "map_id is required"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            original_map = get_object_or_404(Map, id=map_id)
-
-            # 既にシェア済みならそれを返す（任意仕様）
-            existing = SharedMap.objects.filter(
-                original_map=original_map,
-                creator=request.user
-            ).first()
-            if existing:
-                return Response({
-                    "share_uuid": str(existing.share_uuid),
-                    "title": existing.title,
-                }, status=status.HTTP_200_OK)
-
-            # SharedMap作成
-            shared_map = SharedMap.objects.create(
-                original_map=original_map,
-                creator=request.user,
-                title=title or original_map.name,
-                description=description,
-            )
-
-            # 関連するカフェをコピー（CafeMapRelation から取得）
-            cafes = Cafe.objects.filter(cafemaprelation__map=original_map).distinct()
-            for cafe in cafes:
-                CafeSharedMapRelation.objects.create(
-                    shared_map=shared_map,
-                    cafe=cafe
-                )
-
+            result = create_or_get_shared_map(map_id, request.user, title, description)
+            status_code = status.HTTP_201_CREATED if result.get("created") else status.HTTP_200_OK
             return Response({
-                "share_uuid": str(shared_map.share_uuid),
-                "title": shared_map.title,
-            }, status=status.HTTP_201_CREATED)
+                "share_uuid": result["share_uuid"],
+                "title": result["title"],
+            }, status=status_code)
 
         except Exception as e:
-            return Response(
-                {"error": "Internal Server Error", "message": str(e)},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
+            return Response({"error": "Internal Server Error", "message": str(e)},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
 
 class UserSharedMapListAPIView(APIView):
@@ -654,9 +529,7 @@ class UserSharedMapListAPIView(APIView):
 
     def get(self, request):
         """ログインユーザーが登録したシェアマップの一覧を取得"""
-        maps = SharedMap.objects.filter(usersharedmaprelation__user=request.user).distinct()
-        data = [{"id": m.id, "name": m.title, "uuid": m.share_uuid} for m in maps]
-
+        data = get_shared_maps_for_user(request.user)
         return Response(data, status=status.HTTP_200_OK)
     
 
@@ -666,28 +539,7 @@ class SharedMapDetailAPIView(APIView):
     def get(self, request, uuid: UUID):
         """指定したUUIDのシェアマップを取得"""
         try:
-            shared_map = SharedMap.objects.get(share_uuid=uuid)
-            cafe_list = Cafe.objects.filter(cafesharedmaprelation__shared_map=shared_map)
-            data = {
-                "id": shared_map.id,
-                "name": shared_map.title,
-                "cafes": [
-                    {"id": cafe.id, 
-                        "place_id": cafe.place_id, 
-                        "name": cafe.name, 
-                        "photo_urls": cafe.photo_urls,
-                        "rating": cafe.rating,
-                        "phone_number": cafe.phone_number,
-                        "address": cafe.address,
-                        "opening_hours": cafe.opening_hours,
-                        "website": cafe.website,
-                        "latitude": cafe.latitude, 
-                        "longitude": cafe.longitude,
-                        "price_level": cafe.price_level,
-                    } 
-                        for cafe in cafe_list
-                ]
-            }
+            data = get_shared_map_detail(uuid)
             return Response(data, status=status.HTTP_200_OK)
         except SharedMap.DoesNotExist:
             return Response({"error": "Shared Map not found"}, status=status.HTTP_404_NOT_FOUND)
@@ -702,22 +554,12 @@ class RegisterSharedMapAPIView(APIView):
     def post(self, request, uuid: UUID):
         """シェアマップをマイマップとして登録（UserSharedMapRelation に保存）"""
         try:
-            shared_map = get_object_or_404(SharedMap, share_uuid=uuid)
+            result = register_shared_map_for_user(request.user, uuid)
+            status_code = status.HTTP_201_CREATED if result["created"] else status.HTTP_200_OK
 
-            # すでに登録済みかチェック
-            relation, created = UserSharedMapRelation.objects.get_or_create(
-                user=request.user,
-                shared_map=shared_map
-            )
-
-            if created:
-                return Response({
-                    "message": "シェアマップをマイマップとして登録しました"
-                }, status=status.HTTP_201_CREATED)
-            else:
-                return Response({
-                    "message": "すでに登録済みのシェアマップです"
-                }, status=status.HTTP_200_OK)
+            return Response({
+                "message": result["message"]
+            }, status=status_code)
 
         except Exception as e:
             return Response({
@@ -731,23 +573,11 @@ class CopySharedMapAPIView(APIView):
 
     def post(self, request, uuid: UUID):
         try:
-            shared_map = SharedMap.objects.get(share_uuid=uuid)
-            new_name = request.data.get("name", shared_map.title or "シェアマップのコピー")
-
-            # 1. 新しいマップを作成
-            new_map = Map.objects.create(name=new_name)
-
-            # 2. ユーザーとマップの関係を作成
-            MapUserRelation.objects.create(user=request.user, map=new_map)
-
-            # 3. カフェをコピーして紐づける
-            cafes = Cafe.objects.filter(cafesharedmaprelation__shared_map=shared_map)
-            for cafe in cafes:
-                CafeMapRelation.objects.create(map=new_map, cafe=cafe)
-
-            return Response({"id": new_map.id, "name": new_map.name}, status=201)
+            new_name = request.data.get("name")
+            result = copy_shared_map_to_user(request.user, uuid, new_name)
+            return Response(result, status=status.HTTP_201_CREATED)
 
         except SharedMap.DoesNotExist:
-            return Response({"error": "Shared Map not found"}, status=404)
+            return Response({"error": "Shared Map not found"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
-            return Response({"error": str(e)}, status=500)
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
