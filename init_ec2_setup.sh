@@ -13,7 +13,7 @@ fi
 echo "🔧 EC2にDockerおよびGitをインストールし、dockerグループに追加します..."
 
 # リモートでセットアップ実行
-ssh -i "$EC2_KEY_PATH" "$EC2_USER@$EC2_HOST" << 'EOF'
+ssh private-ec2 << 'EOF'
 set -e
 
 # パッケージインストール（すでに入っている場合はスキップ）

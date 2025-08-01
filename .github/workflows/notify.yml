@@ -1,0 +1,42 @@
+name: Notify Slack/LINE
+
+on:
+  workflow_run:
+    workflows: ["Backend Deploy"]  # deploy.ymlのnameに一致
+    types:
+      - completed
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Slack
+        uses: slackapi/slack-github-action@v1.25.0
+        with:
+          payload: |
+            {
+              "text": "${{ github.event.workflow_run.conclusion == 'success' && '✅ デプロイ成功！' || '❌ デプロイ失敗！' }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Notify LINE via Messaging API
+        run: |
+          if [ "${{ github.event.workflow_run.conclusion }}" = "success" ]; then
+            MESSAGE="✅ デプロイ成功！"
+          else
+            MESSAGE="❌ デプロイ失敗！"
+          fi
+
+          curl -X POST https://api.line.me/v2/bot/message/push \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}" \
+            -d '{
+              "to": "${{ secrets.LINE_USER_ID }}",
+              "messages": [
+                {
+                  "type": "text",
+                  "text": "'"${MESSAGE}"'"
+                }
+              ]
+            }'
