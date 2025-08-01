@@ -74,6 +74,11 @@ jobs:
           terraform init
           terraform apply -auto-approve
 
+      - name: Debug terraform output
+        run: |
+          cd terraform/envs/bastion-temp
+          terraform output
+
       # 🔹 8. BastionのPublic IPとSG IDを取得
       - name: Get Bastion IP and SG ID
         run: |
