@@ -11,12 +11,14 @@ interface GroupListItemProps {
   group: Group;
   onSelect: (group: Group) => Promise<void>;
   onInvite: (group: Group) => void;
+  onDetail: (group: Group) => void;
 }
 
 const GroupListItem: React.FC<GroupListItemProps> = ({
   group,
   onSelect,
   onInvite,
+  onDetail,
 }) => {
   const { selectedGroupId } = useGroup();
 
@@ -30,7 +32,8 @@ const GroupListItem: React.FC<GroupListItemProps> = ({
   };
 
   const handleInfo = () => {
-    toast("グループ機能は未実装です");
+    onDetail(group);
+    
   };
 
   return (
