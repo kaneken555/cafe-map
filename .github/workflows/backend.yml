@@ -159,7 +159,7 @@ jobs:
       - name: Add known_hosts entries
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan -H bastion >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ env.BASTION_IP }} >> ~/.ssh/known_hosts
           ssh bastion "ssh-keyscan -H private-ec2" >> ~/.ssh/known_hosts
           
       # 🔹 15. SCP転送
