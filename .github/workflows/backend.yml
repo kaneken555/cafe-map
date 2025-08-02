@@ -160,8 +160,11 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           ssh-keyscan -H ${{ env.BASTION_IP }} >> ~/.ssh/known_hosts
-          ssh bastion "ssh-keyscan -H ${{ secrets.TARGET_PRIVATE_IP }}" >> ~/.ssh/known_hosts
-          
+          ssh -o StrictHostKeyChecking=no \
+            -i ~/.ssh/private_key.pem \
+            ${{ secrets.BASTION_USER }}@${{ env.BASTION_IP }} \
+            "ssh-keyscan -H ${{ secrets.TARGET_PRIVATE_IP }}" >> ~/.ssh/known_hosts
+
       # 🔹 15. SCP転送
       - name: Upload via SCP through Bastion
         run: |
