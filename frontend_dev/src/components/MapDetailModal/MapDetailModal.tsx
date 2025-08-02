@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import BaseModal from "../BaseModal/BaseModal";
 import ModalActionButton from "../ModalActionButton/ModalActionButton";
+import { Cafe } from "../../types/cafe";
 import { MapItem } from "../../types/map";
 import { Map as MapIcon, Save } from "lucide-react";
 
@@ -9,6 +10,7 @@ interface MapDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
   map: MapItem | null;
+  cafes: Cafe[]; // ✅ 追加
   onUpdateMap: (updatedMap: MapItem) => void;
 }
 
@@ -16,6 +18,7 @@ const MapDetailModal: React.FC<MapDetailModalProps> = ({
   isOpen,
   onClose,
   map,
+  cafes,
   onUpdateMap,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -82,6 +85,24 @@ const MapDetailModal: React.FC<MapDetailModalProps> = ({
             />
           ) : (
             <span>{map.description}</span>
+          )}
+        </div>
+
+        {/* カフェ一覧 */}
+        <div>
+          <strong>登録カフェ一覧：</strong>
+          {cafes.length === 0 ? (
+            <p className="text-gray-500">このマップにはまだカフェが登録されていません。</p>
+          ) : (
+            <div>
+              {cafes.map((cafe) => (
+                <div
+                  className="flex items-center justify-between mb-2 cursor-pointer hover:bg-gray-100 border rounded-lg shadow-sm p-2"
+                >
+                  <div className="font-bold text-sm">{cafe.name}</div>
+                </div>
+              ))}
+            </div>
           )}
         </div>
 

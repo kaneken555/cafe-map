@@ -13,10 +13,11 @@ import ModalActionButton from "../ModalActionButton/ModalActionButton";
 import SharedMapListItem from "../SharedMapListItem/SharedMapListItem"; 
 import SharedMapSearchModal from "../SharedMapSearchModal/SharedMapSearchModal";
 import { Coffee } from "lucide-react";
+import { Cafe } from "../../types/cafe";
 import { MapItem, SharedMapItem } from "../../types/map";
 import { toast } from "react-hot-toast";
 import { extractUuidFromUrl } from "../../utils/extractUuid";
-import { searchSharedMap } from "../../services/cafeService";
+import { getCafeList, searchSharedMap } from "../../services/cafeService";
 
 import { useMap } from "../../contexts/MapContext";
 import { useCafe } from "../../contexts/CafeContext"; // ✅ カフェコンテキストをインポート
@@ -25,7 +26,7 @@ import { useGroup } from "../../contexts/GroupContext"; // ✅ グループコ�
 import { MAP_MODES } from "../../constants/map";
 
 import { useMapModals } from "../../hooks/useMapModals";
-import { useMapActions } from "../../hooks/useMapActions"; // ✅ 追加
+import { useMapActions } from "../../hooks/useMapActions";
 
 
 interface MapListModalProps {
@@ -44,7 +45,7 @@ const MapListModal: React.FC<MapListModalProps> = ({
   onSelectMap, 
   onSelectSharedMap, // ✅ シェアマップ選択時のコールバック
   selectedMapId, 
-  setSelectedMapId, // ✅ これを追加
+  setSelectedMapId,
   setShareUuid, // ✅ シェアマップのUUIDをセットする関数
 }) => {
   const { mapList, sharedMapList, setMapMode } = useMap(); // ✅ コンテキストからマップリストとセット関数を取得
@@ -63,6 +64,7 @@ const MapListModal: React.FC<MapListModalProps> = ({
 
   const [selectedMapForDelete, setSelectedMapForDelete] = useState<MapItem | null>(null);
   const [selectedMapForDetail, setSelectedMapForDetail] = useState<MapItem | null>(null); // ✅ 詳細用
+  const [cafesForDetail, setCafesForDetail] = useState<Cafe[]>([]);
   const [activeTab, setActiveTab] = useState<'my' | 'shared'>('my');
 
   const filteredMaps = activeTab === "my" ? mapList : sharedMapList;
@@ -117,8 +119,10 @@ const MapListModal: React.FC<MapListModalProps> = ({
     openDeleteModal();
   };
 
-  const handleDetail = (map: MapItem) => {
+  const handleDetail = async (map: MapItem) => {
     setSelectedMapForDetail(map);
+    const cafes = await getCafeList(map.id);
+    setCafesForDetail(cafes);
     openDetailModal();
   };
 
@@ -155,6 +159,7 @@ const MapListModal: React.FC<MapListModalProps> = ({
           setSelectedMapForDetail(null);
         }}
         map={selectedMapForDetail}
+        cafes={cafesForDetail}
         onUpdateMap={(updatedMap) => {
           // 必要であればmapListを更新するロジックを追加
           console.log("更新されたマップ:", updatedMap);

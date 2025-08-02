@@ -1,10 +1,12 @@
 // components/MapListItem.tsx
 import React, { useState } from "react";
+import { useCafe } from "../../contexts/CafeContext";
 import ShareMapModal from "../ShareMapModal/ShareMapModal";
 import { CheckCircle, Trash2, Share as ShareIcon, Info } from "lucide-react";
 import { MapItem } from "../../types/map";
 import { ICON_SIZES } from "../../constants/ui";
 
+import { getCafeList } from "../../services/cafeService";
 import { useMapModals } from "../../hooks/useMapModals";
 
 
@@ -32,6 +34,8 @@ const MapListItem: React.FC<MapListItemProps> = ({
   onDetailClick, // ✅ 詳細表示用のコールバック関数
 }) => {
 
+  const { setCafeList, setMyCafeList } = useCafe();
+  
   const { 
     isShareModalOpen, openShareModal, closeShareModal,
   } = mapModals;
@@ -48,6 +52,13 @@ const MapListItem: React.FC<MapListItemProps> = ({
       setShareUrl(url);
       openShareModal();
     }
+  };
+
+  const handleDetailClick = async (map: MapItem) => {
+    const cafes = await getCafeList(map.id);
+    setCafeList(cafes);
+    setMyCafeList(cafes);
+    onDetailClick(map);
   };
 
 
@@ -98,7 +109,7 @@ const MapListItem: React.FC<MapListItemProps> = ({
           </button>
 
           <button
-            onClick={() => onDetailClick(map)}
+            onClick={() => handleDetailClick(map)}
             className="w-12 flex flex-col items-center text-gray-700 hover:text-blue-500 cursor-pointer"
           >
             <Info size={ICON_SIZES.MEDIUM} />
