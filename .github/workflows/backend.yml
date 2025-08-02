@@ -134,6 +134,7 @@ jobs:
       # 🔹 13. SSH秘密鍵保存
       - name: Save SSH private key
         run: |
+          mkdir -p ~/.ssh
           echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/private_key.pem
           chmod 600 ~/.ssh/private_key.pem
 
