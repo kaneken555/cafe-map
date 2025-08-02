@@ -157,8 +157,13 @@ jobs:
   
       # 🔹 14. known_hosts登録
       - name: Add Bastion to known_hosts
-        run: ssh-keyscan -H ${{ env.BASTION_IP }} >> ~/.ssh/known_hosts
-      
+        run: |
+          for i in {1..10}; do
+            echo "Trying ssh-keyscan to ${{ env.BASTION_IP }} ($i/10)..."
+            ssh-keyscan -H ${{ env.BASTION_IP }} >> ~/.ssh/known_hosts && break
+            sleep 5
+          done
+                
       - name: Wait for Bastion SSH
         run: |
           for i in {1..10}; do
