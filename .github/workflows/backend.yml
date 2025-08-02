@@ -156,25 +156,29 @@ jobs:
           chmod 600 ~/.ssh/config
   
       # 🔹 14. known_hosts登録
-      - name: Add known_hosts entries
+      - name: Add Bastion to known_hosts
+        run: ssh-keyscan -H ${{ env.BASTION_IP }} >> ~/.ssh/known_hosts
+      
+      - name: Wait for Bastion SSH
         run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan -H ${{ env.BASTION_IP }} >> ~/.ssh/known_hosts
-
           for i in {1..10}; do
             echo "Checking Bastion SSH ($i/10)..."
             if ssh -o StrictHostKeyChecking=no \
                 -i ~/.ssh/private_key.pem \
                 ${{ secrets.BASTION_USER }}@${{ env.BASTION_IP }} "echo ok"; then
-              echo "Bastion is up!"
+              echo "✅ Bastion is up!"
               break
             fi
             sleep 5
           done
+      
+      - name: Add Private EC2 to known_hosts via Bastion
+        run: |
           ssh -o StrictHostKeyChecking=no \
             -i ~/.ssh/private_key.pem \
             ${{ secrets.BASTION_USER }}@${{ env.BASTION_IP }} \
             "ssh-keyscan -H ${{ secrets.TARGET_PRIVATE_IP }}" >> ~/.ssh/known_hosts
+    
 
       # 🔹 15. SCP転送
       - name: Upload via SCP through Bastion
