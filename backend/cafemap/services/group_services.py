@@ -34,3 +34,7 @@ def join_group_by_uuid(user, group_uuid):
 def user_in_group(user, group):
     """ユーザーがグループに所属しているか確認"""
     return UserGroupRelation.objects.filter(user=user, group=group).exists()
+
+def delete_group_and_relations(group):
+    """指定されたグループと関連情報を削除する"""
+    group.delete()

@@ -57,4 +57,16 @@ export class GroupApiClient {
     });
     return res.data;
   }
+
+  /**
+   * グループを削除
+   */
+  static async deleteGroup(groupUuid: string): Promise<void> {
+    const csrfToken = await getCsrfToken();
+
+    await axios.delete(`${API_BASE_PATH}/groups/${groupUuid}/`, {
+      headers: { "X-CSRFToken": csrfToken },
+      withCredentials: true,
+    });
+  }
 }

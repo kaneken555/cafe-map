@@ -16,7 +16,7 @@ from uuid import UUID
 
 from cafemap.services.map_services import get_maps_for_user, create_map_for_user, get_map_with_cafes, delete_map_with_relations, get_maps_for_group, create_map_for_group
 from cafemap.services.cafe_services import get_cafes_for_map_id, create_cafe_and_relation
-from cafemap.services.group_services import get_groups_for_user, create_group_with_user, join_group_by_uuid, user_in_group
+from cafemap.services.group_services import get_groups_for_user, create_group_with_user, join_group_by_uuid, user_in_group, delete_group_and_relations
 from cafemap.services.shared_map_services import get_shared_map_info, create_or_get_shared_map, get_shared_maps_for_user, get_shared_map_detail, register_shared_map_for_user, copy_shared_map_to_user
 
 import logging
@@ -476,6 +476,26 @@ class GroupMapListAPIView(APIView):
         
         result = create_map_for_group(group, name)
         return Response(result, status=status.HTTP_201_CREATED)
+
+
+class GroupDetailAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, uuid: UUID):
+        """指定したグループを削除"""
+        try:
+            group = get_object_or_404(Group, uuid=uuid)
+
+            if not user_in_group(request.user, group):
+                return Response({"error": "Access denied"}, status=status.HTTP_403_FORBIDDEN)
+
+            delete_group_and_relations(group)
+
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+        except Exception as e:
+            return Response({"error": "Internal Server Error", "message": str(e)},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class SharedMapAPIView(APIView):
