@@ -134,31 +134,42 @@ jobs:
       # 🔹 13. SSH秘密鍵保存
       - name: Save SSH private key
         run: |
-          echo "${{ secrets.EC2_SSH_KEY }}" > private_key.pem
-          chmod 600 private_key.pem
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/private_key.pem
+          chmod 600 ~/.ssh/private_key.pem
+
+          cat <<EOF > ~/.ssh/config
+          Host bastion
+            HostName ${{ env.BASTION_IP }}
+            User ${{ secrets.BASTION_USER }}
+            IdentityFile ~/.ssh/private_key.pem
+            StrictHostKeyChecking no
+
+          Host private-ec2
+            HostName ${{ secrets.TARGET_PRIVATE_IP }}
+            User ec2-user
+            IdentityFile ~/.ssh/private_key.pem
+            ProxyJump bastion
+            StrictHostKeyChecking no
+          EOF
+
+          chmod 600 ~/.ssh/config
   
       # 🔹 14. known_hosts登録
       - name: Add known_hosts entries
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan -H ${{ env.BASTION_IP }} >> ~/.ssh/known_hosts
-          ssh -o StrictHostKeyChecking=no \
-              -i private_key.pem \
-              ${{ secrets.BASTION_USER }}@${{ env.BASTION_IP }} \
-              "ssh-keyscan -H ${{ secrets.TARGET_PRIVATE_IP }}" >> ~/.ssh/known_hosts
+          ssh-keyscan -H bastion >> ~/.ssh/known_hosts
+          ssh bastion "ssh-keyscan -H private-ec2" >> ~/.ssh/known_hosts
           
       # 🔹 15. SCP転送
       - name: Upload via SCP through Bastion
         run: |
-          scp -o "ProxyCommand=ssh -i private_key.pem -W %h:%p ${{ secrets.BASTION_USER }}@${{ env.BASTION_IP }}" \
-              -i private_key.pem deploy.zip \
-              ec2-user@${{ secrets.TARGET_PRIVATE_IP }}:/home/ec2-user/
+          scp deploy.zip private-ec2:/home/ec2-user/
     
       # 🔹 16. SSHして展開・再起動
       - name: SSH and Deploy
         run: |
-          ssh -o "ProxyCommand=ssh -i private_key.pem -W %h:%p ${{ secrets.BASTION_USER }}@${{ env.BASTION_IP }}" \
-              -i private_key.pem ec2-user@${{ secrets.TARGET_PRIVATE_IP }} << 'EOF'
+          ssh private-ec2 << 'EOF'
             set -e
             cd /home/ec2-user
             rm -rf deploy_files
