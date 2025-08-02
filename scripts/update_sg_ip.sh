@@ -14,7 +14,7 @@ fi
 export $(grep -v '^#' "$ENV_FILE" | xargs)
 
 # ====== 必須変数の確認 ======
-if [ -z "$SG_ID" ] || [ -z "$REGION" ] || [ -z "$PORT" ]; then
+if [ -z "$BASTION_SG_ID" ] || [ -z "$REGION" ] || [ -z "$PORT" ]; then
   echo "❌ SG_ID, REGION, PORT は .env に必須です"
   exit 1
 fi
@@ -27,7 +27,7 @@ echo "📡 現在のIP: $CIDR"
 # ====== 既存のルール確認 ======
 echo "🔍 現在の許可リストを確認中..."
 EXISTING_IPS=$(aws ec2 describe-security-groups \
-  --group-ids "$SG_ID" \
+  --group-ids "$BASTION_SG_ID" \
   --region "$REGION" \
   --query "SecurityGroups[0].IpPermissions[?FromPort==\`$PORT\` && ToPort==\`$PORT\`].IpRanges[*].CidrIp" \
   --output text \
@@ -38,7 +38,7 @@ for OLD_CIDR in $EXISTING_IPS; do
   if [ "$OLD_CIDR" != "$CIDR" ]; then
     echo "🗑 古いIPルール削除: $OLD_CIDR"
     aws ec2 revoke-security-group-ingress \
-      --group-id "$SG_ID" \
+      --group-id "$BASTION_SG_ID" \
       --protocol tcp \
       --port "$PORT" \
       --cidr "$OLD_CIDR" \
@@ -50,7 +50,7 @@ done
 # ====== 新しいIPを許可 ======
 echo "✅ 新しいIPルール追加: $CIDR"
 aws ec2 authorize-security-group-ingress \
-  --group-id "$SG_ID" \
+  --group-id "$BASTION_SG_ID" \
   --protocol tcp \
   --port "$PORT" \
   --cidr "$CIDR" \
