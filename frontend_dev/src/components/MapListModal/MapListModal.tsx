@@ -6,6 +6,7 @@ import MapCreateModal from "../MapCreateModal/MapCreateModal";
 // import { mockMapData } from "../api/mockMapData"; 
 import MapListItem from "../MapListItem/MapListItem"; 
 import MapDeleteModal from "../MapDeleteModal/MapDeleteModal";
+import MapDetailModal from "../MapDetailModal/MapDetailModal";
 import BaseModal from "../BaseModal/BaseModal";
 
 import ModalActionButton from "../ModalActionButton/ModalActionButton";
@@ -55,11 +56,13 @@ const MapListModal: React.FC<MapListModalProps> = ({
     isCreateModalOpen, openCreateModal, closeCreateModal,
     isSharedMapSearchOpen, openSharedMapSearch, closeSharedMapSearch,
     isDeleteModalOpen, openDeleteModal, closeDeleteModal,
+    isDetailModalOpen, openDetailModal, closeDetailModal,
   } = mapModals;
 
   const { createNewMap, deleteMapById, checkShareStatus, selectMap  } = useMapActions(); // ✅ カスタムフックから取得
 
   const [selectedMapForDelete, setSelectedMapForDelete] = useState<MapItem | null>(null);
+  const [selectedMapForDetail, setSelectedMapForDetail] = useState<MapItem | null>(null); // ✅ 詳細用
   const [activeTab, setActiveTab] = useState<'my' | 'shared'>('my');
 
   const filteredMaps = activeTab === "my" ? mapList : sharedMapList;
@@ -114,6 +117,11 @@ const MapListModal: React.FC<MapListModalProps> = ({
     openDeleteModal();
   };
 
+  const handleDetail = (map: MapItem) => {
+    setSelectedMapForDetail(map);
+    openDetailModal();
+  };
+
   return (
     <>
       {/* マップ作成モーダル */}
@@ -138,6 +146,19 @@ const MapListModal: React.FC<MapListModalProps> = ({
           closeDeleteModal();
         }}
         mapName={selectedMapForDelete?.name ?? ""}
+      />
+
+      <MapDetailModal
+        isOpen={isDetailModalOpen}
+        onClose={() => {
+          closeDetailModal();
+          setSelectedMapForDetail(null);
+        }}
+        map={selectedMapForDetail}
+        onUpdateMap={(updatedMap) => {
+          // 必要であればmapListを更新するロジックを追加
+          console.log("更新されたマップ:", updatedMap);
+        }}
       />
 
       {/* // シェアマップ検索モーダル */}
@@ -190,6 +211,7 @@ const MapListModal: React.FC<MapListModalProps> = ({
                 mapModals={mapModals}
                 onShare={handleShare}
                 onSelectMap={handleSelectMap}
+                onDetailClick={handleDetail} // ✅ 詳細表示用の関数
               />
             ))}
             {activeTab === 'shared' &&

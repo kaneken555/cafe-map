@@ -2,6 +2,7 @@
 export interface MapItem {
   id: number;
   name: string;
+  description?: string;
 }
 
 export interface SharedMapItem {
