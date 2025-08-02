@@ -1,6 +1,7 @@
 // components/GroupDetailModal/GroupDetailModal.tsx
 import React, { useState, useEffect } from "react";
 import BaseModal from "../BaseModal/BaseModal";
+import GroupIconUploadModal from "../GroupIconUploadModal/GroupIconUploadModal";
 import ModalActionButton from "../ModalActionButton/ModalActionButton";
 import { Group } from "../../types/group";
 import { Users, Edit2, Save } from "lucide-react";
@@ -21,6 +22,8 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [updatedGroup, setUpdatedGroup] = useState<Group | null>(group);
+  const [isIconModalOpen, setIsIconModalOpen] = useState(false);
+
 
   // `group` が変更された場合に `updatedGroup` を更新する
   useEffect(() => {
@@ -46,6 +49,13 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
         [field]: e.target.value,
       });
     }
+  };
+
+  const handleIconUpload = (newIcon: string) => {
+    setUpdatedGroup((prev) => {
+      if (!prev) return prev;
+      return { ...prev, icon: newIcon };
+    });
   };
 
   return (
@@ -79,14 +89,14 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
           <strong>アイコン画像：</strong>
           <div className="flex items-center space-x-2">
             <img
-              // src={group.icon || "/default-icon.png"} // デフォルトアイコン
+              src={updatedGroup?.icon || "/default-icon.png"}
               alt="グループアイコン"
-              className="w-12 h-12 rounded-full"
+              className="w-12 h-12 rounded-full border cursor-pointer object-cover"
+              onClick={() => isEditing && setIsIconModalOpen(true)}
             />
             {isEditing && (
-              <button className="text-blue-500 hover:text-blue-700">
+              <button className="text-blue-500 hover:text-blue-700 cursor-pointer">
                 <Edit2 size={16} />
-                アイコンを変更
               </button>
             )}
           </div>
@@ -120,16 +130,22 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
       {/* 編集モードトグルスイッチ */}
       <div className="flex items-center space-x-2 mt-4">
           <span>編集モード</span>
-          <label className="inline-flex relative items-center cursor-pointer">
+          <label className="inline-flex relative items-center cursor-pointer w-10 h-6">
             <input
               type="checkbox"
               checked={isEditing}
               onChange={() => setIsEditing(!isEditing)} // スイッチをトグル
               className="sr-only"
             />
-            <span className="w-10 h-6 bg-gray-200 rounded-full"></span>
             <span
-              className={`absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-all duration-300 ease-in-out ${isEditing ? "transform translate-x-4 bg-green-500" : ""}`}
+              className={`absolute inset-0 rounded-full transition-colors duration-300 ${
+                isEditing ? "bg-green-500" : "bg-gray-300"
+              }`}
+            ></span>
+            <span
+              className={`absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-all duration-300 ease-in-out ${
+                isEditing ? "transform translate-x-4 bg-green-500" : ""
+              }`}
             ></span>
           </label>
           <span className="ml-2">{isEditing ? "ON" : "OFF"}</span>
@@ -146,7 +162,17 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
         )}
       </div>
 
+      <GroupIconUploadModal
+        isOpen={isIconModalOpen}
+        onClose={() => setIsIconModalOpen(false)}
+        groupName={group.name}
+        currentIcon={updatedGroup?.icon}
+        onUpload={handleIconUpload}
+      />
+
     </BaseModal>
+
+    
   );
 };
 
