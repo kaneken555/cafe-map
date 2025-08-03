@@ -14,7 +14,7 @@ from django.utils.decorators import method_decorator
 from django.middleware.csrf import get_token
 from uuid import UUID
 
-from cafemap.services.map_services import get_maps_for_user, create_map_for_user, get_map_with_cafes, delete_map_with_relations, get_maps_for_group, create_map_for_group
+from cafemap.services.map_services import get_maps_for_user, create_map_for_user, get_map_with_cafes, delete_map_with_relations, get_maps_for_group, create_map_for_group, update_map_info
 from cafemap.services.cafe_services import get_cafes_for_map_id, create_cafe_and_relation
 from cafemap.services.group_services import get_groups_for_user, create_group_with_user, join_group_by_uuid, user_in_group, delete_group_and_relations, get_group_detail, update_group
 from cafemap.services.shared_map_services import get_shared_map_info, create_or_get_shared_map, get_shared_maps_for_user, get_shared_map_detail, register_shared_map_for_user, copy_shared_map_to_user
@@ -221,6 +221,7 @@ def login_success_view(request):
 class MapAPIView(APIView):
     # # TODO: 認証つける(↓現在は認証なしで登録可能)
     # permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
         """ マップの一覧を取得 """
@@ -257,9 +258,10 @@ class MapAPIView(APIView):
 
 # /api/maps/<int:map_id>/
 class MapDetailAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, *args, **kwargs):
         """ 特定のマップを取得 """
-        print(f"📌 リクエストユーザー: {request.user}")  # ✅ ユーザーをログに出す
         logging.info(f"📌 リクエストユーザー: {request.user}, マップID: {kwargs.get('map_id')}")  # ログに出力
         try:
             map_id = kwargs.get("map_id")
@@ -273,6 +275,20 @@ class MapDetailAPIView(APIView):
     def put(self, request, *args, **kwargs):
         """ マップ情報を更新 """
         return Response({"message": "PUT request received"}, status=status.HTTP_200_OK)
+
+    def patch(self, request, *args, **kwargs):
+        """ マップ情報を更新 """
+        map_id = kwargs.get("map_id")
+        if not map_id:
+            return Response({"error": "Map ID is required"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            updated_map = update_map_info(request, map_id)
+            return Response(updated_map, status=status.HTTP_200_OK)
+        except Map.DoesNotExist:
+            return Response({"error": "Map not found"}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"error": "Internal Server Error", "message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def delete(self, request, *args, **kwargs):
         """ マップ情報を削除 """

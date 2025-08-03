@@ -7,6 +7,7 @@ import { MapItem } from "../../types/map";
 import { ICON_SIZES } from "../../constants/ui";
 
 import { getCafeList } from "../../services/cafeService";
+import { getMapDetail } from "../../services/mapService"; // ✅ マップ詳細情報取得のAPIをインポート
 import { useMapModals } from "../../hooks/useMapModals";
 
 
@@ -58,7 +59,8 @@ const MapListItem: React.FC<MapListItemProps> = ({
     const cafes = await getCafeList(map.id);
     setCafeList(cafes);
     setMyCafeList(cafes);
-    onDetailClick(map);
+    const mapInfo = await getMapDetail(map.id);
+    onDetailClick(mapInfo);
   };
 
 

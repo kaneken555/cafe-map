@@ -18,6 +18,7 @@ import { MapItem, SharedMapItem } from "../../types/map";
 import { toast } from "react-hot-toast";
 import { extractUuidFromUrl } from "../../utils/extractUuid";
 import { getCafeList, searchSharedMap } from "../../services/cafeService";
+import { updateMapInfo } from "../../services/mapService"; // ✅ マップ情報更新のAPIをインポート
 
 import { useMap } from "../../contexts/MapContext";
 import { useCafe } from "../../contexts/CafeContext"; // ✅ カフェコンテキストをインポート
@@ -161,8 +162,10 @@ const MapListModal: React.FC<MapListModalProps> = ({
         map={selectedMapForDetail}
         cafes={cafesForDetail}
         onUpdateMap={(updatedMap) => {
-          // 必要であればmapListを更新するロジックを追加
-          console.log("更新されたマップ:", updatedMap);
+          updateMapInfo(updatedMap.id, {
+            name: updatedMap.name,
+            description: updatedMap.description,
+          });
         }}
       />
 
