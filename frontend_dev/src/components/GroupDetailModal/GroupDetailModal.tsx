@@ -5,35 +5,62 @@ import GroupIconUploadModal from "../GroupIconUploadModal/GroupIconUploadModal";
 import ModalActionButton from "../ModalActionButton/ModalActionButton";
 import { Group } from "../../types/group";
 import { Users, Edit2, Save } from "lucide-react";
+import { getGroupInfo } from "../../services/groupService";
 
 
 interface GroupDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
-  group: Group | null;
+  groupUuid: string | null;
   onUpdateGroup: (updatedGroup: Group) => void; // グループ更新用のコールバック
 }
 
 const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
   isOpen,
   onClose,
-  group,
+  groupUuid,
   onUpdateGroup,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [updatedGroup, setUpdatedGroup] = useState<Group | null>(group);
+  const [group, setGroup] = useState<Group | null>(null);
+  const [updatedGroup, setUpdatedGroup] = useState<Group | null>(null);
   const [isIconModalOpen, setIsIconModalOpen] = useState(false);
-
+  // const [isLoading, setIsLoading] = useState(false);
 
   // `group` が変更された場合に `updatedGroup` を更新する
   useEffect(() => {
-    if (group) {
-      setUpdatedGroup({ ...group }); // `group` が null でない場合に初期化
-    }
-  }, [group]);
+    const fetchGroup = async () => {
+      if (!groupUuid) return;
+      // setIsLoading(true);
+      try {
+        const data = await getGroupInfo(groupUuid);
+        setGroup(data);
+        setUpdatedGroup(data);
+      } catch (err) {
+        console.error("グループ情報取得失敗", err);
+      } finally {
+        // setIsLoading(false);
+      }
+    };
+    fetchGroup();
+  }, [groupUuid]);
 
 
   if (!group) return null;
+  // ✅ 読み込み中表示
+  // if (isLoading || !group) {
+  //   return (
+  //     <BaseModal
+  //       isOpen={isOpen}
+  //       onClose={onClose}
+  //       title="グループ詳細"
+  //       icon={<Users className="w-6 h-6 text-[#6b4226]" />}
+  //       size="md"
+  //     >
+  //       <div className="p-4 text-center text-gray-500">読み込み中です...</div>
+  //     </BaseModal>
+  //   );
+  // }
 
   const handleUpdate = () => {
     if (updatedGroup) {
@@ -108,8 +135,8 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
           {isEditing ? (
             <input
               type="text"
-              // value={updatedGroup.description}
-              // onChange={(e) => handleChange(e, "description")}
+              value={updatedGroup?.description}
+              onChange={(e) => handleChange(e, "description")}
               className="w-full px-2 py-1 border rounded"
             />
           ) : (

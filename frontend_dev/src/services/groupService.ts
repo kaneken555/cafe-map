@@ -57,3 +57,30 @@ export const deleteGroup = async (groupUuid: string): Promise<void> => {
     throw error;
   }
 };
+
+/**
+ * グループ情報を取得
+ */
+export const getGroupInfo = async (groupUuid: string): Promise<Group> => {
+  try {
+    const group = await GroupApiClient.getGroupInfo(groupUuid);
+    return group;
+  } catch (error) {
+    toast.error("グループ情報の取得に失敗しました");
+    throw error;
+  }
+}
+
+/**
+ * グループ情報を更新
+ */
+export const updateGroupInfo = async (groupUuid: string, updatedGroup: Partial<Group>): Promise<Group> => {
+  try {
+    const group = await GroupApiClient.updateGroupInfo(groupUuid, updatedGroup);
+    toast.success("グループ情報を更新しました");
+    return group;
+  } catch (error) {
+    toast.error("グループ情報の更新に失敗しました");
+    throw error;
+  }
+}

@@ -7,6 +7,8 @@ import { ICON_SIZES } from "../../constants/ui";
 
 import { useGroup } from "../../contexts/GroupContext";
 
+// import { deleteGroup } from "../../services/groupService";
+
 interface GroupListItemProps {
   group: Group;
   onSelect: (group: Group) => Promise<void>;
@@ -33,8 +35,16 @@ const GroupListItem: React.FC<GroupListItemProps> = ({
 
   const handleInfo = () => {
     onDetail(group);
-    
   };
+
+  // const handleDelete = async () => {
+  //   try {
+  //     await deleteGroup(group.uuid);
+  //     toast.success(`${group.name}を削除しました`);
+  //   } catch (error) {
+  //     toast.error(`グループ削除に失敗しました: ${error}`);
+  //   }
+  // };
 
   return (
     <li className="flex justify-between items-center border px-4 py-2 rounded">
@@ -70,6 +80,14 @@ const GroupListItem: React.FC<GroupListItemProps> = ({
           <UserPlus size={ICON_SIZES.MEDIUM} />
           <span className="text-sm">招待</span>
         </button>
+
+        {/* <button
+          onClick={handleDelete}
+          className="w-12 flex flex-col items-center text-gray-700 hover:text-blue-500 cursor-pointer"
+          >
+          <UserPlus size={ICON_SIZES.MEDIUM} />
+          <span className="text-sm">削除</span>
+        </button> */}
       </div>
     </li>
   );

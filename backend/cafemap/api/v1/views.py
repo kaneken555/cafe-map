@@ -16,7 +16,7 @@ from uuid import UUID
 
 from cafemap.services.map_services import get_maps_for_user, create_map_for_user, get_map_with_cafes, delete_map_with_relations, get_maps_for_group, create_map_for_group
 from cafemap.services.cafe_services import get_cafes_for_map_id, create_cafe_and_relation
-from cafemap.services.group_services import get_groups_for_user, create_group_with_user, join_group_by_uuid, user_in_group, delete_group_and_relations
+from cafemap.services.group_services import get_groups_for_user, create_group_with_user, join_group_by_uuid, user_in_group, delete_group_and_relations, get_group_detail, update_group
 from cafemap.services.shared_map_services import get_shared_map_info, create_or_get_shared_map, get_shared_maps_for_user, get_shared_map_detail, register_shared_map_for_user, copy_shared_map_to_user
 
 import logging
@@ -392,7 +392,6 @@ class CafeTagDetailAPIView(APIView):
         return Response({"message": "DELETE request received"}, status=status.HTTP_204_NO_CONTENT)
     
 
-
 # カフェのメモ登録・一覧取得用のAPIViewを実装
 # TODO: CafeMemoAPIViewとCafeMemoDetailAPIViewを実装
 # /api/maps/<int:map_id>/cafes/<int:cafe_id>/memos/
@@ -405,6 +404,7 @@ class CafeMemoAPIView(APIView):
         """ カフェにメモを追加 """
         return Response({"message": "POST request received"}, status=status.HTTP_201_CREATED)
     
+
 # /api/maps/<int:map_id>/cafes/<int:cafe_id>/memos/<int:memo_id>/
 class CafeMemoDetailAPIView(APIView):
     def get(self, request, *args, **kwargs):
@@ -416,8 +416,8 @@ class CafeMemoDetailAPIView(APIView):
         return Response({"message": "DELETE request received"}, status=status.HTTP_204_NO_CONTENT)
 
 
-
-class GroupListCreateAPIView(APIView):
+# /api/groups/
+class GroupListAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
@@ -437,7 +437,8 @@ class GroupListCreateAPIView(APIView):
         return Response(result, status=status.HTTP_201_CREATED)
 
 
-class GroupJoinAPIView(APIView):
+# /api/groups/<uuid:uuid>/memberships/
+class GroupMembershipAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, uuid: UUID):
@@ -445,7 +446,13 @@ class GroupJoinAPIView(APIView):
         group = join_group_by_uuid(request.user, uuid)
         return Response({"message": f"Joined group {group.name}"}, status=status.HTTP_200_OK)
 
+    # def delete(self, request, uuid: UUID):
+    #     group = get_object_or_404(Group, uuid=uuid)
+    #     leave_group(request.user, group)
+    #     return Response({"message": "Left the group"}, status=status.HTTP_204_NO_CONTENT)
 
+
+# /api/groups/<uuid:uuid>/maps/
 class GroupMapListAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -477,9 +484,28 @@ class GroupMapListAPIView(APIView):
         result = create_map_for_group(group, name)
         return Response(result, status=status.HTTP_201_CREATED)
 
-
+# /api/groups/<uuid:uuid>/
 class GroupDetailAPIView(APIView):
     permission_classes = [IsAuthenticated]
+
+    def get(self, request, uuid: UUID):
+        group = get_object_or_404(Group, uuid=uuid)
+        if not user_in_group(request.user, group):
+            return Response({"error": "Access denied"}, status=status.HTTP_403_FORBIDDEN)
+
+        data = get_group_detail(uuid)  # → 例えば { name, description, created_at, member_count, ... }
+        return Response(data, status=status.HTTP_200_OK)
+
+    def patch(self, request, uuid: UUID):
+        group = get_object_or_404(Group, uuid=uuid)
+        if not user_in_group(request.user, group):
+            return Response({"error": "Access denied"}, status=status.HTTP_403_FORBIDDEN)
+
+        name = request.data.get("name")
+        description = request.data.get("description")
+
+        updated_group = update_group(group, name, description)
+        return Response({"message": "Group updated"}, status=status.HTTP_200_OK)
 
     def delete(self, request, uuid: UUID):
         """指定したグループを削除"""
@@ -517,7 +543,6 @@ class SharedMapAPIView(APIView):
         except Exception as e:
             return Response({"error": "Internal Server Error", "message": str(e)},
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 
     def post(self, request):
         """
