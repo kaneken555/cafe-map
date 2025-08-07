@@ -25,11 +25,14 @@ const CafeDetailPanel: React.FC<CafeDetailPanelProps> = ({
   
   const { selectedMap } = useMap(); // マップコンテキストからselectedMapを取得
   const { myCafeList, setMyCafeList } = useCafe();
-  const { addCafe } = useCafeActions(selectedMap, setMyCafeList);
+  const { toggleCafe } = useCafeActions(selectedMap, setMyCafeList);
 
 
   const renderCafeDetailCard = () => {
     if (!cafe) return null;
+
+    const isRegistered = myCafeList.some((c) => c.placeId === cafe.placeId);
+
     return (
       <CafeDetailCard
         cafe={cafe}
@@ -37,7 +40,7 @@ const CafeDetailPanel: React.FC<CafeDetailPanelProps> = ({
         myCafeList={myCafeList}
         // setMyCafeList={setMyCafeList}
         onAddClick={handleAddClick} // ✅ ボタン用コールバック追加
-        onAddCafe={addCafe} // ✅ 追加
+        onAddCafe={() => toggleCafe(cafe, isRegistered)}
         onShareCafe={() => toast("カフェ共有機能は未実装です")}
       />
     );

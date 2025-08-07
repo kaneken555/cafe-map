@@ -1,5 +1,7 @@
 # services/cafe_services.py
-from cafemap.models import Map, Cafe, CafeMapRelation
+from django.shortcuts import get_object_or_404
+from django.core.exceptions import PermissionDenied
+from cafemap.models import Map, Cafe, CafeMapRelation, MapUserRelation
 
 
 def get_cafes_for_map(map_obj):
@@ -61,3 +63,18 @@ def create_cafe_and_relation(map_id: int, cafe_data: dict):
         "name": cafe.name,
         "already_existed": not created
     }
+
+
+def remove_cafe_from_map(user, map_id: int, cafe_id: int) -> None:
+    """
+    指定されたマップからカフェの紐付けを削除する。
+    権限チェックも行う。
+    """
+    # マップがユーザーのものであることを確認（認可チェック）
+    if not MapUserRelation.objects.filter(user=user, map_id=map_id).exists():
+        raise PermissionDenied("You do not have permission to modify this map.")
+
+    # CafeMapRelation を取得・削除
+    relation = get_object_or_404(CafeMapRelation, map_id=map_id, cafe_id=cafe_id)
+    relation.delete()
+

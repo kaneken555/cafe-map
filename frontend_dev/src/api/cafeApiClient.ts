@@ -17,7 +17,8 @@ export class CafeApiClient {
     return response.data.cafes.map((cafe: any) => this.transformCafe(cafe));
   }
 
-  static async addCafeToMyCafe(mapId: number, cafe: Cafe): Promise<void> {
+  static async addCafeToMyCafe(mapId: number, cafe: Cafe
+  ): Promise<{ id: number; name: string; already_existed: boolean }> {
     const csrfToken = await getCsrfToken();
     const response = await axios.post(
       `${API_BASE_PATH}/maps/${mapId}/cafes/`,
@@ -126,5 +127,13 @@ export class CafeApiClient {
       website: cafe.website,
       priceLevel: cafe.price_level,
     };
+  }
+
+  static async removeCafeFromMap(mapId: number, cafeId: number): Promise<void> {
+    const csrfToken = await getCsrfToken();
+    await axios.delete(`${API_BASE_PATH}/maps/${mapId}/cafes/${cafeId}/`, {
+      headers: { "X-CSRFToken": csrfToken },
+      withCredentials: true,
+    });
   }
 }
