@@ -9,6 +9,10 @@ interface CafeContextProps {
   setMyCafeList: React.Dispatch<React.SetStateAction<Cafe[]>>;
   sharedMapCafeList: Cafe[];
   setSharedMapCafeList: React.Dispatch<React.SetStateAction<Cafe[]>>;
+  selectedSearchedCafe: Cafe | null;
+  setSelectedSearchedCafe: React.Dispatch<React.SetStateAction<Cafe | null>>;
+  selectedRegisteredCafe: Cafe | null;
+  setSelectedRegisteredCafe: React.Dispatch<React.SetStateAction<Cafe | null>>;
   resetCafeContext: () => void;
 }
 
@@ -18,11 +22,15 @@ export const CafeProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [cafeList, setCafeList] = useState<Cafe[]>([]);
   const [myCafeList, setMyCafeList] = useState<Cafe[]>([]);
   const [sharedMapCafeList, setSharedMapCafeList] = useState<Cafe[]>([]);
+  const [selectedSearchedCafe, setSelectedSearchedCafe] = useState<Cafe | null>(null);
+  const [selectedRegisteredCafe, setSelectedRegisteredCafe] = useState<Cafe | null>(null);
 
   const resetCafeContext = () => {
     setCafeList([]);
     setMyCafeList([]);
     setSharedMapCafeList([]);
+    setSelectedSearchedCafe(null);
+    setSelectedRegisteredCafe(null);
   };
 
   const value = useMemo(
@@ -33,9 +41,19 @@ export const CafeProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setMyCafeList,
       sharedMapCafeList,
       setSharedMapCafeList,
+      selectedSearchedCafe,
+      setSelectedSearchedCafe,
+      selectedRegisteredCafe,
+      setSelectedRegisteredCafe,
       resetCafeContext,
     }),
-    [cafeList, myCafeList, sharedMapCafeList]
+    [
+      cafeList, 
+      myCafeList, 
+      sharedMapCafeList,
+      selectedSearchedCafe,
+      selectedRegisteredCafe,
+    ]
   );
 
   return <CafeContext.Provider value={value}>{children}</CafeContext.Provider>;
