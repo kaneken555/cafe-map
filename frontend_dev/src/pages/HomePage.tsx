@@ -27,7 +27,7 @@ import { requireMapSelected } from "../utils/mapUtils";
 
 const HomePage: React.FC = () => {
   // コンテキストから必要な値を取得
-  const { cafeList, myCafeList, setMyCafeList, sharedMapCafeList,
+  const { myCafeList, setMyCafeList, sharedMapCafeList,
     selectedSearchedCafe, setSelectedSearchedCafe,
     selectedRegisteredCafe, setSelectedRegisteredCafe,
    } = useCafe(); // カフェコンテキストからcafeListとsetCafeListを取得
@@ -97,7 +97,7 @@ const HomePage: React.FC = () => {
       <MyCafeListPanel
         isOpen={isMyCafeListOpen}
         onClose={() => setIsMyCafeListOpen(false)}
-        cafes={cafeList}
+        cafes={myCafeList}
         onCafeClick={(cafe) => {
           setSelectedRegisteredCafe(cafe); // ✅ 選択カフェセット
           setSelectedCafeId(cafe.id); // ✅ 選択IDセット（今後何かに使う用？）
