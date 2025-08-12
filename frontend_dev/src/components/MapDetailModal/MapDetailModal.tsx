@@ -97,6 +97,7 @@ const MapDetailModal: React.FC<MapDetailModalProps> = ({
             <div>
               {cafes.map((cafe) => (
                 <div
+                  key={cafe.id} // ← ユニークな値を指定
                   className="flex items-center justify-between mb-2 cursor-pointer hover:bg-gray-100 border rounded-lg shadow-sm p-2"
                 >
                   <div className="font-bold text-sm">{cafe.name}</div>
