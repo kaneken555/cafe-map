@@ -49,7 +49,7 @@ const MapListModal: React.FC<MapListModalProps> = ({
   setSelectedMapId,
   setShareUuid, // ✅ シェアマップのUUIDをセットする関数
 }) => {
-  const { mapList, sharedMapList, setMapMode } = useMap(); // ✅ コンテキストからマップリストとセット関数を取得
+  const { mapList, setMapList, sharedMapList, setMapMode } = useMap(); // ✅ コンテキストからマップリストとセット関数を取得
   const { setSharedMapCafeList} = useCafe(); // ✅ シェアマップのカフェリストとセット関数を取得
   const { selectedGroup } = useGroup(); // ✅ グループ情報を取得
 
@@ -123,6 +123,7 @@ const MapListModal: React.FC<MapListModalProps> = ({
   const handleDetail = async (map: MapItem) => {
     setSelectedMapForDetail(map);
     const cafes = await getCafeList(map.id);
+    console.log("📡 カフェ一覧取得:", cafes);
     setCafesForDetail(cafes);
     openDetailModal();
   };
@@ -141,6 +142,7 @@ const MapListModal: React.FC<MapListModalProps> = ({
         onClose={() => {
           closeDeleteModal();
           setSelectedMapForDelete(null);
+          setCafesForDetail([]);
         }}
         onConfirm={async () => {
           if (selectedMapForDelete) {
@@ -161,11 +163,13 @@ const MapListModal: React.FC<MapListModalProps> = ({
         }}
         map={selectedMapForDetail}
         cafes={cafesForDetail}
-        onUpdateMap={(updatedMap) => {
-          updateMapInfo(updatedMap.id, {
+        onUpdateMap={async (updatedMap) => {
+          const res = await updateMapInfo(updatedMap.id, {
             name: updatedMap.name,
             description: updatedMap.description,
           });
+          setSelectedMapForDetail(res);
+          setMapList(prev => prev.map(m => m.id === res.id ? res : m));
         }}
       />
 

@@ -43,7 +43,7 @@ def update_map(map_obj, name: str, description: str = ""):
     map_obj.name = name
     map_obj.description = description
     map_obj.save()
-    return {"id": map_obj.id, "name": map_obj.name}
+    return {"id": map_obj.id, "name": map_obj.name, "description": map_obj.description}
 
 def update_map_info(request, map_id: int):
     """マップの名前を更新"""

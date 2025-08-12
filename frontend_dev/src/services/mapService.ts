@@ -1,5 +1,6 @@
 // src/api/mapService.ts
 import { MapApiClient, CreateMapRequest, CreateGroupMapRequest, UpdateMapRequest } from "../api/mapApiClient";
+import { MapItem } from "../types/map";
 
 
 export const createMap = async (params: CreateMapRequest): Promise<void> => {
@@ -34,7 +35,7 @@ export const copySharedMap = async (uuid: string, name: string): Promise<void> =
   return await MapApiClient.copySharedMap(uuid, name);
 };
 
-export const updateMapInfo = async (mapId: number, params: UpdateMapRequest): Promise<void> => {
+export const updateMapInfo = async (mapId: number, params: UpdateMapRequest): Promise<MapItem> => {
   return await MapApiClient.updateMapInfo(mapId, params);
 }
 
