@@ -12,8 +12,6 @@ export class CafeApiClient {
       headers: { "X-CSRFToken": csrfToken },
       withCredentials: true,
     });
-    console.log("📡 カフェ一覧取得:", response.data);
-
     return response.data.cafes.map((cafe: any) => this.transformCafe(cafe));
   }
 
