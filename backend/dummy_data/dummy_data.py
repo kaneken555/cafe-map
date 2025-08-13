@@ -124,3 +124,49 @@ mock_cafes = [
         "website": "https://www.tullys.co.jp/",
     },
 ]
+
+
+# --- mock_groups ---
+mock_groups = [
+    {"name": "渋谷カフェ部", "description": "渋谷中心のカフェ好きコミュニティ"},
+    {"name": "関西巡り", "description": "大阪・京都のカフェを開拓する会"},
+]
+
+# --- mock_user_group_relations ---
+# 名前ベース推奨（IDでも可）
+mock_user_group_relations = [
+    {"user_name": "guest", "group_name": "渋谷カフェ部"},
+    {"user_name": "test",  "group_name": "関西巡り"},
+    {"user_name": "admin", "group_name": "渋谷カフェ部"},
+]
+
+# --- mock_group_map_relations ---
+mock_group_map_relations = [
+    {"group_name": "渋谷カフェ部", "map_name": "渋谷カフェマップ"},
+    {"group_name": "渋谷カフェ部", "map_name": "東京駅カフェマップ"},
+    {"group_name": "関西巡り",     "map_name": "京都カフェ巡り"},
+    {"group_name": "関西巡り",     "map_name": "大阪カフェ巡り"},
+]
+
+# --- mock_shared_maps ---
+# original_map_name / creator_name を使って関連付け
+mock_shared_maps = [
+    {
+        "original_map_name": "渋谷カフェマップ",
+        "creator_name": "guest",
+        "title": "渋谷おすすめ",
+        "description": "初めての渋谷向けコース",
+        "allow_sync": False,
+        "participants": ["test"],             # 追加参加者（任意）
+        "copy_cafes_from_original": True,     # 元マップのカフェをコピー
+    },
+    {
+        "original_map_name": "京都カフェ巡り",
+        "creator_name": "test",
+        "title": "京都観光カフェ",
+        "description": "寺社巡りとセットでどうぞ",
+        "allow_sync": True,
+        "participants": ["guest", "admin"],
+        "copy_cafes_from_original": True,
+    },
+]
