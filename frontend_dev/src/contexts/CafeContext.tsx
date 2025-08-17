@@ -5,14 +5,21 @@ import { Cafe } from "../types/cafe";
 interface CafeContextProps {
   cafeList: Cafe[];
   setCafeList: React.Dispatch<React.SetStateAction<Cafe[]>>;
+  /** ✅ 自分のマップに登録済みのカフェ */
   myCafeList: Cafe[];
   setMyCafeList: React.Dispatch<React.SetStateAction<Cafe[]>>;
+  /** 🔗 シェアマップ上の登録済みカフェ */
   sharedMapCafeList: Cafe[];
   setSharedMapCafeList: React.Dispatch<React.SetStateAction<Cafe[]>>;
+  /** 🔍 検索結果から選択されたカフェ */
   selectedSearchedCafe: Cafe | null;
   setSelectedSearchedCafe: React.Dispatch<React.SetStateAction<Cafe | null>>;
+  /** ✅ 登録済みリストから選択されたカフェ */
   selectedRegisteredCafe: Cafe | null;
   setSelectedRegisteredCafe: React.Dispatch<React.SetStateAction<Cafe | null>>;
+  /** よく使うヘルパー */
+  clearSelectedCafe: () => void;
+  /** まとめて初期化 */
   resetCafeContext: () => void;
 }
 
@@ -25,12 +32,16 @@ export const CafeProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [selectedSearchedCafe, setSelectedSearchedCafe] = useState<Cafe | null>(null);
   const [selectedRegisteredCafe, setSelectedRegisteredCafe] = useState<Cafe | null>(null);
 
+  const clearSelectedCafe = () => {
+    setSelectedSearchedCafe(null);
+    setSelectedRegisteredCafe(null);
+  };
+
   const resetCafeContext = () => {
     setCafeList([]);
     setMyCafeList([]);
     setSharedMapCafeList([]);
-    setSelectedSearchedCafe(null);
-    setSelectedRegisteredCafe(null);
+    clearSelectedCafe();
   };
 
   const value = useMemo(
@@ -45,6 +56,7 @@ export const CafeProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setSelectedSearchedCafe,
       selectedRegisteredCafe,
       setSelectedRegisteredCafe,
+      clearSelectedCafe,
       resetCafeContext,
     }),
     [
