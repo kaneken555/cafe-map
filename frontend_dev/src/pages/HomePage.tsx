@@ -11,7 +11,6 @@ import MapListModal from "../components/MapListModal/MapListModal";
 import MyCafeListPanel from "../components/MyCafeListPanel/MyCafeListPanel"; // ✅ カフェ一覧パネル
 import SearchResultPanel from "../components/SearchResultPanel/SearchResultPanel";
 
-import { Cafe, mockSearchResults } from "../api/mockCafeData"; // ✅ Cafe型をインポート
 import { MAP_MODES } from "../constants/map";
 import { MapItem, SharedMapItem } from "../types/map";
 // Contexts
@@ -29,6 +28,7 @@ const HomePage: React.FC = () => {
   // コンテキストから必要な値を取得
   const { myCafeList, setMyCafeList, sharedMapCafeList,
     selectedSearchedCafe, setSelectedSearchedCafe,
+    searchResultCafes, setSearchResultCafes,
     selectedRegisteredCafe, setSelectedRegisteredCafe,
    } = useCafe(); // カフェコンテキストからcafeListとsetCafeListを取得
   const { selectedMap, mapMode, setMapMode } = useMap(); // マップコンテキストからmapModeとsetMapModeを取得
@@ -38,11 +38,9 @@ const HomePage: React.FC = () => {
   } = useCafeMapModals();
   
   // 状態管理
-  // const [selectedCafe, setSelectedCafe] = useState<Cafe | null>(null); // ✅ カフェ詳細
   const [selectedCafeId, setSelectedCafeId] = useState<number | null>(null);
   const [selectedMapId, setSelectedMapId] = useState<number | null>(selectedMap?.id ?? null);
   const [isMyCafeListOpen, setIsMyCafeListOpen] = useState(false); // ✅ カフェ一覧パネルの表示
-  const [searchResultCafes, setSearchResultCafes] = useState<Cafe[]>(mockSearchResults); // 検索結果
   const [isSearchResultOpen, setIsSearchResultOpen] = useState(false); // ✅ 検索パネル表示用
   const [shareUuid, setShareUuid] = useState<string | null>(null);
   const [isMapListOpen, setIsMapListOpen] = useState(false); // ✅ mapモーダル状態
