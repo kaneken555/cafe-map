@@ -44,3 +44,43 @@ export const joinGroup = async (groupUuid: string): Promise<void> => {
 export const fetchGroupMaps = async (groupUuid: number): Promise<{ id: number; name: string }[]> => {
   return await GroupApiClient.fetchGroupMaps(groupUuid);
 };
+
+/**
+ * グループを削除
+ */
+export const deleteGroup = async (groupUuid: string): Promise<void> => {
+  try {
+    await GroupApiClient.deleteGroup(groupUuid);
+    toast.success("グループを削除しました");
+  } catch (error) {
+    toast.error("グループ削除に失敗しました");
+    throw error;
+  }
+};
+
+/**
+ * グループ情報を取得
+ */
+export const getGroupInfo = async (groupUuid: string): Promise<Group> => {
+  try {
+    const group = await GroupApiClient.getGroupInfo(groupUuid);
+    return group;
+  } catch (error) {
+    toast.error("グループ情報の取得に失敗しました");
+    throw error;
+  }
+}
+
+/**
+ * グループ情報を更新
+ */
+export const updateGroupInfo = async (groupUuid: string, updatedGroup: Partial<Group>): Promise<Group> => {
+  try {
+    const group = await GroupApiClient.updateGroupInfo(groupUuid, updatedGroup);
+    toast.success("グループ情報を更新しました");
+    return group;
+  } catch (error) {
+    toast.error("グループ情報の更新に失敗しました");
+    throw error;
+  }
+}

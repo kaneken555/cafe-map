@@ -1,6 +1,5 @@
 // src/api/cafeService.ts
 import { Cafe } from "../types/cafe";
-import { toast } from "react-hot-toast";
 import { CafeApiClient } from "../api/cafeApiClient";
 
 
@@ -11,9 +10,10 @@ export const getCafeList = async (mapId: number): Promise<Cafe[]> => {
 
 
 // POSTリクエスト関数
-export const addCafeToMyCafe = async (mapId: number ,cafe: Cafe): Promise<void> => {
-  await CafeApiClient.addCafeToMyCafe(mapId, cafe);
-  toast.success("カフェがマイカフェに追加されました");
+export const addCafeToMyCafe = async (mapId: number ,cafe: Cafe
+): Promise<{ id: number; name: string; already_existed: boolean }> => {
+  const response = await CafeApiClient.addCafeToMyCafe(mapId, cafe);
+  return response;
 };
 
 
@@ -41,4 +41,10 @@ export const searchSharedMap = async (groupUuid: string): Promise<Cafe[]> => {
 // シェアマップに登録されているカフェの情報を取得する
 export const getSharedMapCafeList = async (mapUuid: string): Promise<Cafe[]> => {
   return await CafeApiClient.getSharedMapCafeList(mapUuid);
+};
+
+
+// マップからカフェを削除する
+export const removeCafeFromMap = async (mapId: number, cafeId: number): Promise<void> => {
+  await CafeApiClient.removeCafeFromMap(mapId, cafeId);
 };

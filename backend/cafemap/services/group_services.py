@@ -34,3 +34,31 @@ def join_group_by_uuid(user, group_uuid):
 def user_in_group(user, group):
     """ユーザーがグループに所属しているか確認"""
     return UserGroupRelation.objects.filter(user=user, group=group).exists()
+
+def delete_group_and_relations(group):
+    """指定されたグループと関連情報を削除する"""
+    group.delete()
+
+def get_group_detail(group_uuid):
+    """UUIDで指定されたグループの詳細を取得"""
+    group = get_object_or_404(Group, uuid=group_uuid)
+    return {
+        "id": group.id,
+        "uuid": str(group.uuid),
+        "name": group.name,
+        "description": group.description,
+        "created_at": group.created_at,
+        "updated_at": group.updated_at
+    }
+
+def update_group(group, name: str, description: str):
+    """グループの情報を更新"""
+    group.name = name
+    group.description = description
+    group.save()
+    return {
+        "id": group.id,
+        "uuid": str(group.uuid),
+        "name": group.name,
+        "description": group.description
+    }

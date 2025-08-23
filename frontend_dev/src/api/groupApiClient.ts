@@ -39,7 +39,7 @@ export class GroupApiClient {
     const csrfToken = await getCsrfToken();
 
     await axios.post(
-      `${API_BASE_PATH}/groups/${groupUuid}/join/`,
+      `${API_BASE_PATH}/groups/${groupUuid}/memberships/`,
       {},
       {
         headers: { "X-CSRFToken": csrfToken },
@@ -57,4 +57,47 @@ export class GroupApiClient {
     });
     return res.data;
   }
+
+  /**
+   * グループを削除
+   */
+  static async deleteGroup(groupUuid: string): Promise<void> {
+    const csrfToken = await getCsrfToken();
+
+    await axios.delete(`${API_BASE_PATH}/groups/${groupUuid}/`, {
+      headers: { "X-CSRFToken": csrfToken },
+      withCredentials: true,
+    });
+  }
+
+  /**
+   * グループ情報を取得
+   */
+  static async getGroupInfo(groupUuid: string): Promise<Group> {
+    const csrfToken = await getCsrfToken();
+
+    const res = await axios.get(`${API_BASE_PATH}/groups/${groupUuid}/`, {
+      headers: { "X-CSRFToken": csrfToken },
+      withCredentials: true,
+    });
+    return res.data;
+  }
+
+  /**
+   * グループの情報を更新
+   */
+  static async updateGroupInfo(groupUuid: string, updatedData: Partial<Group>): Promise<Group> {
+    const csrfToken = await getCsrfToken();
+
+    const res = await axios.patch(
+      `${API_BASE_PATH}/groups/${groupUuid}/`,
+      updatedData,
+      {
+        headers: { "X-CSRFToken": csrfToken },
+        withCredentials: true,
+      }
+    );
+    return res.data;
+  }
+
 }

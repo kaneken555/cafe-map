@@ -4,4 +4,5 @@ export interface Group {
   uuid: string;
   name: string;
   description?: string;
+  icon?: string; // 画像URL（省略可能）
 }

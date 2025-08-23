@@ -11,7 +11,7 @@ import ModalActionButton from "../ModalActionButton/ModalActionButton";
 
 import { Users } from "lucide-react";
 import { Group } from "../../types/group";
-import { fetchGroupList } from "../../services/groupService";
+import { fetchGroupList, updateGroupInfo } from "../../services/groupService";
 import { toast } from "react-hot-toast";
 import { extractUuidFromUrl } from "../../utils/extractUuid";
 
@@ -95,10 +95,9 @@ const GroupListModal: React.FC<GroupListModalProps> = ({
       <GroupDetailModal
         isOpen={isDetailModalOpen}
         onClose={closeDetailModal}
-        group={detailTargetGroup}
+        groupUuid={detailTargetGroup?.uuid ?? null}
         onUpdateGroup={(updatedGroup) => {
-          // グループ情報更新処理
-          console.log("Updated Group:", updatedGroup);
+          updateGroupInfo(detailTargetGroup?.uuid ?? "", updatedGroup)
         }}
       />
 
