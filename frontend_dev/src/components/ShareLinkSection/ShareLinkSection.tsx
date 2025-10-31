@@ -3,7 +3,16 @@ import React from "react";
 import { Copy } from "lucide-react";
 import toast from "react-hot-toast";
 
-const ShareLinkSection: React.FC<{ shareUrl: string }> = ({ shareUrl }) => {
+const LABELS: Record<string, string> = {
+  direct: "URL",
+  x: "URL（X用トラッキング）",
+  line: "URL（LINE用トラッキング）",
+  email: "URL（Email用トラッキング）",
+  qr: "URL（QR用トラッキング）",
+};
+
+
+const ShareLinkSection: React.FC<{ shareUrl: string; channel?: string }> = ({ shareUrl, channel = "direct" }) => {
   const handleCopy = () => {
     navigator.clipboard.writeText(shareUrl);
     toast.success("URLをコピーしました");
@@ -11,7 +20,9 @@ const ShareLinkSection: React.FC<{ shareUrl: string }> = ({ shareUrl }) => {
 
   return (
     <div className="mb-4">
-      <label className="text-sm text-gray-700">URL</label>
+      <label className="text-sm text-gray-700">
+        {LABELS[channel] ?? "URL"}
+      </label>
       <div className="flex mt-1">
         <input
           type="text"
