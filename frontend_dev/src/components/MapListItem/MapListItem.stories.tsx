@@ -46,6 +46,10 @@ export const Default: Story = {
       onClose();
     };
 
+    const handleDetail = (map: MapItem) => {
+      alert(`マップ「${map.name}」の詳細を表示します`);
+    };
+
     return (
       <>
         <Toaster />
@@ -59,6 +63,7 @@ export const Default: Story = {
             onShare={handleShare}
             onSelectMap={handleSelectMap}
             mapModals={modals}
+            onDetailClick={handleDetail} // ✅ 詳細表示用の関数
           />
         </ul>
       </>

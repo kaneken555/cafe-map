@@ -11,7 +11,6 @@ import MapListModal from "../components/MapListModal/MapListModal";
 import MyCafeListPanel from "../components/MyCafeListPanel/MyCafeListPanel"; // ✅ カフェ一覧パネル
 import SearchResultPanel from "../components/SearchResultPanel/SearchResultPanel";
 
-import { Cafe, mockSearchResults } from "../api/mockCafeData"; // ✅ Cafe型をインポート
 import { MAP_MODES } from "../constants/map";
 import { MapItem, SharedMapItem } from "../types/map";
 // Contexts
@@ -27,7 +26,11 @@ import { requireMapSelected } from "../utils/mapUtils";
 
 const HomePage: React.FC = () => {
   // コンテキストから必要な値を取得
-  const { cafeList, myCafeList, setMyCafeList, sharedMapCafeList } = useCafe(); // カフェコンテキストからcafeListとsetCafeListを取得
+  const { myCafeList, setMyCafeList, sharedMapCafeList,
+    selectedSearchedCafe, setSelectedSearchedCafe,
+    searchResultCafes, setSearchResultCafes,
+    selectedRegisteredCafe, setSelectedRegisteredCafe,
+   } = useCafe(); // カフェコンテキストからcafeListとsetCafeListを取得
   const { selectedMap, mapMode, setMapMode } = useMap(); // マップコンテキストからmapModeとsetMapModeを取得
 
   const {
@@ -35,16 +38,17 @@ const HomePage: React.FC = () => {
   } = useCafeMapModals();
   
   // 状態管理
-  const [selectedCafe, setSelectedCafe] = useState<Cafe | null>(null); // ✅ カフェ詳細
   const [selectedCafeId, setSelectedCafeId] = useState<number | null>(null);
   const [selectedMapId, setSelectedMapId] = useState<number | null>(selectedMap?.id ?? null);
   const [isMyCafeListOpen, setIsMyCafeListOpen] = useState(false); // ✅ カフェ一覧パネルの表示
-  const [searchResultCafes, setSearchResultCafes] = useState<Cafe[]>(mockSearchResults); // 検索結果
   const [isSearchResultOpen, setIsSearchResultOpen] = useState(false); // ✅ 検索パネル表示用
   const [shareUuid, setShareUuid] = useState<string | null>(null);
   const [isMapListOpen, setIsMapListOpen] = useState(false); // ✅ mapモーダル状態
 
-  const { handleAddToMaps } = useCafeMapAssign(selectedCafe, setMyCafeList);
+  const { handleAddToMaps } = useCafeMapAssign(
+    selectedSearchedCafe || selectedRegisteredCafe,
+    setMyCafeList
+  );
 
   const closeCafeListPanel = () => {
     setIsMyCafeListOpen(false)
@@ -91,9 +95,9 @@ const HomePage: React.FC = () => {
       <MyCafeListPanel
         isOpen={isMyCafeListOpen}
         onClose={() => setIsMyCafeListOpen(false)}
-        cafes={cafeList}
+        cafes={myCafeList}
         onCafeClick={(cafe) => {
-          setSelectedCafe(cafe); // ✅ 選択カフェセット
+          setSelectedRegisteredCafe(cafe); // ✅ 選択カフェセット
           setSelectedCafeId(cafe.id); // ✅ 選択IDセット（今後何かに使う用？）
         }}
       />
@@ -114,16 +118,17 @@ const HomePage: React.FC = () => {
         onClose={() => setIsSearchResultOpen(false)}
         cafes={searchResultCafes}
         onCafeClick={(cafe) => {
-          setSelectedCafe(cafe);
+          setSelectedSearchedCafe(cafe);
           setSelectedCafeId(cafe.id);
         }}
       />
 
       {/* カフェ詳細パネル */}
       <CafeDetailPanel
-        cafe={selectedCafe}
+        cafe={selectedSearchedCafe || selectedRegisteredCafe}
         onClose={() => {
-          setSelectedCafe(null);
+          setSelectedSearchedCafe(null);
+          setSelectedRegisteredCafe(null);
           setSelectedCafeId(null);
         }}
         onAddCafeToMapClick={openCafeMapAssignModal} // ✅ useCafeMapModalsから取得した関数
@@ -146,7 +151,13 @@ const HomePage: React.FC = () => {
               ? sharedMapCafeList
               : searchResultCafes
           }          
-          onCafeIconClick={(cafe) => setSelectedCafe(cafe)} 
+          onCafeIconClick={(cafe) => {
+            if (mapMode === MAP_MODES.mycafe || mapMode === MAP_MODES.share) {
+              setSelectedRegisteredCafe(cafe);
+            } else {
+              setSelectedSearchedCafe(cafe);
+            }
+          }}
           selectedCafeId={selectedCafeId}
           setSelectedCafeId={setSelectedCafeId}
           setSearchResultCafes={(cafes) => {

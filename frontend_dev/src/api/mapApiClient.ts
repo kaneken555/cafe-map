@@ -5,6 +5,12 @@ import { API_BASE_PATH } from "../constants/api";
 
 export interface CreateMapRequest {
   name: string;
+  description?: string| null;
+}
+
+export interface UpdateMapRequest {
+  name?: string;
+  description?: string;
 }
 
 export interface CreateGroupMapRequest {
@@ -94,4 +100,27 @@ export class MapApiClient {
     );
     return response.data;
   }
+
+  static async updateMapInfo(mapId: number, params: { name?: string, description?: string }): Promise<any> { 
+    const csrfToken = await getCsrfToken();
+    const response = await axios.patch(
+      `${API_BASE_PATH}/maps/${mapId}/`,
+      params,
+      {
+        headers: { "X-CSRFToken": csrfToken },
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  }
+
+  static async getMapDetail(mapId: number): Promise<any> {
+    const csrfToken = await getCsrfToken();
+    const response = await axios.get(`${API_BASE_PATH}/maps/${mapId}/`, {
+      headers: { "X-CSRFToken": csrfToken },
+      withCredentials: true,
+    });
+    return response.data;
+  }
+
 }

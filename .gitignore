@@ -25,3 +25,5 @@ frontend/build/
 
 deploy_files
 deploy.zip
+
+Makefile.local

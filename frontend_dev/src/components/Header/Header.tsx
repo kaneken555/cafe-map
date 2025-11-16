@@ -27,6 +27,8 @@ interface HeaderProps {
   onOpenCafeList: () => void; // ✅ カフェ一覧パネルを開く関数
   onShowMyCafeMap: () => void; // ✅ 追加
   onOpenMapList: () => void; // ✅ 追加
+  isSharedMapView?: boolean; // ✅ シェアマップビューかどうか
+  sharedMapName?: string; // ✅ シェアマップの名前
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -36,6 +38,8 @@ const Header: React.FC<HeaderProps> = ({
   onOpenCafeList, // ✅ カフェ一覧パネルを開く関数
   onShowMyCafeMap, // ✅ 追加
   onOpenMapList,
+  isSharedMapView = false, // ✅ デフォルトはfalse
+  sharedMapName, // ✅ シェアマップの名前
 }) => {    
   const { user } = useAuth();
   const { selectedMap, mapMode } = useMap(); // マップリストとセット関数をコンテキストから取得
@@ -100,28 +104,44 @@ const Header: React.FC<HeaderProps> = ({
         {/* 中央：タイトル */}
         <div className="flex-grow flex justify-center items-center space-x-2">
           <Coffee size={ICON_SIZES.MEDIUM} />
-          <h1 className="text-lg md:text-2xl font-bold text-black">{APP_TITLE}</h1>
+          <div className="flex flex-col md:flex-row items-center md:space-x-2">
+            <h1 className="text-lg md:text-2xl font-bold text-black">{APP_TITLE}</h1>
+            {isSharedMapView && sharedMapName && (
+              <div className="flex items-center space-x-1 md:space-x-2">
+                <span className="text-gray-600 hidden md:inline">|</span>
+                <span className="text-sm md:text-base font-semibold text-gray-700">{sharedMapName}</span>
+                <span className="text-xs md:text-sm px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full border border-blue-300">
+                  共有マップ
+                </span>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* 右：操作ボタン群 */}
         <div className="flex items-center space-x-2">
           {/* <div className="flex items-center space-x-2">        */}
-          <div className="hidden md:flex items-center space-x-2">             
-            <HeaderButton
-              onClick={onOpenCafeList}
-              disabled={!user}
-              icon={<ListIcon size={ICON_SIZES.MEDIUM} />}
-              label="My Café List"
-              active={isMyCafeListOpen}
-            />
+          <div className="hidden md:flex items-center space-x-2">
+            {/* シェアマップビューでは My Café List と My Café Map を非表示 */}
+            {!isSharedMapView && (
+              <>
+                <HeaderButton
+                  onClick={onOpenCafeList}
+                  disabled={!user}
+                  icon={<ListIcon size={ICON_SIZES.MEDIUM} />}
+                  label="My Café List"
+                  active={isMyCafeListOpen}
+                />
 
-            <HeaderButton
-              onClick={onShowMyCafeMap}
-              disabled={!user}
-              icon={<MapIcon size={ICON_SIZES.MEDIUM} />}
-              label="My Café Map"
-              active={mapMode === "mycafe"} // ✅ 現在のモードによって強調
-            />
+                <HeaderButton
+                  onClick={onShowMyCafeMap}
+                  disabled={!user}
+                  icon={<MapIcon size={ICON_SIZES.MEDIUM} />}
+                  label="My Café Map"
+                  active={mapMode === "mycafe"} // ✅ 現在のモードによって強調
+                />
+              </>
+            )}
 
             <HeaderButton
               onClick={onOpenMapList}

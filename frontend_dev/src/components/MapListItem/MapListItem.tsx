@@ -1,10 +1,13 @@
 // components/MapListItem.tsx
 import React, { useState } from "react";
+import { useCafe } from "../../contexts/CafeContext";
 import ShareMapModal from "../ShareMapModal/ShareMapModal";
-import { CheckCircle, Trash2, Share as ShareIcon } from "lucide-react";
+import { CheckCircle, Trash2, Share as ShareIcon, Info } from "lucide-react";
 import { MapItem } from "../../types/map";
 import { ICON_SIZES } from "../../constants/ui";
 
+import { getCafeList } from "../../services/cafeService";
+import { getMapDetail } from "../../services/mapService"; // ✅ マップ詳細情報取得のAPIをインポート
 import { useMapModals } from "../../hooks/useMapModals";
 
 
@@ -15,9 +18,9 @@ interface MapListItemProps {
   onClose: () => void;
   onDeleteClick: (map: MapItem) => void;
   mapModals: ReturnType<typeof useMapModals>; // ✅ 型は補完から取得 or 別途定義
-
   onShare: (id: number) => Promise<string | null>;
   onSelectMap: (map: MapItem, onSelect: any, onClose: any) => void;
+  onDetailClick: (map: MapItem) => void; // ✅ 詳細表示用のコールバック関数
 }
   
 const MapListItem: React.FC<MapListItemProps> = ({ 
@@ -29,8 +32,11 @@ const MapListItem: React.FC<MapListItemProps> = ({
   mapModals,
   onShare,
   onSelectMap,
+  onDetailClick, // ✅ 詳細表示用のコールバック関数
 }) => {
 
+  const { setCafeList, setMyCafeList } = useCafe();
+  
   const { 
     isShareModalOpen, openShareModal, closeShareModal,
   } = mapModals;
@@ -41,13 +47,20 @@ const MapListItem: React.FC<MapListItemProps> = ({
     onSelectMap(map, onSelect, onClose);
   };
 
-
   const handleShare = async () => {
     const url = await onShare(map.id);
     if (url !== null) {
       setShareUrl(url);
       openShareModal();
     }
+  };
+
+  const handleDetailClick = async (map: MapItem) => {
+    const cafes = await getCafeList(map.id);
+    setCafeList(cafes);
+    setMyCafeList(cafes);
+    const mapInfo = await getMapDetail(map.id);
+    onDetailClick(mapInfo);
   };
 
 
@@ -95,6 +108,14 @@ const MapListItem: React.FC<MapListItemProps> = ({
           >
             <ShareIcon size={ICON_SIZES.MEDIUM} /> {/* シェアアイコン */}
             <span className="text-sm">Share</span>
+          </button>
+
+          <button
+            onClick={() => handleDetailClick(map)}
+            className="w-12 flex flex-col items-center text-gray-700 hover:text-blue-500 cursor-pointer"
+          >
+            <Info size={ICON_SIZES.MEDIUM} />
+            <span className="text-sm">詳細</span>
           </button>
         </div>
       </li>

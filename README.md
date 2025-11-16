@@ -38,16 +38,34 @@ DATABASE_USER=your-user
 DATABASE_PASSWORD=your-password
 ```
 
-### 3. **Dockerコンテナの起動**
+### 3. **初回セットアップ**
 ```bash
-docker-compose up --build -d
+make up           # コンテナ起動（ビルド込み）
+make deps         # 依存パッケージをインストール
+make migrate      # マイグレーション適用
+make createsuperuser  # 管理ユーザー作成（対話式）
+make collectstatic   # 静的ファイル収集
+make open         # ブラウザで開く（macOS）
 ```
 
-### 4. **マイグレーションと静的ファイルの収集**
-```bash
-docker-compose exec backend python manage.py migrate
-docker-compose exec backend python manage.py collectstatic --noinput
-```
+
+
+### **よく使う Make コマンド一覧**
+| コマンド                  | 説明                          |
+| --------------------- | --------------------------- |
+| `make up`             | コンテナ起動（ビルド込み）               |
+| `make down`           | コンテナ停止                      |
+| `make logs-web`       | Django のログを確認（リアルタイム）       |
+| `make sh`             | Django コンテナに入る              |
+| `make sh-db`          | DB コンテナに入る                  |
+| `make makemigrations` | モデル変更からマイグレーション作成           |
+| `make migrate`        | マイグレーション適用                  |
+| `make seed`           | 初期データ投入（fixtures利用時）        |
+| `make reset-db`       | DBを初期化（開発用・注意！）             |
+| `make test`           | テスト実行（pytest）               |
+| `make lint`           | コードチェック（ruff, black, isort） |
+| `make fmt`            | 自動整形                        |
+
 
 
 ## 📦 デプロイ構成（本番環境）

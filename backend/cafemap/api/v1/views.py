@@ -8,15 +8,16 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
-from cafemap.models import User, Map, Cafe, Tag, MapUserRelation, CafeMapRelation, Group, UserGroupRelation, GroupMapRelation, SharedMap, CafeSharedMapRelation, UserSharedMapRelation
+from cafemap.models import User, Map, Tag, Group, SharedMap, CafeMapRelation
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.middleware.csrf import get_token
+from rest_framework.exceptions import PermissionDenied
 from uuid import UUID
 
-from cafemap.services.map_services import get_maps_for_user, create_map_for_user, get_map_with_cafes, delete_map_with_relations, get_maps_for_group, create_map_for_group
-from cafemap.services.cafe_services import get_cafes_for_map_id, create_cafe_and_relation
-from cafemap.services.group_services import get_groups_for_user, create_group_with_user, join_group_by_uuid, user_in_group
+from cafemap.services.map_services import get_maps_for_user, create_map_for_user, get_map_with_cafes, delete_map_with_relations, get_maps_for_group, create_map_for_group, update_map_info
+from cafemap.services.cafe_services import get_cafes_for_map_id, create_cafe_and_relation, remove_cafe_from_map
+from cafemap.services.group_services import get_groups_for_user, create_group_with_user, join_group_by_uuid, user_in_group, delete_group_and_relations, get_group_detail, update_group
 from cafemap.services.shared_map_services import get_shared_map_info, create_or_get_shared_map, get_shared_maps_for_user, get_shared_map_detail, register_shared_map_for_user, copy_shared_map_to_user
 
 import logging
@@ -219,28 +220,21 @@ def login_success_view(request):
 # TODO: MapAPIViewとMapDetailAPIViewを実装
 # /api/maps/
 class MapAPIView(APIView):
-    # # TODO: 認証つける(↓現在は認証なしで登録可能)
-    # permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
         """ マップの一覧を取得 """
-        if not request.user.is_authenticated:
-            return Response({"error": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
         try:
             # ログインユーザーに関連するマップのみ取得
             maps = get_maps_for_user(request.user)
             data = [{"id": m.id, "name": m.name} for m in maps]
-            print(f"📌 リクエストユーザー: {request.user},maps:{maps},📌 マップ一覧: {data}")
+            logging.info(f"📌 リクエストユーザー: {request.user},maps:{maps},📌 マップ一覧: {data}")
             return Response(data, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": "Internal Server Error", "message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def post(self, request, *args, **kwargs):
         """ 新しいマップを作成（特定のユーザーに紐づく）  """
-        print(f"📌 リクエストユーザー: {request.user}")  # ✅ ユーザーをログに出す
-
-        if not request.user.is_authenticated:
-            return Response({"error": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
         try:
             # マップ名をリクエストから取得
             map_name = request.data.get("name")
@@ -257,9 +251,10 @@ class MapAPIView(APIView):
 
 # /api/maps/<int:map_id>/
 class MapDetailAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, *args, **kwargs):
         """ 特定のマップを取得 """
-        print(f"📌 リクエストユーザー: {request.user}")  # ✅ ユーザーをログに出す
         logging.info(f"📌 リクエストユーザー: {request.user}, マップID: {kwargs.get('map_id')}")  # ログに出力
         try:
             map_id = kwargs.get("map_id")
@@ -270,9 +265,19 @@ class MapDetailAPIView(APIView):
         except Exception as e:
             return Response({"error": "Internal Server Error", "message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    def put(self, request, *args, **kwargs):
+    def patch(self, request, *args, **kwargs):
         """ マップ情報を更新 """
-        return Response({"message": "PUT request received"}, status=status.HTTP_200_OK)
+        map_id = kwargs.get("map_id")
+        if not map_id:
+            return Response({"error": "Map ID is required"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            updated_map = update_map_info(request, map_id)
+            return Response(updated_map, status=status.HTTP_200_OK)
+        except Map.DoesNotExist:
+            return Response({"error": "Map not found"}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"error": "Internal Server Error", "message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def delete(self, request, *args, **kwargs):
         """ マップ情報を削除 """
@@ -292,8 +297,7 @@ class MapDetailAPIView(APIView):
 # TODO: CafeAPIViewとCafeDetailAPIViewを実装
 # /api/maps/<int:map_id>/cafes/
 class CafeAPIView(APIView):
-    # # TODO: 認証つける(↓現在は認証なしで登録可能)
-    # permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
         """ カフェの一覧を取得 """
@@ -323,6 +327,8 @@ class CafeAPIView(APIView):
     
 # /api/maps/<int:map_id>/cafes/<int:cafe_id>/
 class CafeDetailAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, *args, **kwargs):
         """ 特定のカフェを取得 """
         return Response({"message": "GET request received"}, status=status.HTTP_200_OK)
@@ -336,8 +342,23 @@ class CafeDetailAPIView(APIView):
         return Response({"message": "PUT request received"}, status=status.HTTP_200_OK)
 
     def delete(self, request, *args, **kwargs):
-        """ カフェ情報を削除 """
-        return Response({"message": "DELETE request received"}, status=status.HTTP_204_NO_CONTENT)
+        """ マップからカフェの紐付けを削除 """
+        map_id = kwargs.get("map_id")
+        cafe_id = kwargs.get("cafe_id")
+        logging.info(f"📌 リクエストユーザー: {request.user}, マップID: {map_id}, カフェID: {cafe_id}")  # ログに出力
+
+        if not map_id or not cafe_id:
+            return Response({"error": "Map ID and Cafe ID are required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            remove_cafe_from_map(request.user, map_id, cafe_id)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+        except PermissionDenied as e:
+            return Response({"error": str(e)}, status=status.HTTP_403_FORBIDDEN)
+
+        except CafeMapRelation.DoesNotExist:
+            return Response({"error": "Cafe is not associated with this map"}, status=status.HTTP_404_NOT_FOUND)
     
 
 # タグ登録・一覧取得用のAPIViewを実装
@@ -392,7 +413,6 @@ class CafeTagDetailAPIView(APIView):
         return Response({"message": "DELETE request received"}, status=status.HTTP_204_NO_CONTENT)
     
 
-
 # カフェのメモ登録・一覧取得用のAPIViewを実装
 # TODO: CafeMemoAPIViewとCafeMemoDetailAPIViewを実装
 # /api/maps/<int:map_id>/cafes/<int:cafe_id>/memos/
@@ -405,6 +425,7 @@ class CafeMemoAPIView(APIView):
         """ カフェにメモを追加 """
         return Response({"message": "POST request received"}, status=status.HTTP_201_CREATED)
     
+
 # /api/maps/<int:map_id>/cafes/<int:cafe_id>/memos/<int:memo_id>/
 class CafeMemoDetailAPIView(APIView):
     def get(self, request, *args, **kwargs):
@@ -416,8 +437,8 @@ class CafeMemoDetailAPIView(APIView):
         return Response({"message": "DELETE request received"}, status=status.HTTP_204_NO_CONTENT)
 
 
-
-class GroupListCreateAPIView(APIView):
+# /api/groups/
+class GroupListAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
@@ -437,7 +458,8 @@ class GroupListCreateAPIView(APIView):
         return Response(result, status=status.HTTP_201_CREATED)
 
 
-class GroupJoinAPIView(APIView):
+# /api/groups/<uuid:uuid>/memberships/
+class GroupMembershipAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, uuid: UUID):
@@ -445,7 +467,13 @@ class GroupJoinAPIView(APIView):
         group = join_group_by_uuid(request.user, uuid)
         return Response({"message": f"Joined group {group.name}"}, status=status.HTTP_200_OK)
 
+    # def delete(self, request, uuid: UUID):
+    #     group = get_object_or_404(Group, uuid=uuid)
+    #     leave_group(request.user, group)
+    #     return Response({"message": "Left the group"}, status=status.HTTP_204_NO_CONTENT)
 
+
+# /api/groups/<uuid:uuid>/maps/
 class GroupMapListAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -477,6 +505,63 @@ class GroupMapListAPIView(APIView):
         result = create_map_for_group(group, name)
         return Response(result, status=status.HTTP_201_CREATED)
 
+# /api/groups/<uuid:uuid>/maps/<uuid:uuid>
+class GroupMapDetailAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, uuid: UUID):
+        """指定したグループに紐づくマップを削除"""
+        group = get_object_or_404(Group, uuid=uuid)
+        if not user_in_group(request.user, group):
+            return Response({"error": "Access denied"}, status=status.HTTP_403_FORBIDDEN)
+
+        try:
+            delete_map_with_relations(uuid)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Exception as e:
+            return Response({"error": "Internal Server Error", "message": str(e)},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+# /api/groups/<uuid:uuid>/
+class GroupDetailAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, uuid: UUID):
+        group = get_object_or_404(Group, uuid=uuid)
+        if not user_in_group(request.user, group):
+            return Response({"error": "Access denied"}, status=status.HTTP_403_FORBIDDEN)
+
+        data = get_group_detail(uuid)  # → 例えば { name, description, created_at, member_count, ... }
+        return Response(data, status=status.HTTP_200_OK)
+
+    def patch(self, request, uuid: UUID):
+        group = get_object_or_404(Group, uuid=uuid)
+        if not user_in_group(request.user, group):
+            return Response({"error": "Access denied"}, status=status.HTTP_403_FORBIDDEN)
+
+        name = request.data.get("name")
+        description = request.data.get("description")
+
+        updated_group = update_group(group, name, description)
+        return Response({"message": "Group updated"}, status=status.HTTP_200_OK)
+
+    def delete(self, request, uuid: UUID):
+        """指定したグループを削除"""
+        try:
+            group = get_object_or_404(Group, uuid=uuid)
+
+            if not user_in_group(request.user, group):
+                return Response({"error": "Access denied"}, status=status.HTTP_403_FORBIDDEN)
+
+            delete_group_and_relations(group)
+
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+        except Exception as e:
+            return Response({"error": "Internal Server Error", "message": str(e)},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 class SharedMapAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -497,7 +582,6 @@ class SharedMapAPIView(APIView):
         except Exception as e:
             return Response({"error": "Internal Server Error", "message": str(e)},
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 
     def post(self, request):
         """
@@ -534,10 +618,10 @@ class UserSharedMapListAPIView(APIView):
     
 
 class SharedMapDetailAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]  # 公開シェアマップは認証不要
 
     def get(self, request, uuid: UUID):
-        """指定したUUIDのシェアマップを取得"""
+        """指定したUUIDのシェアマップを取得（認証不要）"""
         try:
             data = get_shared_map_detail(uuid)
             return Response(data, status=status.HTTP_200_OK)

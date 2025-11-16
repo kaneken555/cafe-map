@@ -18,7 +18,8 @@ def get_map_with_cafes(map_id: int):
     return {
         "id": map_obj.id,
         "name": map_obj.name,
-        "cafes": cafes
+        "description": map_obj.description,
+        "cafes": cafes,
     }
 
 def delete_map_with_relations(map_id: int):
@@ -29,10 +30,28 @@ def delete_map_with_relations(map_id: int):
 def get_maps_for_group(group):
     """グループに紐づくマップ一覧を取得"""
     maps = Map.objects.filter(groupmaprelation__group=group)
-    return [{"id": m.id, "name": m.name} for m in maps]
+    return [{"id": m.id, "name": m.name, "description": m.description} for m in maps]
 
 def create_map_for_group(group, name):
     """グループに紐づくマップを新規作成"""
     map_obj = Map.objects.create(name=name)
     GroupMapRelation.objects.create(group=group, map=map_obj)
     return {"id": map_obj.id, "name": map_obj.name}
+
+def update_map(map_obj, name: str, description: str = ""):
+    """マップの情報を更新"""
+    map_obj.name = name
+    map_obj.description = description
+    map_obj.save()
+    return {"id": map_obj.id, "name": map_obj.name, "description": map_obj.description}
+
+def update_map_info(request, map_id: int):
+    """マップの名前を更新"""
+    map_obj = Map.objects.get(id=map_id)
+    name = request.data.get("name")
+    description = request.data.get("description", "")
+
+    if not name:
+        raise ValueError("名前が未入力です")
+
+    return update_map(map_obj, name, description)

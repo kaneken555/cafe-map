@@ -7,6 +7,7 @@ export const useMapModals = () => {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isSharedMapSearchOpen, setIsSharedMapSearchOpen] = useState(false);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false); // ✅ 追加
 
   const openCreateModal = () => setIsCreateModalOpen(true);
   const closeCreateModal = () => setIsCreateModalOpen(false);
@@ -18,6 +19,8 @@ export const useMapModals = () => {
   const closeSharedMapSearch = () => setIsSharedMapSearchOpen(false);
   const openRegisterModal = () => setIsRegisterModalOpen(true);
   const closeRegisterModal = () => setIsRegisterModalOpen(false);
+  const openDetailModal = () => setIsDetailModalOpen(true); // ✅ 追加
+  const closeDetailModal = () => setIsDetailModalOpen(false); // ✅ 追加
 
   return {
     isCreateModalOpen, openCreateModal, closeCreateModal,
@@ -25,5 +28,6 @@ export const useMapModals = () => {
     isShareModalOpen, openShareModal, closeShareModal,
     isSharedMapSearchOpen, openSharedMapSearch, closeSharedMapSearch,
     isRegisterModalOpen, openRegisterModal, closeRegisterModal,
+    isDetailModalOpen, openDetailModal, closeDetailModal, // ✅ 追加
   };
 };

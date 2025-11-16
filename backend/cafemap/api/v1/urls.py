@@ -5,7 +5,7 @@ from django.contrib.auth import logout
 from . import views
 from .views import (
     MapAPIView, MapDetailAPIView, CafeAPIView, CafeDetailAPIView, TagAPIView, TagDetailAPIView, CafeTagAPIView, CafeTagDetailAPIView, CafeMemoAPIView,
-    GroupListCreateAPIView, GroupJoinAPIView, GroupMapListAPIView,
+    GroupListAPIView, GroupMembershipAPIView, GroupMapListAPIView, GroupDetailAPIView,
     SharedMapAPIView,
     UserSharedMapListAPIView,
     SharedMapDetailAPIView,
@@ -44,9 +44,10 @@ urlpatterns = [
     path("auth/", include("social_django.urls", namespace="social")),
 
     # グループ関連のルーティング
-    path('groups/', GroupListCreateAPIView.as_view(), name='group-list-create'),
-    path('groups/<uuid:uuid>/join/', GroupJoinAPIView.as_view(), name='group-join'),
+    path('groups/', GroupListAPIView.as_view(), name='group-list-create'),
+    path('groups/<uuid:uuid>/memberships/', GroupMembershipAPIView.as_view(), name='group-join'),
     path('groups/<uuid:uuid>/maps/', GroupMapListAPIView.as_view(), name='group-map-list'),
+    path("groups/<uuid:uuid>/", GroupDetailAPIView.as_view(), name="group-detail"),
 
     # シェアマップ関連のルーティング
     path("shared-maps/", SharedMapAPIView.as_view(), name="shared-map"),

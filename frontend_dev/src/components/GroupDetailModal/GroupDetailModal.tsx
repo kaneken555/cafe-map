@@ -1,36 +1,66 @@
 // components/GroupDetailModal/GroupDetailModal.tsx
 import React, { useState, useEffect } from "react";
 import BaseModal from "../BaseModal/BaseModal";
+import GroupIconUploadModal from "../GroupIconUploadModal/GroupIconUploadModal";
 import ModalActionButton from "../ModalActionButton/ModalActionButton";
 import { Group } from "../../types/group";
 import { Users, Edit2, Save } from "lucide-react";
+import { getGroupInfo } from "../../services/groupService";
 
 
 interface GroupDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
-  group: Group | null;
+  groupUuid: string | null;
   onUpdateGroup: (updatedGroup: Group) => void; // グループ更新用のコールバック
 }
 
 const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
   isOpen,
   onClose,
-  group,
+  groupUuid,
   onUpdateGroup,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [updatedGroup, setUpdatedGroup] = useState<Group | null>(group);
+  const [group, setGroup] = useState<Group | null>(null);
+  const [updatedGroup, setUpdatedGroup] = useState<Group | null>(null);
+  const [isIconModalOpen, setIsIconModalOpen] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
 
   // `group` が変更された場合に `updatedGroup` を更新する
   useEffect(() => {
-    if (group) {
-      setUpdatedGroup({ ...group }); // `group` が null でない場合に初期化
-    }
-  }, [group]);
+    const fetchGroup = async () => {
+      if (!groupUuid) return;
+      // setIsLoading(true);
+      try {
+        const data = await getGroupInfo(groupUuid);
+        setGroup(data);
+        setUpdatedGroup(data);
+      } catch (err) {
+        console.error("グループ情報取得失敗", err);
+      } finally {
+        // setIsLoading(false);
+      }
+    };
+    fetchGroup();
+  }, [groupUuid]);
 
 
   if (!group) return null;
+  // ✅ 読み込み中表示
+  // if (isLoading || !group) {
+  //   return (
+  //     <BaseModal
+  //       isOpen={isOpen}
+  //       onClose={onClose}
+  //       title="グループ詳細"
+  //       icon={<Users className="w-6 h-6 text-[#6b4226]" />}
+  //       size="md"
+  //     >
+  //       <div className="p-4 text-center text-gray-500">読み込み中です...</div>
+  //     </BaseModal>
+  //   );
+  // }
 
   const handleUpdate = () => {
     if (updatedGroup) {
@@ -46,6 +76,13 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
         [field]: e.target.value,
       });
     }
+  };
+
+  const handleIconUpload = (newIcon: string) => {
+    setUpdatedGroup((prev) => {
+      if (!prev) return prev;
+      return { ...prev, icon: newIcon };
+    });
   };
 
   return (
@@ -79,14 +116,14 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
           <strong>アイコン画像：</strong>
           <div className="flex items-center space-x-2">
             <img
-              // src={group.icon || "/default-icon.png"} // デフォルトアイコン
+              src={updatedGroup?.icon || "/default-icon.png"}
               alt="グループアイコン"
-              className="w-12 h-12 rounded-full"
+              className="w-12 h-12 rounded-full border cursor-pointer object-cover"
+              onClick={() => isEditing && setIsIconModalOpen(true)}
             />
             {isEditing && (
-              <button className="text-blue-500 hover:text-blue-700">
+              <button className="text-blue-500 hover:text-blue-700 cursor-pointer">
                 <Edit2 size={16} />
-                アイコンを変更
               </button>
             )}
           </div>
@@ -98,8 +135,8 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
           {isEditing ? (
             <input
               type="text"
-              // value={updatedGroup.description}
-              // onChange={(e) => handleChange(e, "description")}
+              value={updatedGroup?.description}
+              onChange={(e) => handleChange(e, "description")}
               className="w-full px-2 py-1 border rounded"
             />
           ) : (
@@ -120,16 +157,22 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
       {/* 編集モードトグルスイッチ */}
       <div className="flex items-center space-x-2 mt-4">
           <span>編集モード</span>
-          <label className="inline-flex relative items-center cursor-pointer">
+          <label className="inline-flex relative items-center cursor-pointer w-10 h-6">
             <input
               type="checkbox"
               checked={isEditing}
               onChange={() => setIsEditing(!isEditing)} // スイッチをトグル
               className="sr-only"
             />
-            <span className="w-10 h-6 bg-gray-200 rounded-full"></span>
             <span
-              className={`absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-all duration-300 ease-in-out ${isEditing ? "transform translate-x-4 bg-green-500" : ""}`}
+              className={`absolute inset-0 rounded-full transition-colors duration-300 ${
+                isEditing ? "bg-green-500" : "bg-gray-300"
+              }`}
+            ></span>
+            <span
+              className={`absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-all duration-300 ease-in-out ${
+                isEditing ? "transform translate-x-4 bg-green-500" : ""
+              }`}
             ></span>
           </label>
           <span className="ml-2">{isEditing ? "ON" : "OFF"}</span>
@@ -146,7 +189,17 @@ const GroupDetailModal: React.FC<GroupDetailModalProps> = ({
         )}
       </div>
 
+      <GroupIconUploadModal
+        isOpen={isIconModalOpen}
+        onClose={() => setIsIconModalOpen(false)}
+        groupName={group.name}
+        currentIcon={updatedGroup?.icon}
+        onUpload={handleIconUpload}
+      />
+
     </BaseModal>
+
+    
   );
 };
 
