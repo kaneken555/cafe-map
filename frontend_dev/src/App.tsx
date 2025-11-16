@@ -3,6 +3,7 @@ import './App.css'
 // import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from './pages/HomePage';
+import SharedMapViewPage from './pages/SharedMapViewPage';
 import { Toaster } from "react-hot-toast";
 
 // Context Providers
@@ -32,6 +33,7 @@ const App: React.FC = () => {
                     <Routes>
                       {/* <Route path="/" element={<HomePage user={user} setUser={setUser} />} /> */}
                       <Route path="/" element={<HomePage />} />
+                      <Route path="/shared-maps/:uuid" element={<SharedMapViewPage />} />
                     </Routes>
                   </main>
                 </div>

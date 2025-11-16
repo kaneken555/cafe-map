@@ -8,7 +8,7 @@ import ModalActionButton from "../ModalActionButton/ModalActionButton";
 import ShareLinkSection from "../ShareLinkSection/ShareLinkSection";
 import QRCodeSection from "../QRCodeSection/QRCodeSection";
 import EmbedCodeSection from "../EmbedCodeSection/EmbedCodeSection";
-import { API_BASE_URL } from "../../constants/api";
+import { FRONTEND_BASE_URL } from "../../constants/api";
 
 type ShareChannel = "direct" | "x" | "line" | "email" | "qr";
 type Tab = "share" | "embed";
@@ -57,7 +57,7 @@ const ShareMapModal: React.FC<ShareMapModalProps> = ({
         title: selectedMap.name,
         description: "",
       });
-      const url = `${API_BASE_URL}/shared-map/${res.share_uuid}`;
+      const url = `${FRONTEND_BASE_URL}/shared-maps/${res.share_uuid}`;
       setShareUrl(url);
       toast.success("シェアリンクを作成しました");
     } catch (error) {

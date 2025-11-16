@@ -618,10 +618,10 @@ class UserSharedMapListAPIView(APIView):
     
 
 class SharedMapDetailAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]  # 公開シェアマップは認証不要
 
     def get(self, request, uuid: UUID):
-        """指定したUUIDのシェアマップを取得"""
+        """指定したUUIDのシェアマップを取得（認証不要）"""
         try:
             data = get_shared_map_detail(uuid)
             return Response(data, status=status.HTTP_200_OK)
