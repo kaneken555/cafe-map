@@ -1,7 +1,7 @@
 # ============================
 # ステージ1: ビルドステージ
 # ============================
-FROM python:3.10 AS builder
+FROM --platform=linux/amd64 python:3.10 AS builder
 
 WORKDIR /app
 
@@ -16,7 +16,7 @@ RUN pip install --upgrade pip && pip install --user --no-cache-dir -r requiremen
 # ============================
 # ステージ2: 実行ステージ（軽量）
 # ============================
-FROM python:3.10-slim
+FROM --platform=linux/amd64 python:3.10-slim
 
 WORKDIR /app
 
