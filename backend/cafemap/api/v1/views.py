@@ -622,6 +622,8 @@ class SharedMapDetailAPIView(APIView):
 
     def get(self, request, uuid: UUID):
         """指定したUUIDのシェアマップを取得（認証不要）"""
+        src = request.GET.get("src")
+        logger.info(f"📌 SharedMapDetailAPIView GET called with src: {src}")  # ログに出力
         try:
             data = get_shared_map_detail(uuid)
             return Response(data, status=status.HTTP_200_OK)

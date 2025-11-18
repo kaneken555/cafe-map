@@ -108,12 +108,16 @@ interface PublicSharedMapDetailResponse {
  * 公開シェアマップの詳細を取得（認証不要）
  */
 export const getPublicSharedMapDetail = async (
-  uuid: string
+  uuid: string,
+  src?: string | null
 ): Promise<PublicSharedMapDetailResponse> => {
-  console.log("📡 公開シェアマップ取得リクエスト:", uuid);
+  console.log("📡 公開シェアマップ取得リクエスト:", uuid, "src:", src);
 
   try {
-    const response = await axios.get(`${API_BASE_PATH}/shared-maps/${uuid}/`);
+    const params = src ? { src } : {};
+    const response = await axios.get(`${API_BASE_PATH}/shared-maps/${uuid}/`, {
+      params,
+    });
 
     console.log("✅ 公開シェアマップ取得成功:", response.data);
     return response.data;

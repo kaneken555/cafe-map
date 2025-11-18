@@ -13,6 +13,7 @@ import { registerSharedMap as registerSharedMapApi } from "../services/mapServic
 import { MapItem } from "../types/map";
 import { toast } from "react-hot-toast";
 import ReactGA from "react-ga4";
+import { FRONTEND_BASE_URL } from "../constants/api";
 
 
 export const useMapActions = () => {
@@ -72,7 +73,7 @@ export const useMapActions = () => {
     try {
       const result = await checkSharedMap(mapId);
       if (result) {
-        return `https://your-domain.com/shared-map/${result.share_uuid}`;
+        return `${FRONTEND_BASE_URL}/shared-maps/${result.share_uuid}`;
       }
       return "";
     } catch {
