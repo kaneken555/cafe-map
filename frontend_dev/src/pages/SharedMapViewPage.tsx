@@ -1,6 +1,6 @@
 // pages/SharedMapViewPage.tsx
 import React, { useEffect, useState, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { LoadScript, GoogleMap } from "@react-google-maps/api";
 import { getPublicSharedMapDetail } from "../api/sharedMap";
 import CafeOverlayIcon from "../components/CafeOverlayIcon/CafeOverlayIcon";
@@ -12,6 +12,7 @@ import { DEFAULT_CENTER, MAP_CONTAINER_STYLE } from "../constants/map";
 
 const SharedMapViewPage: React.FC = () => {
   const { uuid } = useParams<{ uuid: string }>();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   const mapRef = useRef<google.maps.Map | null>(null);
@@ -32,7 +33,9 @@ const SharedMapViewPage: React.FC = () => {
 
       try {
         setIsLoading(true);
-        const data = await getPublicSharedMapDetail(uuid);
+        // URLのクエリパラメータを取得
+        const src = searchParams.get("src");
+        const data = await getPublicSharedMapDetail(uuid, src);
 
         // APIレスポンスをCafe型にマッピング
         const mappedCafes: Cafe[] = data.cafes.map((cafe) => ({
