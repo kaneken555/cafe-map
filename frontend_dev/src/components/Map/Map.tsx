@@ -1,6 +1,6 @@
 // components/Map.tsx
 import React, { useState, useRef } from "react";
-import { GoogleMap, LoadScript, TrafficLayer, TransitLayer, BicyclingLayer } from "@react-google-maps/api";
+import { GoogleMap, TrafficLayer, TransitLayer, BicyclingLayer } from "@react-google-maps/api";
 import MapButton from "../MapButton/MapButton"; 
 import CafeOverlayIcon from "../CafeOverlayIcon/CafeOverlayIcon"; // ✅ 切り出したカフェアイコン表示用コンポーネント
 import KeywordSearchModal from "../KeywordSearchModal/KeywordSearchModal"; // ✅ キーワード検索モーダルをインポート
@@ -37,8 +37,7 @@ const Map: React.FC<MapProps> = ({
   const { mapMode } = useMap(); // マップリストのセット関数をコンテキストから取得
   const { registerSharedMap } = useMapActions();
   const { fetchCafes } = useCafeSearch(setSearchResultCafes);
-  
-  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+
   const [isMapLoading, setIsMapLoading] = useState(true);
   const mapRef = useRef<google.maps.Map | null>(null);
   const [isKeywordSearchOpen, setIsKeywordSearchOpen] = useState(false); // モーダル開閉用
@@ -147,48 +146,46 @@ const Map: React.FC<MapProps> = ({
         />
       )}
 
-      <LoadScript googleMapsApiKey={apiKey} onError={() => setIsMapLoading(false)}>
-        <GoogleMap
-          mapContainerStyle={MAP_CONTAINER_STYLE}
-          center={DEFAULT_CENTER}
-          zoom={15}
-          onLoad={handleMapLoad}
-          onUnmount={() => { mapRef.current = null; }}
-          options={{
-            mapTypeControl: false,
-            streetViewControl: false,
-            ...(MAP_STYLES[displayOptions.style] ? { styles: MAP_STYLES[displayOptions.style] } : {}),
+      <GoogleMap
+        mapContainerStyle={MAP_CONTAINER_STYLE}
+        center={DEFAULT_CENTER}
+        zoom={15}
+        onLoad={handleMapLoad}
+        onUnmount={() => { mapRef.current = null; }}
+        options={{
+          mapTypeControl: false,
+          streetViewControl: false,
+          ...(MAP_STYLES[displayOptions.style] ? { styles: MAP_STYLES[displayOptions.style] } : {}),
 
-          }}
-        >
-          {/* レイヤー */}
-          {displayOptions.layers.traffic && <TrafficLayer />}
-          {displayOptions.layers.transit && <TransitLayer />}
-          {displayOptions.layers.bicycling && <BicyclingLayer />}
+        }}
+      >
+        {/* レイヤー */}
+        {displayOptions.layers.traffic && <TrafficLayer />}
+        {displayOptions.layers.transit && <TransitLayer />}
+        {displayOptions.layers.bicycling && <BicyclingLayer />}
 
-          {/* カフェアイコン */}
-          {cafes.map((cafe) => (
-            <CafeOverlayIcon
-              key={cafe.id}
-              cafe={cafe}
-              isSelected={selectedCafeId === cafe.id}
-              showLabel={displayOptions.showLabels}         // ★ 反映
-              variant={displayOptions.iconVariant}          // ★ 反映（コンポーネント側対応）
-              color={displayOptions.iconColor} // ✅ カラー反映
-              size={displayOptions.iconSize} // ✅ 追加！
-              onClick={() => {
-                onCafeIconClick(cafe);
-                setSelectedCafeId(cafe.id);
-              }}
-            />
-          ))}
+        {/* カフェアイコン */}
+        {cafes.map((cafe) => (
+          <CafeOverlayIcon
+            key={cafe.id}
+            cafe={cafe}
+            isSelected={selectedCafeId === cafe.id}
+            showLabel={displayOptions.showLabels}         // ★ 反映
+            variant={displayOptions.iconVariant}          // ★ 反映（コンポーネント側対応）
+            color={displayOptions.iconColor} // ✅ カラー反映
+            size={displayOptions.iconSize} // ✅ 追加！
+            onClick={() => {
+              onCafeIconClick(cafe);
+              setSelectedCafeId(cafe.id);
+            }}
+          />
+        ))}
 
-          {/* TODO:
-              displayOptions.clustering → MarkerClusterer に切替
-              displayOptions.heatmap    → HeatmapLayer 追加
-           */}
-        </GoogleMap>
-      </LoadScript>
+        {/* TODO:
+            displayOptions.clustering → MarkerClusterer に切替
+            displayOptions.heatmap    → HeatmapLayer 追加
+         */}
+      </GoogleMap>
     </div>
   );
 };

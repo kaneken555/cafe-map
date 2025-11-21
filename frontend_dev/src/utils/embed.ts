@@ -11,8 +11,8 @@ export interface EmbedOptions {
 export const buildEmbedSrc = (shareUrl: string, opts: EmbedOptions) => {
   if (!shareUrl) return "";
   const url = new URL(shareUrl);
-  // 例: /shared-map/{uuid} → /shared-map/embed/{uuid} に差し替え
-  url.pathname = url.pathname.replace("/shared-map/", "/shared-map/embed/");
+  // 例: /shared-maps/{uuid} → /shared-maps/embed/{uuid} に差し替え
+  url.pathname = url.pathname.replace("/shared-maps/", "/shared-maps/embed/");
   url.searchParams.set("src", "embed");
   url.searchParams.set("utm_source", "embed");
   url.searchParams.set("utm_medium", "share");

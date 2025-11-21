@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+# set -ex  # ← デバッグモード（失敗したら止まる＋実行コマンドを全部表示）
 
 # .env.deploy の読み込み
 if [ -f .env.deploy ]; then
@@ -14,8 +15,8 @@ bash prepare-ec2-github-key.sh
 
 # Docker イメージをビルドして保存（※既にビルド済みでもOK）
 echo "🐳 Docker イメージを保存中..."
-docker build -t myapp-backend -f backend/Dockerfile backend
-docker build -t myapp-nginx -f nginx/Dockerfile nginx
+docker build --platform=linux/amd64 -t myapp-backend -f backend/Dockerfile backend
+docker build --platform=linux/amd64 -t myapp-nginx -f nginx/Dockerfile nginx
 
 # 🔐 Docker Hub にログイン
 echo "🔐 Docker Hub にログイン..."

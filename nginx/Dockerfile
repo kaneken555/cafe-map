@@ -1,4 +1,4 @@
-FROM nginx:alpine
+FROM --platform=linux/amd64 nginx:alpine
 
 # テンプレートとエントリースクリプトをコピー
 COPY nginx.conf.template /etc/nginx/nginx.conf.template
