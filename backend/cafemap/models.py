@@ -157,6 +157,9 @@ class SharedMap(models.Model):  # ← 旧ShareMapをこれに統一推奨
     created_at = models.DateTimeField(auto_now_add=True)
     expires_at = models.DateTimeField(blank=True, null=True)
     is_active = models.BooleanField(default=True)
+    # アナライズ機能: 直接アクセス用
+    direct_access_count = models.IntegerField(default=0)
+    direct_last_accessed_at = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return f"{self.title or 'No Title'} ({self.share_uuid})"
@@ -175,3 +178,48 @@ class UserSharedMapRelation(models.Model):
 
     class Meta:
         unique_together = ('user', 'shared_map')  # 重複登録を防止
+
+
+# アナライズ機能: 共有先マスタ
+class ShareChannel(models.Model):
+    key = models.CharField(max_length=50, unique=True)  # 'x', 'blog', 'email', etc.
+    name = models.CharField(max_length=100)  # 'X', 'ブログ', 'メール', etc.
+    description = models.TextField(blank=True, null=True)
+    icon = models.CharField(max_length=100, blank=True, null=True)
+    sort_order = models.IntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'share_channel'
+        indexes = [
+            models.Index(fields=['is_active', 'sort_order']),
+        ]
+
+    def __str__(self):
+        return self.name
+
+
+# アナライズ機能: SharedMap × 共有先ごとの集計
+class SharedMapAnalyzeLink(models.Model):
+    shared_map = models.ForeignKey(SharedMap, on_delete=models.CASCADE)
+    channel = models.ForeignKey(ShareChannel, on_delete=models.CASCADE)
+    custom_label = models.CharField(max_length=255, blank=True, null=True)
+    share_link_url = models.TextField()
+    access_count = models.IntegerField(default=0)
+    last_accessed_at = models.DateTimeField(blank=True, null=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'shared_map_analyze_link'
+        unique_together = [['shared_map', 'channel']]  # 1 SharedMap × 1 共有先につき1レコード
+        indexes = [
+            models.Index(fields=['shared_map']),
+            models.Index(fields=['shared_map', 'is_active']),
+        ]
+
+    def __str__(self):
+        return f"{self.shared_map.title or 'No Title'} - {self.channel.name}"

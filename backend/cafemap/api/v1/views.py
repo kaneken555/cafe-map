@@ -18,7 +18,12 @@ from uuid import UUID
 from cafemap.services.map_services import get_maps_for_user, create_map_for_user, get_map_with_cafes, delete_map_with_relations, get_maps_for_group, create_map_for_group, update_map_info
 from cafemap.services.cafe_services import get_cafes_for_map_id, create_cafe_and_relation, remove_cafe_from_map
 from cafemap.services.group_services import get_groups_for_user, create_group_with_user, join_group_by_uuid, user_in_group, delete_group_and_relations, get_group_detail, update_group
-from cafemap.services.shared_map_services import get_shared_map_info, create_or_get_shared_map, get_shared_maps_for_user, get_shared_map_detail, register_shared_map_for_user, copy_shared_map_to_user
+from cafemap.services.shared_map_services import (
+    get_shared_map_info, create_or_get_shared_map, get_shared_maps_for_user,
+    get_shared_map_detail, register_shared_map_for_user, copy_shared_map_to_user,
+    increment_access_count, get_all_share_channels, get_analyze_data_for_map,
+    create_or_get_analyze_link, update_analyze_link_label
+)
 
 import logging
 
@@ -625,6 +630,9 @@ class SharedMapDetailAPIView(APIView):
         src = request.GET.get("src")
         logger.info(f"📌 SharedMapDetailAPIView GET called with src: {src}")  # ログに出力
         try:
+            # アクセスカウントを増やす（アナライズ機能）
+            increment_access_count(uuid, src)
+
             data = get_shared_map_detail(uuid)
             return Response(data, status=status.HTTP_200_OK)
         except SharedMap.DoesNotExist:
@@ -665,5 +673,75 @@ class CopySharedMapAPIView(APIView):
 
         except SharedMap.DoesNotExist:
             return Response({"error": "Shared Map not found"}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+# ========== アナライズ機能 API ==========
+
+class ShareChannelListAPIView(APIView):
+    """共有先マスタ一覧取得"""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        try:
+            channels = get_all_share_channels()
+            return Response(channels, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class MapAnalyzeDataAPIView(APIView):
+    """指定マップのアナライズ情報取得"""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, map_id: int):
+        try:
+            data = get_analyze_data_for_map(map_id, request.user)
+            return Response(data, status=status.HTTP_200_OK)
+        except PermissionError as e:
+            return Response({"error": str(e)}, status=status.HTTP_403_FORBIDDEN)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class AnalyzeLinkCreateAPIView(APIView):
+    """シェアリンク作成/取得"""
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, map_id: int):
+        try:
+            channel_key = request.data.get("channel_key")
+            custom_label = request.data.get("custom_label")
+
+            if not channel_key:
+                return Response(
+                    {"error": "channel_key is required"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            result = create_or_get_analyze_link(map_id, request.user, channel_key, custom_label)
+            status_code = status.HTTP_201_CREATED if result.get("created") else status.HTTP_200_OK
+
+            return Response(result, status=status_code)
+
+        except PermissionError as e:
+            return Response({"error": str(e)}, status=status.HTTP_403_FORBIDDEN)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class AnalyzeLinkUpdateAPIView(APIView):
+    """シェアリンクのcustom_label更新"""
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request, link_id: int):
+        try:
+            custom_label = request.data.get("custom_label", "")
+            result = update_analyze_link_label(link_id, request.user, custom_label)
+            return Response(result, status=status.HTTP_200_OK)
+
+        except PermissionError as e:
+            return Response({"error": str(e)}, status=status.HTTP_403_FORBIDDEN)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

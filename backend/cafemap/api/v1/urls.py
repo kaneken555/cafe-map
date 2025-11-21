@@ -11,6 +11,10 @@ from .views import (
     SharedMapDetailAPIView,
     RegisterSharedMapAPIView,
     CopySharedMapAPIView,
+    ShareChannelListAPIView,
+    MapAnalyzeDataAPIView,
+    AnalyzeLinkCreateAPIView,
+    AnalyzeLinkUpdateAPIView,
 )
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 
@@ -56,6 +60,12 @@ urlpatterns = [
     path('shared-maps/<uuid:uuid>/', SharedMapDetailAPIView.as_view(), name='shared_map_detail'),
     path('shared-maps/<uuid:uuid>/register/', RegisterSharedMapAPIView.as_view(), name='register_shared_map'),
     path("shared-maps/<uuid:uuid>/copy/", CopySharedMapAPIView.as_view(), name="copy_shared_map"),
+
+    # アナライズ機能関連のルーティング
+    path('share-channels/', ShareChannelListAPIView.as_view(), name='share-channel-list'),
+    path('maps/<int:map_id>/analyze/', MapAnalyzeDataAPIView.as_view(), name='map-analyze-data'),
+    path('maps/<int:map_id>/analyze/links/', AnalyzeLinkCreateAPIView.as_view(), name='analyze-link-create'),
+    path('analyze/links/<int:link_id>/', AnalyzeLinkUpdateAPIView.as_view(), name='analyze-link-update'),
 
     # OpenAPIスキーマ(JSON形式)
     path('schema/', SpectacularAPIView.as_view(), name='schema'),
