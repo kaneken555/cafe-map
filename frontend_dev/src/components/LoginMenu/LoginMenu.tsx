@@ -1,8 +1,9 @@
 // components/LoginMenu.tsx
 import React from "react";
 import clsx from "clsx";
+import { useNavigate } from "react-router-dom";
 
-import { ArrowRightToLine, User as UserIcon, LogIn, Users } from "lucide-react";
+import { ArrowRightToLine, User as UserIcon, LogIn, Users, BarChart3 } from "lucide-react";
 
 import { useAuth } from "../../contexts/AuthContext";
 
@@ -14,14 +15,15 @@ interface LoginMenuProps {
   onOpenGroupList: () => void;
 }
 
-const LoginMenu: React.FC<LoginMenuProps> = ({ 
+const LoginMenu: React.FC<LoginMenuProps> = ({
   isOpen,
-  onGuestLogin, 
-  onGoogleLogin, 
-  onLogout, 
+  onGuestLogin,
+  onGoogleLogin,
+  onLogout,
   onOpenGroupList,
 }) => {
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   if (!isOpen) return null;
 
@@ -52,7 +54,12 @@ const LoginMenu: React.FC<LoginMenuProps> = ({
             <Users size={16} />
             <span>グループ</span>
           </button>
-          
+
+          <button className={menuButtonClass} onClick={() => navigate("/analyze")}>
+            <BarChart3 size={16} />
+            <span>アナライズ</span>
+          </button>
+
           <button className={menuButtonClass} onClick={onLogout}>
             <ArrowRightToLine size={16} />
             <span>ログアウト</span>

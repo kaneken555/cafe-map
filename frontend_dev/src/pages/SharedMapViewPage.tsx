@@ -1,7 +1,7 @@
 // pages/SharedMapViewPage.tsx
 import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
-import { LoadScript, GoogleMap } from "@react-google-maps/api";
+import { GoogleMap } from "@react-google-maps/api";
 import { getPublicSharedMapDetail } from "../api/sharedMap";
 import CafeOverlayIcon from "../components/CafeOverlayIcon/CafeOverlayIcon";
 import CafeDetailPanel from "../components/CafeDetailPanel/CafeDetailPanel";
@@ -14,7 +14,6 @@ const SharedMapViewPage: React.FC = () => {
   const { uuid } = useParams<{ uuid: string }>();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   const mapRef = useRef<google.maps.Map | null>(null);
 
   const [mapData, setMapData] = useState<{ name: string; cafes: Cafe[] } | null>(null);
@@ -22,6 +21,9 @@ const SharedMapViewPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedCafe, setSelectedCafe] = useState<Cafe | null>(null);
   const [isMyCafeListOpen, setIsMyCafeListOpen] = useState(false);
+
+  // URLのクエリパラメータを取得
+  const src = searchParams.get("src");
 
   useEffect(() => {
     const fetchSharedMap = async () => {
@@ -33,8 +35,6 @@ const SharedMapViewPage: React.FC = () => {
 
       try {
         setIsLoading(true);
-        // URLのクエリパラメータを取得
-        const src = searchParams.get("src");
         const data = await getPublicSharedMapDetail(uuid, src);
 
         // APIレスポンスをCafe型にマッピング
@@ -72,7 +72,7 @@ const SharedMapViewPage: React.FC = () => {
     };
 
     fetchSharedMap();
-  }, [uuid]);
+  }, [uuid, src]);
 
   const handleMapLoad = (map: google.maps.Map) => {
     mapRef.current = map;
@@ -124,36 +124,34 @@ const SharedMapViewPage: React.FC = () => {
 
       {/* マップ */}
       <div className="flex-grow">
-        <LoadScript googleMapsApiKey={apiKey}>
-          <GoogleMap
-            mapContainerStyle={MAP_CONTAINER_STYLE}
-            center={
-              mapData?.cafes[0]
-                ? { lat: mapData.cafes[0].lat, lng: mapData.cafes[0].lng }
-                : DEFAULT_CENTER
-            }
-            zoom={13}
-            onLoad={handleMapLoad}
-            onUnmount={() => { mapRef.current = null; }}
-            options={{
-              mapTypeControl: false,
-              streetViewControl: false,
-            }}
-          >
-            {mapData?.cafes.map((cafe) => (
-              <CafeOverlayIcon
-                key={cafe.id}
-                cafe={cafe}
-                isSelected={selectedCafe?.id === cafe.id}
-                showLabel={false}
-                variant="photo"
-                color="#3B82F6"
-                size={48}
-                onClick={() => setSelectedCafe(cafe)}
-              />
-            ))}
-          </GoogleMap>
-        </LoadScript>
+        <GoogleMap
+          mapContainerStyle={MAP_CONTAINER_STYLE}
+          center={
+            mapData?.cafes[0]
+              ? { lat: mapData.cafes[0].lat, lng: mapData.cafes[0].lng }
+              : DEFAULT_CENTER
+          }
+          zoom={13}
+          onLoad={handleMapLoad}
+          onUnmount={() => { mapRef.current = null; }}
+          options={{
+            mapTypeControl: false,
+            streetViewControl: false,
+          }}
+        >
+          {mapData?.cafes.map((cafe) => (
+            <CafeOverlayIcon
+              key={cafe.id}
+              cafe={cafe}
+              isSelected={selectedCafe?.id === cafe.id}
+              showLabel={false}
+              variant="photo"
+              color="#3B82F6"
+              size={48}
+              onClick={() => setSelectedCafe(cafe)}
+            />
+          ))}
+        </GoogleMap>
       </div>
 
       {/* カフェ詳細パネル */}
