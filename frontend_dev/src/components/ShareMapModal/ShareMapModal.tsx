@@ -1,9 +1,10 @@
 // components/ShareMapModal.tsx
-import React, { useMemo, useRef, useState } from "react";
+import React, { useMemo, useRef, useState, useEffect } from "react";
 import { Share2 } from "lucide-react";
 import BaseModal from "../BaseModal/BaseModal";
 import toast from "react-hot-toast";
 import { createSharedMap } from "../../api/sharedMap";
+import { AnalyzeApiClient } from "../../api/analyzeApiClient";
 import ModalActionButton from "../ModalActionButton/ModalActionButton";
 import ShareLinkSection from "../ShareLinkSection/ShareLinkSection";
 import QRCodeSection from "../QRCodeSection/QRCodeSection";
@@ -59,6 +60,22 @@ const ShareMapModal: React.FC<ShareMapModalProps> = ({
       });
       const url = `${FRONTEND_BASE_URL}/shared-maps/${res.share_uuid}`;
       setShareUrl(url);
+
+      // シェアリンク作成後、すべてのチャンネルを自動登録
+      const channels: ShareChannel[] = ["x", "line", "email", "qr"];
+      await Promise.all(
+        channels.map(async (ch) => {
+          try {
+            await AnalyzeApiClient.createOrGetAnalyzeLink(selectedMap.id, {
+              channel_key: ch,
+            });
+            console.log(`✅ チャンネル「${ch}」を自動登録しました`);
+          } catch (error) {
+            console.error(`❌ チャンネル「${ch}」の自動登録に失敗:`, error);
+          }
+        })
+      );
+
       toast.success("シェアリンクを作成しました");
     } catch (error) {
       toast.error("シェアリンクの作成に失敗しました");
@@ -66,6 +83,28 @@ const ShareMapModal: React.FC<ShareMapModalProps> = ({
       setIsCreating(false);
     }
   };
+
+  // チャンネルが選択されたら自動的にアナライズリンクを登録
+  useEffect(() => {
+    const registerChannel = async () => {
+      // shareUrl が存在し、selectedMap があり、channel が direct 以外の場合に登録
+      if (!shareUrl || !selectedMap || channel === "direct") {
+        return;
+      }
+
+      try {
+        await AnalyzeApiClient.createOrGetAnalyzeLink(selectedMap.id, {
+          channel_key: channel,
+        });
+        console.log(`✅ チャンネル「${channel}」を自動登録しました`);
+      } catch (error) {
+        // バックグラウンド処理なのでユーザーにはエラーを表示しない
+        console.error(`❌ チャンネル「${channel}」の自動登録に失敗:`, error);
+      }
+    };
+
+    registerChannel();
+  }, [shareUrl, selectedMap, channel]);
 
   // 表示・コピー用（選択中シェア先のトラッキング付きURL）
   const trackedUrl = useMemo(

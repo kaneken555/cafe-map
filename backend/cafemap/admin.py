@@ -1,6 +1,11 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User, Cafe, Map, Tag, Memo, ShareMap,MapUserRelation, CafeMapRelation, CafeTagRelation, CafeMemoRelation, CafeShareMapRelation, Group, UserGroupRelation, GroupMapRelation
+from .models import (
+    User, Cafe, Map, Tag, Memo, ShareMap, MapUserRelation, CafeMapRelation,
+    CafeTagRelation, CafeMemoRelation, CafeShareMapRelation, Group,
+    UserGroupRelation, GroupMapRelation, SharedMap, ShareChannel,
+    SharedMapAnalyzeLink
+)
 
 class UserAdmin(BaseUserAdmin):
     model = User
@@ -95,4 +100,30 @@ class GroupMapRelationAdmin(admin.ModelAdmin):
     list_display = ("id", "group", "map", "created_at")
     search_fields = ("group__name", "map__name")
     list_filter = ("group",)
+    ordering = ("-created_at",)
+
+# SharedMapモデル（アナライズ機能）
+@admin.register(SharedMap)
+class SharedMapAdmin(admin.ModelAdmin):
+    list_display = ("id", "title", "share_uuid", "creator", "direct_access_count", "is_active", "created_at")
+    search_fields = ("title", "share_uuid")
+    list_filter = ("is_active", "created_at")
+    readonly_fields = ("share_uuid", "created_at")
+    ordering = ("-created_at",)
+
+# 共有先マスタ（アナライズ機能）
+@admin.register(ShareChannel)
+class ShareChannelAdmin(admin.ModelAdmin):
+    list_display = ("id", "key", "name", "sort_order", "is_active", "created_at")
+    search_fields = ("key", "name")
+    list_filter = ("is_active",)
+    ordering = ("sort_order",)
+
+# SharedMap × 共有先ごとの集計（アナライズ機能）
+@admin.register(SharedMapAnalyzeLink)
+class SharedMapAnalyzeLinkAdmin(admin.ModelAdmin):
+    list_display = ("id", "shared_map", "channel", "custom_label", "access_count", "last_accessed_at", "is_active", "created_at")
+    search_fields = ("shared_map__title", "channel__name", "custom_label")
+    list_filter = ("channel", "is_active", "created_at")
+    readonly_fields = ("created_at", "updated_at")
     ordering = ("-created_at",)
