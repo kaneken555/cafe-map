@@ -2,9 +2,9 @@
 import React, { useState } from "react";
 import clsx from "clsx";
 
-import MapCreateModal from "../MapCreateModal/MapCreateModal"; 
-// import { mockMapData } from "../api/mockMapData"; 
-import MapListItem from "../MapListItem/MapListItem"; 
+import MapCreateModal from "../MapCreateModal/MapCreateModal";
+// import { mockMapData } from "../api/mockMapData";
+import MapListItem from "../MapListItem/MapListItem";
 import MapDeleteModal from "../MapDeleteModal/MapDeleteModal";
 import MapDetailModal from "../MapDetailModal/MapDetailModal";
 import BaseModal from "../BaseModal/BaseModal";
