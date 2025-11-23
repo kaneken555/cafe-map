@@ -224,7 +224,6 @@ const Map: React.FC<MapProps> = ({
         options={{
           mapTypeControl: false,
           streetViewControl: false,
-          mapId: import.meta.env.VITE_GOOGLE_MAPS_MAP_ID || 'DEMO_MAP_ID',
           ...(MAP_STYLES[displayOptions.style] ? { styles: MAP_STYLES[displayOptions.style] } : {}),
         }}
       >
