@@ -4,7 +4,7 @@ from .models import (
     User, Cafe, Map, Tag, Memo, ShareMap, MapUserRelation, CafeMapRelation,
     CafeTagRelation, CafeMemoRelation, CafeShareMapRelation, Group,
     UserGroupRelation, GroupMapRelation, SharedMap, ShareChannel,
-    SharedMapAnalyzeLink
+    SharedMapAnalyzeLink, Custom, SystemSetting, UserCustomRelation
 )
 
 class UserAdmin(BaseUserAdmin):
@@ -126,4 +126,48 @@ class SharedMapAnalyzeLinkAdmin(admin.ModelAdmin):
     search_fields = ("shared_map__title", "channel__name", "custom_label")
     list_filter = ("channel", "is_active", "created_at")
     readonly_fields = ("created_at", "updated_at")
+    ordering = ("-created_at",)
+
+# カスタマイズ設定（Custom）
+@admin.register(Custom)
+class CustomAdmin(admin.ModelAdmin):
+    list_display = ("id", "name", "map_style", "icon_variant", "icon_color", "icon_size", "is_public", "is_snapshot", "created_by_user", "created_at")
+    search_fields = ("name", "description")
+    list_filter = ("is_public", "is_snapshot", "map_style", "icon_variant", "created_at")
+    readonly_fields = ("created_at", "updated_at")
+    ordering = ("-is_public", "-created_at")
+
+    fieldsets = (
+        ("基本情報", {
+            "fields": ("name", "description", "created_by_user")
+        }),
+        ("マップ設定", {
+            "fields": ("map_style", "icon_variant", "icon_color", "icon_size", "show_labels")
+        }),
+        ("詳細設定", {
+            "fields": ("border_color", "background_color")
+        }),
+        ("システム設定", {
+            "fields": ("is_public", "is_snapshot", "original_custom")
+        }),
+        ("日時", {
+            "fields": ("created_at", "updated_at")
+        }),
+    )
+
+# システム設定
+@admin.register(SystemSetting)
+class SystemSettingAdmin(admin.ModelAdmin):
+    list_display = ("id", "key", "value", "description", "updated_at")
+    search_fields = ("key", "description")
+    readonly_fields = ("created_at", "updated_at")
+    ordering = ("key",)
+
+# ユーザー × カスタマイズ設定の関係
+@admin.register(UserCustomRelation)
+class UserCustomRelationAdmin(admin.ModelAdmin):
+    list_display = ("id", "user", "custom", "created_at")
+    search_fields = ("user__name", "custom__name")
+    list_filter = ("custom__is_public", "created_at")
+    readonly_fields = ("created_at",)
     ordering = ("-created_at",)

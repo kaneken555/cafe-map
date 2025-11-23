@@ -51,6 +51,8 @@ class User(AbstractBaseUser, PermissionsMixin):  # AbstractBaseUserを継承
 class Map(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
+    # カスタマイズ設定（後で定義されるCustomモデルを参照）
+    # custom フィールドはファイル末尾で追加
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -148,15 +150,21 @@ class GroupMapRelation(models.Model):
 
 # 共有マップモデル
 class SharedMap(models.Model):  # ← 旧ShareMapをこれに統一推奨
-    original_map = models.ForeignKey(Map, on_delete=models.CASCADE)
+    original_map = models.OneToOneField(  # ← ForeignKeyからOneToOneFieldに変更（UNIQUE制約）
+        Map,
+        on_delete=models.CASCADE,
+        related_name='shared_map'
+    )
     share_uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
+    # カスタマイズ設定（スナップショット用、後で動的に追加）
+    # custom フィールドはファイル末尾で追加
     title = models.CharField(max_length=255, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     allow_sync = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     expires_at = models.DateTimeField(blank=True, null=True)
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True)  # is_publicの代わりに使用
     # アナライズ機能: 直接アクセス用
     direct_access_count = models.IntegerField(default=0)
     direct_last_accessed_at = models.DateTimeField(blank=True, null=True)
@@ -223,3 +231,112 @@ class SharedMapAnalyzeLink(models.Model):
 
     def __str__(self):
         return f"{self.shared_map.title or 'No Title'} - {self.channel.name}"
+
+
+# カスタマイズ設定モデル
+class Custom(models.Model):
+    """カスタマイズ設定"""
+    name = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+
+    # マップ・アイコン設定
+    map_style = models.CharField(max_length=50, default='default')  # default, light, dark, mono
+    icon_variant = models.CharField(max_length=50, default='photo')  # pin, badge, bubble, photo
+    icon_color = models.CharField(max_length=7, default='#3B82F6')  # #RRGGBB
+    icon_size = models.IntegerField(default=48)  # 24-96
+    show_labels = models.BooleanField(default=True)
+
+    # 将来用
+    border_color = models.CharField(max_length=7, blank=True, null=True)
+    background_color = models.CharField(max_length=7, blank=True, null=True)
+
+    # メタ情報
+    created_by_user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='customs'
+    )
+    is_snapshot = models.BooleanField(default=False)
+    is_public = models.BooleanField(default=False)
+    original_custom = models.ForeignKey(
+        'self',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='snapshots'
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'custom'
+        indexes = [
+            models.Index(fields=['created_by_user']),
+            models.Index(fields=['is_public', 'is_snapshot']),
+        ]
+
+    def __str__(self):
+        return self.name
+
+
+# システム設定モデル
+class SystemSetting(models.Model):
+    """システム設定"""
+    key = models.CharField(max_length=255, unique=True)
+    value = models.TextField()
+    description = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'system_setting'
+
+    def __str__(self):
+        return f"{self.key}: {self.value}"
+
+
+# ユーザーとCustomの関係（お気に入り管理）
+class UserCustomRelation(models.Model):
+    """ユーザーとCustomの関係（お気に入り管理）"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    custom = models.ForeignKey(Custom, on_delete=models.CASCADE)
+    is_favorite = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'user_custom_relation'
+        unique_together = ('user', 'custom')
+
+    def __str__(self):
+        return f"{self.user.name} - {self.custom.name}"
+
+
+# Mapモデルにcustomフィールドを追加（Customモデル定義後に追加）
+from cafemap.utils.custom_utils import get_default_custom_id
+
+# ForeignKeyを動的に追加
+Map.add_to_class(
+    'custom',
+    models.ForeignKey(
+        Custom,
+        on_delete=models.SET_NULL,
+        related_name='maps',
+        null=True,
+        blank=True
+    )
+)
+
+# SharedMapモデルにcustomフィールドを追加（スナップショットCustom用）
+SharedMap.add_to_class(
+    'custom',
+    models.ForeignKey(
+        Custom,
+        on_delete=models.SET_NULL,
+        related_name='shared_maps',
+        null=True,
+        blank=True
+    )
+)
