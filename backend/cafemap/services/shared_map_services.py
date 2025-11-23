@@ -4,8 +4,9 @@ from django.utils import timezone
 from cafemap.models import (
     SharedMap, Map, MapUserRelation, Cafe, CafeMapRelation,
     CafeSharedMapRelation, UserSharedMapRelation, ShareChannel,
-    SharedMapAnalyzeLink
+    SharedMapAnalyzeLink, Custom
 )
+from cafemap.services.custom_services import CustomService
 from uuid import UUID
 
 
@@ -28,7 +29,13 @@ def get_shared_map_info(map_id, user):
         }
 
 def create_or_get_shared_map(map_id, user, title=None, description=""):
-    """シェアマップを作成（既に存在すればそれを返す）"""
+    """
+    シェアマップを作成（既に存在すればそれを返す）
+
+    SharedMap作成時に元のMapのCustomからスナップショットCustomを自動作成し、
+    SharedMapに紐付ける。これにより元のCustomが編集・削除されても
+    SharedMapの見た目は変わらない。
+    """
     original_map = get_object_or_404(Map, id=map_id)
 
     # 既に存在するなら再利用
@@ -40,12 +47,18 @@ def create_or_get_shared_map(map_id, user, title=None, description=""):
             "created": False
         }
 
-    # 新規作成
+    # 元のMapのCustomからスナップショットCustomを作成
+    snapshot_custom = None
+    if original_map.custom:
+        snapshot_custom = CustomService.create_snapshot_custom(original_map.custom)
+
+    # SharedMap新規作成
     shared_map = SharedMap.objects.create(
         original_map=original_map,
         creator=user,
         title=title or original_map.name,
-        description=description
+        description=description,
+        custom=snapshot_custom  # スナップショットCustomを紐付け
     )
 
     # 関連カフェをコピー
@@ -72,9 +85,25 @@ def get_shared_map_detail(uuid: UUID):
     shared_map = SharedMap.objects.get(share_uuid=uuid)
     cafes = Cafe.objects.filter(cafesharedmaprelation__shared_map=shared_map)
 
+    # Custom情報を取得
+    custom_data = None
+    if shared_map.custom:
+        custom_data = {
+            "id": shared_map.custom.id,
+            "name": shared_map.custom.name,
+            "map_style": shared_map.custom.map_style,
+            "icon_variant": shared_map.custom.icon_variant,
+            "icon_color": shared_map.custom.icon_color,
+            "icon_size": shared_map.custom.icon_size,
+            "show_labels": shared_map.custom.show_labels,
+            "border_color": shared_map.custom.border_color,
+            "background_color": shared_map.custom.background_color,
+        }
+
     return {
         "id": shared_map.id,
         "name": shared_map.title,
+        "custom": custom_data,
         "cafes": [
             {
                 "id": cafe.id,
@@ -113,12 +142,35 @@ def register_shared_map_for_user(user, shared_map_uuid: UUID):
 def copy_shared_map_to_user(user, shared_map_uuid: UUID, new_name: str = None):
     """
     SharedMapをもとに、ユーザーのマップを作成・関連付け・カフェもコピー
+
+    SharedMapのスナップショットCustomから新しいユーザーCustomを作成し、
+    コピーされたMapに紐付ける。
     """
     shared_map = get_object_or_404(SharedMap, share_uuid=shared_map_uuid)
     map_name = new_name or shared_map.title or "シェアマップのコピー"
 
+    # SharedMapのスナップショットCustomから新しいユーザーCustomを作成
+    custom_id = None
+    if shared_map.custom:
+        # スナップショットCustomをベースに新しいユーザーCustomを作成
+        new_custom = Custom.objects.create(
+            name=f"{shared_map.custom.name}（コピー）",
+            description=shared_map.custom.description,
+            map_style=shared_map.custom.map_style,
+            icon_variant=shared_map.custom.icon_variant,
+            icon_color=shared_map.custom.icon_color,
+            icon_size=shared_map.custom.icon_size,
+            show_labels=shared_map.custom.show_labels,
+            border_color=shared_map.custom.border_color,
+            background_color=shared_map.custom.background_color,
+            created_by_user=user,
+            is_public=False,
+            is_snapshot=False
+        )
+        custom_id = new_custom.id
+
     # 新しいマップ作成
-    new_map = Map.objects.create(name=map_name)
+    new_map = Map.objects.create(name=map_name, custom_id=custom_id)
 
     # ユーザーとマップの関連付け
     MapUserRelation.objects.create(user=user, map=new_map)

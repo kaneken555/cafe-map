@@ -1,12 +1,18 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { MapDisplayOptions, MapStyleKey, IconVariant } from "../../types/mapDisplay";
 import { MapPreview } from "./MapPreview";
+import { CustomApiClient } from "../../api/customApiClient";
+import type { Custom } from "../../types/custom";
+import { toast } from "react-hot-toast";
 
 interface Props {
   value: MapDisplayOptions;
   onChange: (next: MapDisplayOptions) => void;
   onClose: () => void;
-  previewPoints?: { lat: number; lng: number }[]; // 任意：プレビュー用ダミー座標
+  previewPoints?: { lat: number; lng: number }[]; // 任意:プレビュー用ダミー座標
+  selectedMapId?: number; // ✅ 選択中のマップID（Custom適用用）
+  onCustomApplied?: (customId: number) => void; // ✅ Custom適用後のコールバック
+  initialCustomId?: number; // ✅ 初期選択するCustomID
 }
 
 const styles: { label: string; value: MapStyleKey }[] = [
@@ -23,14 +29,154 @@ const iconVariants: { label: string; value: IconVariant }[] = [
   { label: "写真サムネ", value: "photo" },
 ];
 
-const MapCustomizeModal: React.FC<Props> = ({ value, onChange, onClose, previewPoints }) => {
+const MapCustomizeModal: React.FC<Props> = ({ value, onChange, onClose, previewPoints, selectedMapId, onCustomApplied, initialCustomId }) => {
   const [local, setLocal] = useState<MapDisplayOptions>(value);
   const dirty = useMemo(() => JSON.stringify(local) !== JSON.stringify(value), [local, value]);
 
+  // ✅ Custom選択機能
+  const [customs, setCustoms] = useState<Custom[]>([]);
+  const [selectedCustomId, setSelectedCustomId] = useState<number | null>(initialCustomId ?? null);
+  const [loading, setLoading] = useState(false);
+
+  // ✅ Custom一覧を取得
+  useEffect(() => {
+    const fetchCustoms = async () => {
+      try {
+        setLoading(true);
+        const data = await CustomApiClient.getCustoms();
+        setCustoms(data);
+      } catch (error) {
+        console.error("Custom取得エラー:", error);
+        toast.error("カスタマイズ設定の取得に失敗しました");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCustoms();
+  }, []);
+
+  // ✅ Custom選択時に設定を反映
+  const handleCustomSelect = async (customId: string) => {
+    if (customId === "none") {
+      setSelectedCustomId(null);
+      return;
+    }
+
+    const id = Number(customId);
+    setSelectedCustomId(id);
+
+    try {
+      const custom = await CustomApiClient.getCustomById(id);
+      // Custom設定をlocalに反映
+      setLocal({
+        ...local,
+        style: custom.map_style,
+        iconVariant: custom.icon_variant,
+        iconColor: custom.icon_color,
+        iconSize: custom.icon_size,
+        showLabels: custom.show_labels,
+      });
+      toast.success(`「${custom.name}」を読み込みました`);
+    } catch (error) {
+      console.error("Custom読み込みエラー:", error);
+      toast.error("カスタマイズ設定の読み込みに失敗しました");
+    }
+  };
+
+  // ✅ Custom新規作成
+  const handleCreateCustom = async () => {
+    const name = window.prompt("カスタマイズ設定の名前を入力してください");
+    if (!name) return;
+
+    try {
+      setLoading(true);
+      const newCustom = await CustomApiClient.createCustom({
+        name,
+        description: "",
+        map_style: local.style,
+        icon_variant: local.iconVariant,
+        icon_color: local.iconColor,
+        icon_size: local.iconSize,
+        show_labels: local.showLabels,
+      });
+
+      // 一覧を再取得
+      const updatedCustoms = await CustomApiClient.getCustoms();
+      setCustoms(updatedCustoms);
+      setSelectedCustomId(newCustom.id);
+
+      toast.success(`「${newCustom.name}」を作成しました`);
+    } catch (error) {
+      console.error("Custom作成エラー:", error);
+      toast.error("カスタマイズ設定の作成に失敗しました");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ✅ Custom削除
+  const handleDeleteCustom = async () => {
+    if (!selectedCustomId) return;
+
+    const custom = customs.find(c => c.id === selectedCustomId);
+    if (!custom) return;
+
+    if (!window.confirm(`「${custom.name}」を削除しますか？`)) return;
+
+    try {
+      setLoading(true);
+      await CustomApiClient.deleteCustom(selectedCustomId);
+
+      // 一覧を再取得
+      const updatedCustoms = await CustomApiClient.getCustoms();
+      setCustoms(updatedCustoms);
+      setSelectedCustomId(null);
+
+      toast.success(`「${custom.name}」を削除しました`);
+    } catch (error) {
+      console.error("Custom削除エラー:", error);
+      toast.error("カスタマイズ設定の削除に失敗しました");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const reset = () => setLocal(value);
   const applyOnly = () => onChange(local); // 適用のみ（閉じない）
-  const applyAndClose = () => {
+  const applyAndClose = async () => {
     onChange(local);
+
+    // ✅ selectedMapIdがある場合、バックエンドに適用
+    if (selectedMapId) {
+      try {
+        if (selectedCustomId) {
+          // プリセットが選択されている場合、そのCustomを適用
+          await CustomApiClient.applyCustomToMap(selectedMapId, selectedCustomId);
+          onCustomApplied?.(selectedCustomId);
+          toast.success("カスタマイズ設定をマップに適用しました");
+        } else {
+          // 手動で設定を変更した場合、新しいCustomを作成して適用
+          const customName = `カスタム設定（自動保存）`;
+          const newCustom = await CustomApiClient.createCustom({
+            name: customName,
+            description: "",
+            map_style: local.style,
+            icon_variant: local.iconVariant,
+            icon_color: local.iconColor,
+            icon_size: local.iconSize,
+            show_labels: local.showLabels,
+          });
+
+          await CustomApiClient.applyCustomToMap(selectedMapId, newCustom.id);
+          onCustomApplied?.(newCustom.id);
+          toast.success("カスタマイズ設定を保存してマップに適用しました");
+        }
+      } catch (error) {
+        console.error("Custom適用エラー:", error);
+        toast.error("カスタマイズ設定の適用に失敗しました");
+      }
+    }
+
     onClose();
   };
 
@@ -39,8 +185,54 @@ const MapCustomizeModal: React.FC<Props> = ({ value, onChange, onClose, previewP
       {/* backdrop */}
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
       {/* panel */}
-      <div className="relative z-10 w-[900px] max-w-[95vw] rounded-xl bg-white p-5 shadow-lg">
+      <div className="relative z-10 w-[900px] max-w-[95vw] rounded-xl bg-white p-5 shadow-lg max-h-[90vh] overflow-y-auto">
         <h2 className="mb-4 text-lg font-semibold">表示カスタマイズ</h2>
+
+        {/* ✅ Custom選択セクション */}
+        <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+          <label className="block text-sm font-medium mb-2">カスタマイズプリセット</label>
+          <div className="flex gap-2">
+            <select
+              className="flex-1 rounded border p-2"
+              value={selectedCustomId?.toString() || "none"}
+              onChange={(e) => handleCustomSelect(e.target.value)}
+              disabled={loading}
+            >
+              <option value="none">カスタム（現在の設定）</option>
+              <optgroup label="プリセット">
+                {customs.filter(c => c.is_public).map((custom) => (
+                  <option key={custom.id} value={custom.id}>
+                    {custom.name}
+                  </option>
+                ))}
+              </optgroup>
+              <optgroup label="マイカスタム">
+                {customs.filter(c => !c.is_public).map((custom) => (
+                  <option key={custom.id} value={custom.id}>
+                    {custom.name}
+                  </option>
+                ))}
+              </optgroup>
+            </select>
+            <button
+              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:bg-gray-400"
+              onClick={handleCreateCustom}
+              disabled={loading}
+            >
+              新規作成
+            </button>
+            <button
+              className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 disabled:bg-gray-400"
+              onClick={handleDeleteCustom}
+              disabled={!selectedCustomId || loading || customs.find(c => c.id === selectedCustomId)?.is_public}
+            >
+              削除
+            </button>
+          </div>
+          <p className="text-xs text-gray-500 mt-2">
+            プリセットから選択するか、下の設定を変更して新規作成できます
+          </p>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {/* 左：フォーム */}

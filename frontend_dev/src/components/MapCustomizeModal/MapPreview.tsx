@@ -187,6 +187,7 @@ export const MapPreview: React.FC<PreviewProps> = ({
       disableDefaultUI: true,
       gestureHandling: "greedy",
       styles,
+      mapId: import.meta.env.VITE_GOOGLE_MAPS_MAP_ID || 'DEMO_MAP_ID',
     });
 
     return () => {

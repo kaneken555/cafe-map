@@ -1,7 +1,7 @@
 // components/Map.tsx
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { GoogleMap, TrafficLayer, TransitLayer, BicyclingLayer } from "@react-google-maps/api";
-import MapButton from "../MapButton/MapButton"; 
+import MapButton from "../MapButton/MapButton";
 import CafeOverlayIcon from "../CafeOverlayIcon/CafeOverlayIcon"; // ✅ 切り出したカフェアイコン表示用コンポーネント
 import KeywordSearchModal from "../KeywordSearchModal/KeywordSearchModal"; // ✅ キーワード検索モーダルをインポート
 import LoadingOverlay from "../LoadingOverlay/LoadingOverlay"; // ✅ ローディングオーバーレイコンポーネントをインポート
@@ -15,6 +15,8 @@ import { MapDisplayOptions } from "../../types/mapDisplay";                     
 import lightJson from "../../assets/mapstyles/light.json";                     // ★ 追加
 import darkJson from "../../assets/mapstyles/dark.json";                       // ★ 追加
 import monoJson from "../../assets/mapstyles/mono.json";                       // ★ 追加
+import { CustomApiClient } from "../../api/customApiClient"; // ✅ Custom APIクライアントをインポート
+import type { Custom } from "../../types/custom"; // ✅ Custom型をインポート
 
 interface MapProps {
   cafes: Cafe[];
@@ -26,15 +28,15 @@ interface MapProps {
 }
 
 
-const Map: React.FC<MapProps> = ({ 
-  cafes, 
-  onCafeIconClick, 
+const Map: React.FC<MapProps> = ({
+  cafes,
+  onCafeIconClick,
   selectedCafeId,
-  setSelectedCafeId, 
-  setSearchResultCafes, 
-  shareUuid 
+  setSelectedCafeId,
+  setSearchResultCafes,
+  shareUuid
 }) => {
-  const { mapMode } = useMap(); // マップリストのセット関数をコンテキストから取得
+  const { mapMode, selectedMap, setSelectedMap, setMapList } = useMap(); // ✅ setMapListも取得
   const { registerSharedMap } = useMapActions();
   const { fetchCafes } = useCafeSearch(setSearchResultCafes);
 
@@ -42,8 +44,21 @@ const Map: React.FC<MapProps> = ({
   const mapRef = useRef<google.maps.Map | null>(null);
   const [isKeywordSearchOpen, setIsKeywordSearchOpen] = useState(false); // モーダル開閉用
 
-    // ★ カスタマイズモーダルの状態
+  // ★ カスタマイズモーダルの状態
   const [isCustomizeOpen, setIsCustomizeOpen] = useState(false);
+
+  // ✅ Custom適用後にselectedMapとmapListのcustom_idを更新
+  const handleCustomApplied = (customId: number) => {
+    if (selectedMap) {
+      const updatedMap = { ...selectedMap, custom_id: customId };
+      setSelectedMap(updatedMap);
+
+      // mapListも更新して一貫性を保つ
+      setMapList(prev =>
+        prev.map(m => m.id === selectedMap.id ? updatedMap : m)
+      );
+    }
+  };
 
   // ★ 表示オプション（最小セット）
   const [displayOptions, setDisplayOptions] = useState<MapDisplayOptions>({
@@ -56,6 +71,57 @@ const Map: React.FC<MapProps> = ({
     clustering: false,
     heatmap: false,
   });
+
+  // ✅ selectedMapのCustom設定を取得して反映
+  useEffect(() => {
+    const fetchAndApplyCustom = async () => {
+      // マップが選択されていない、またはcustom_idがない場合はデフォルト設定にリセット
+      if (!selectedMap || !selectedMap.custom_id) {
+        console.log("✅ デフォルト設定にリセット");
+        setDisplayOptions({
+          style: "default",
+          iconVariant: "photo",
+          iconColor: "#3B82F6",
+          iconSize: 48,
+          showLabels: false,
+          layers: { traffic: false, transit: false, bicycling: false },
+          clustering: false,
+          heatmap: false,
+        });
+        return;
+      }
+
+      try {
+        const custom: Custom = await CustomApiClient.getCustomById(selectedMap.custom_id);
+        console.log("✅ Custom設定を取得:", custom);
+
+        // Custom設定をdisplayOptionsに反映
+        setDisplayOptions((prev) => ({
+          ...prev,
+          style: custom.map_style,
+          iconVariant: custom.icon_variant,
+          iconColor: custom.icon_color,
+          iconSize: custom.icon_size,
+          showLabels: custom.show_labels,
+        }));
+      } catch (error) {
+        console.error("❌ Custom設定の取得に失敗:", error);
+        // エラー時はデフォルト設定にリセット
+        setDisplayOptions({
+          style: "default",
+          iconVariant: "photo",
+          iconColor: "#3B82F6",
+          iconSize: 48,
+          showLabels: false,
+          layers: { traffic: false, transit: false, bicycling: false },
+          clustering: false,
+          heatmap: false,
+        });
+      }
+    };
+
+    fetchAndApplyCustom();
+  }, [selectedMap?.id, selectedMap?.custom_id]); // マップIDとcustom_idが変更されたら再実行
 
   // ★ スタイルJSONは任意で差し替え（ここでは例として空配列＝デフォルト）
   const MAP_STYLES: Record<"default" | "light" | "dark" | "mono", google.maps.MapTypeStyle[] | undefined> = {
@@ -143,6 +209,9 @@ const Map: React.FC<MapProps> = ({
           value={displayOptions}
           onChange={setDisplayOptions}
           onClose={() => setIsCustomizeOpen(false)}
+          selectedMapId={selectedMap?.id} // ✅ selectedMapIdを渡す
+          onCustomApplied={handleCustomApplied} // ✅ Custom適用後のコールバックを渡す
+          initialCustomId={selectedMap?.custom_id} // ✅ 初期選択するCustomIDを渡す
         />
       )}
 
@@ -155,8 +224,8 @@ const Map: React.FC<MapProps> = ({
         options={{
           mapTypeControl: false,
           streetViewControl: false,
+          mapId: import.meta.env.VITE_GOOGLE_MAPS_MAP_ID || 'DEMO_MAP_ID',
           ...(MAP_STYLES[displayOptions.style] ? { styles: MAP_STYLES[displayOptions.style] } : {}),
-
         }}
       >
         {/* レイヤー */}

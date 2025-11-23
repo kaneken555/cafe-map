@@ -15,6 +15,9 @@ from .views import (
     MapAnalyzeDataAPIView,
     AnalyzeLinkCreateAPIView,
     AnalyzeLinkUpdateAPIView,
+    MapCustomAPIView,
+    CustomListAPIView,
+    CustomDetailAPIView,
 )
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 
@@ -31,6 +34,7 @@ urlpatterns = [
     # APIViewを使用したエンドポイント
     path('maps/', MapAPIView.as_view(), name='maps'),
     path('maps/<int:map_id>/', MapDetailAPIView.as_view(), name='map'),
+    path('maps/<int:map_id>/custom/', MapCustomAPIView.as_view(), name='map-custom'),
     path('maps/<int:map_id>/cafes/', CafeAPIView.as_view(), name='cafes'),
     path('maps/<int:map_id>/cafes/<int:cafe_id>/', CafeDetailAPIView.as_view(), name='cafe'),
     path('tags/', TagAPIView.as_view(), name='tags'),
@@ -66,6 +70,10 @@ urlpatterns = [
     path('maps/<int:map_id>/analyze/', MapAnalyzeDataAPIView.as_view(), name='map-analyze-data'),
     path('maps/<int:map_id>/analyze/links/', AnalyzeLinkCreateAPIView.as_view(), name='analyze-link-create'),
     path('analyze/links/<int:link_id>/', AnalyzeLinkUpdateAPIView.as_view(), name='analyze-link-update'),
+
+    # カスタマイズ設定関連のルーティング
+    path('customs/', CustomListAPIView.as_view(), name='custom-list'),
+    path('customs/<int:pk>/', CustomDetailAPIView.as_view(), name='custom-detail'),
 
     # OpenAPIスキーマ(JSON形式)
     path('schema/', SpectacularAPIView.as_view(), name='schema'),

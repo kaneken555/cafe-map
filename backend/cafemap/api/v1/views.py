@@ -15,7 +15,7 @@ from django.middleware.csrf import get_token
 from rest_framework.exceptions import PermissionDenied
 from uuid import UUID
 
-from cafemap.services.map_services import get_maps_for_user, create_map_for_user, get_map_with_cafes, delete_map_with_relations, get_maps_for_group, create_map_for_group, update_map_info
+from cafemap.services.map_services import get_maps_for_user, create_map_for_user, get_map_with_cafes, delete_map_with_relations, get_maps_for_group, create_map_for_group, update_map_info, update_map_custom
 from cafemap.services.cafe_services import get_cafes_for_map_id, create_cafe_and_relation, remove_cafe_from_map
 from cafemap.services.group_services import get_groups_for_user, create_group_with_user, join_group_by_uuid, user_in_group, delete_group_and_relations, get_group_detail, update_group
 from cafemap.services.shared_map_services import (
@@ -232,7 +232,14 @@ class MapAPIView(APIView):
         try:
             # ログインユーザーに関連するマップのみ取得
             maps = get_maps_for_user(request.user)
-            data = [{"id": m.id, "name": m.name} for m in maps]
+            data = [
+                {
+                    "id": m.id,
+                    "name": m.name,
+                    "custom_id": m.custom.id if m.custom else None
+                }
+                for m in maps
+            ]
             logging.info(f"📌 リクエストユーザー: {request.user},maps:{maps},📌 マップ一覧: {data}")
             return Response(data, status=status.HTTP_200_OK)
         except Exception as e:
@@ -745,3 +752,178 @@ class AnalyzeLinkUpdateAPIView(APIView):
             return Response({"error": str(e)}, status=status.HTTP_403_FORBIDDEN)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+# ==================== Map × Custom 連携 ====================
+
+class MapCustomAPIView(APIView):
+    """MapへのCustom適用"""
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request, map_id):
+        """MapにCustomを適用"""
+        try:
+            custom_id = request.data.get('custom_id')
+            if not custom_id:
+                return Response(
+                    {"error": "custom_idが必要です"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            map_obj = get_object_or_404(Map, id=map_id)
+
+            # マップへのアクセス権限チェック（ユーザーに紐づくマップか確認）
+            if not map_obj.mapuserrelation_set.filter(user=request.user).exists():
+                return Response(
+                    {"error": "このマップを編集する権限がありません"},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+
+            result = update_map_custom(map_obj, custom_id, request.user)
+            logger.info(f"Map {map_id} にCustom {custom_id} を適用しました")
+            return Response(result, status=status.HTTP_200_OK)
+
+        except Map.DoesNotExist:
+            return Response(
+                {"error": "マップが見つかりません"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except PermissionError as e:
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        except ValueError as e:
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        except Exception as e:
+            logger.error(f"MapへのCustom適用エラー: {str(e)}")
+            return Response(
+                {"error": "カスタマイズ設定の適用に失敗しました"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+# ==================== Custom（カスタマイズ設定）関連 ====================
+
+from cafemap.serializers.custom_serializer import CustomSerializer
+from cafemap.services.custom_services import CustomService
+
+
+class CustomListAPIView(APIView):
+    """Custom一覧取得・新規作成"""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        """Custom一覧取得"""
+        try:
+            customs = CustomService.get_user_customs(request.user)
+            serializer = CustomSerializer(customs, many=True)
+            return Response({'customs': serializer.data}, status=status.HTTP_200_OK)
+        except Exception as e:
+            logger.error(f"Custom一覧取得エラー: {str(e)}")
+            return Response(
+                {"error": "カスタマイズ設定の取得に失敗しました"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+    def post(self, request):
+        """Custom新規作成"""
+        try:
+            serializer = CustomSerializer(data=request.data)
+            if serializer.is_valid():
+                custom = CustomService.create_custom(request.user, serializer.validated_data)
+                return Response(
+                    CustomSerializer(custom).data,
+                    status=status.HTTP_201_CREATED
+                )
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            logger.error(f"Custom作成エラー: {str(e)}")
+            return Response(
+                {"error": "カスタマイズ設定の作成に失敗しました"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+class CustomDetailAPIView(APIView):
+    """Custom詳細取得・更新・削除"""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk):
+        """Custom詳細取得"""
+        try:
+            custom = CustomService.get_custom_by_id(pk, request.user)
+            if not custom:
+                return Response(
+                    {'error': 'カスタマイズ設定が見つかりません'},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+            serializer = CustomSerializer(custom)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            logger.error(f"Custom詳細取得エラー: {str(e)}")
+            return Response(
+                {"error": "カスタマイズ設定の取得に失敗しました"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+    def patch(self, request, pk):
+        """Custom更新"""
+        try:
+            custom = CustomService.get_custom_by_id(pk, request.user)
+            if not custom:
+                return Response(
+                    {'error': 'カスタマイズ設定が見つかりません'},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+            # 編集権限チェック
+            can_edit, error_message = CustomService.can_edit_custom(custom, request.user)
+            if not can_edit:
+                return Response(
+                    {'error': error_message},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+
+            serializer = CustomSerializer(custom, data=request.data, partial=True)
+            if serializer.is_valid():
+                custom = CustomService.update_custom(custom, serializer.validated_data)
+                return Response(CustomSerializer(custom).data, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            logger.error(f"Custom更新エラー: {str(e)}")
+            return Response(
+                {"error": "カスタマイズ設定の更新に失敗しました"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+    def delete(self, request, pk):
+        """Custom削除"""
+        try:
+            custom = CustomService.get_custom_by_id(pk, request.user)
+            if not custom:
+                return Response(
+                    {'error': 'カスタマイズ設定が見つかりません'},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+            # 削除権限チェック
+            can_delete, error_message = CustomService.can_delete_custom(custom, request.user)
+            if not can_delete:
+                return Response(
+                    {'error': error_message},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+
+            CustomService.delete_custom(custom)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Exception as e:
+            logger.error(f"Custom削除エラー: {str(e)}")
+            return Response(
+                {"error": "カスタマイズ設定の削除に失敗しました"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )

@@ -3,6 +3,7 @@ export interface MapItem {
   id: number;
   name: string;
   description?: string;
+  custom_id?: number; // ✅ カスタマイズ設定ID
 }
 
 export interface SharedMapItem {

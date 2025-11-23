@@ -23,8 +23,8 @@ interface MapListItemProps {
   onDetailClick: (map: MapItem) => void; // ✅ 詳細表示用のコールバック関数
 }
   
-const MapListItem: React.FC<MapListItemProps> = ({ 
-  map, 
+const MapListItem: React.FC<MapListItemProps> = ({
+  map,
   selectedMapId,
   onSelect,
   onClose,
