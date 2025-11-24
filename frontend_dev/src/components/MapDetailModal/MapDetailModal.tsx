@@ -5,6 +5,7 @@ import ModalActionButton from "../ModalActionButton/ModalActionButton";
 import { Cafe } from "../../types/cafe";
 import { MapItem } from "../../types/map";
 import { Map as MapIcon, Save } from "lucide-react";
+import { getMapDetail } from "../../services/mapService";
 
 interface MapDetailModalProps {
   isOpen: boolean;
@@ -23,12 +24,25 @@ const MapDetailModal: React.FC<MapDetailModalProps> = ({
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [updatedMap, setUpdatedMap] = useState<MapItem | null>(map);
+  const [currentMap, setCurrentMap] = useState<any>(map);
 
+  // マップの詳細情報を取得（customオブジェクトを含む）
   useEffect(() => {
-    if (map) {
-      setUpdatedMap({ ...map });
-    }
-  }, [map]);
+    const fetchMapDetail = async () => {
+      if (map?.id && isOpen) {
+        try {
+          const detailData = await getMapDetail(map.id);
+          setCurrentMap(detailData);
+          setUpdatedMap(detailData);
+        } catch (error) {
+          console.error("マップ詳細取得エラー:", error);
+          setCurrentMap(map);
+          setUpdatedMap(map);
+        }
+      }
+    };
+    fetchMapDetail();
+  }, [map?.id, isOpen]);
 
   if (!map) return null;
 
@@ -69,7 +83,7 @@ const MapDetailModal: React.FC<MapDetailModalProps> = ({
               className="w-full px-2 py-1 border rounded"
             />
           ) : (
-            <span>{map.name}</span>
+            <span>{currentMap?.name || map.name}</span>
           )}
         </div>
 
@@ -84,7 +98,17 @@ const MapDetailModal: React.FC<MapDetailModalProps> = ({
               className="w-full px-2 py-1 border rounded"
             />
           ) : (
-            <span>{map.description}</span>
+            <span>{currentMap?.description || map.description}</span>
+          )}
+        </div>
+
+        {/* カスタマイズ設定 */}
+        <div>
+          <strong>カスタマイズ設定：</strong>
+          {currentMap?.custom?.name ? (
+            <span>{currentMap.custom.name}</span>
+          ) : (
+            <span className="text-gray-500">未設定</span>
           )}
         </div>
 

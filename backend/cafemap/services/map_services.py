@@ -82,14 +82,23 @@ def create_map_for_group(group, name, custom_id=None):
 
     map_obj = Map.objects.create(name=name, custom_id=custom_id)
     GroupMapRelation.objects.create(group=group, map=map_obj)
-    return {"id": map_obj.id, "name": map_obj.name}
+    return {
+        "id": map_obj.id,
+        "name": map_obj.name,
+        "custom_id": map_obj.custom.id if map_obj.custom else None
+    }
 
 def update_map(map_obj, name: str, description: str = ""):
     """マップの情報を更新"""
     map_obj.name = name
     map_obj.description = description
     map_obj.save()
-    return {"id": map_obj.id, "name": map_obj.name, "description": map_obj.description}
+    return {
+        "id": map_obj.id,
+        "name": map_obj.name,
+        "description": map_obj.description,
+        "custom_id": map_obj.custom.id if map_obj.custom else None
+    }
 
 def update_map_info(request, map_id: int):
     """マップの名前を更新"""

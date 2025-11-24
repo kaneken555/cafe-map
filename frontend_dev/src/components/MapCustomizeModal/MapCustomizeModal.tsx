@@ -341,28 +341,6 @@ const MapCustomizeModal: React.FC<Props> = ({ value, onChange, onClose, previewP
                 </label>
               </div>
             </fieldset>
-
-            {/* 集約表示 */}
-            <div className="flex items-center gap-2">
-              <input
-                id="clustering"
-                type="checkbox"
-                checked={local.clustering}
-                onChange={(e) => setLocal({ ...local, clustering: e.target.checked })}
-              />
-              <label htmlFor="clustering">クラスタ表示を有効化</label>
-            </div>
-
-            {/* ヒートマップ */}
-            <div className="flex items-center gap-2">
-              <input
-                id="heatmap"
-                type="checkbox"
-                checked={local.heatmap}
-                onChange={(e) => setLocal({ ...local, heatmap: e.target.checked })}
-              />
-              <label htmlFor="heatmap">ヒートマップを有効化</label>
-            </div>
           </div>
 
           {/* 右：ライブプレビュー */}
