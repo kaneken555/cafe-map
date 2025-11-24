@@ -79,7 +79,7 @@ const CafeDetailInfoTable: React.FC<CafeDetailInfoTableProps> = ({ address, rati
   };
 
   return (
-    <div className="mt-2 text-sm text-gray-700 overflow-x-auto">
+    <div className="mt-2 text-xs sm:text-sm text-gray-700 overflow-x-auto">
       <table className="w-full border-collapse">
         <tbody>
           <tr className="border-b">
