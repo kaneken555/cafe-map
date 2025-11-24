@@ -42,6 +42,7 @@ const ToggleAuthWrapper: React.FC = () => {
         <div className="relative w-80 h-64 border p-4">
           <LoginMenu
             isOpen={true}
+            onClose={() => alert("メニューを閉じる")}
             onGuestLogin={() => alert("ゲストログイン")}
             onGoogleLogin={() => alert("Googleログイン")}
             onLogout={() => alert("ログアウト")}
