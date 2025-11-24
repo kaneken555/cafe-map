@@ -7,6 +7,7 @@ import CafeMapAssignModal from "../components/CafeMapAssignModal/CafeMapAssignMo
 import FooterActions from "../components/FooterActions/FooterActions"; // ✅ 追加
 import Header from "../components/Header/Header";
 import Map from "../components/Map/Map";
+import MapCreateModal from "../components/MapCreateModal/MapCreateModal"; // ✅ マップ作成モーダル
 import MapListModal from "../components/MapListModal/MapListModal";
 import MyCafeListPanel from "../components/MyCafeListPanel/MyCafeListPanel"; // ✅ カフェ一覧パネル
 import SearchResultPanel from "../components/SearchResultPanel/SearchResultPanel";
@@ -20,6 +21,7 @@ import { useMap } from "../contexts/MapContext";
 import { useHeaderActions } from "../hooks/useHeaderActions"; // ✅ ヘッダーアクションフックをインポート
 import { useCafeMapModals } from "../hooks/useCafeMapModals"; // ✅ カフェマップモーダルフックをインポート
 import { useCafeMapAssign } from "../hooks/useCafeMapAssign"; // ✅ カフェマップアサインフックをインポート
+import { useMapActions } from "../hooks/useMapActions"; // ✅ マップアクションフックをインポート
 // Utils
 import { requireMapSelected } from "../utils/mapUtils";
 
@@ -36,7 +38,7 @@ const HomePage: React.FC = () => {
   const {
     isCafeMapAssignModalOpen, openCafeMapAssignModal, closeCafeMapAssignModal,
   } = useCafeMapModals();
-  
+
   // 状態管理
   const [selectedCafeId, setSelectedCafeId] = useState<number | null>(null);
   const [selectedMapId, setSelectedMapId] = useState<number | null>(selectedMap?.id ?? null);
@@ -44,11 +46,14 @@ const HomePage: React.FC = () => {
   const [isSearchResultOpen, setIsSearchResultOpen] = useState(false); // ✅ 検索パネル表示用
   const [shareUuid, setShareUuid] = useState<string | null>(null);
   const [isMapListOpen, setIsMapListOpen] = useState(false); // ✅ mapモーダル状態
+  const [isMapCreateOpen, setIsMapCreateOpen] = useState(false); // ✅ マップ作成モーダル状態
 
   const { handleAddToMaps } = useCafeMapAssign(
     selectedSearchedCafe || selectedRegisteredCafe,
     setMyCafeList
   );
+
+  const { createNewMap } = useMapActions(); // ✅ マップアクションフックからマップ作成関数を取得
 
   const closeCafeListPanel = () => {
     setIsMyCafeListOpen(false)
@@ -107,10 +112,17 @@ const HomePage: React.FC = () => {
           onClose={() => setIsMapListOpen(false)}
           onSelectMap={handleMapSelect}
           onSelectSharedMap={handleSharedMapSelect} // ✅ シェアマップ選択ハンドラを追加
-          selectedMapId={selectedMapId} 
+          selectedMapId={selectedMapId}
           setSelectedMapId={setSelectedMapId}
           setShareUuid={setShareUuid} // ✅ シェアマップのUUIDをセットする関数
         />
+
+      {/* ✅ マップ作成モーダル */}
+      <MapCreateModal
+        isOpen={isMapCreateOpen}
+        onClose={() => setIsMapCreateOpen(false)}
+        createMap={createNewMap}
+      />
 
       {/* 検索結果パネル */}
       <SearchResultPanel
@@ -143,14 +155,14 @@ const HomePage: React.FC = () => {
 
       {/* Map */}
       <div className="flex-grow">
-        <Map 
+        <Map
           cafes={
             mapMode === MAP_MODES.mycafe
               ? myCafeList
               : mapMode === MAP_MODES.share
               ? sharedMapCafeList
               : searchResultCafes
-          }          
+          }
           onCafeIconClick={(cafe) => {
             if (mapMode === MAP_MODES.mycafe || mapMode === MAP_MODES.share) {
               setSelectedRegisteredCafe(cafe);
@@ -165,6 +177,7 @@ const HomePage: React.FC = () => {
             setIsSearchResultOpen(true); // ✅ 検索結果パネル表示
           }}
           shareUuid={shareUuid} // ✅ シェアマップのUUIDを渡す
+          onCreateMapClick={() => setIsMapCreateOpen(true)} // ✅ マップ作成ボタンクリック時の処理
         />
       </div>
 

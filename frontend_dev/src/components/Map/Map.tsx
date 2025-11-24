@@ -21,10 +21,11 @@ import type { Custom } from "../../types/custom"; // ✅ Custom型をインポ�
 interface MapProps {
   cafes: Cafe[];
   onCafeIconClick: (cafe: Cafe) => void;
-  selectedCafeId: number | null; 
-  setSelectedCafeId: (id: number | null) => void; 
+  selectedCafeId: number | null;
+  setSelectedCafeId: (id: number | null) => void;
   setSearchResultCafes: (cafes: Cafe[]) => void; // ✅ 検索結果をセットする関数
   shareUuid: string | null; // ✅ シェアマップのUUIDをセットする関数
+  onCreateMapClick?: () => void; // ✅ マップ作成ボタンクリック時のコールバック
 }
 
 
@@ -34,7 +35,8 @@ const Map: React.FC<MapProps> = ({
   selectedCafeId,
   setSelectedCafeId,
   setSearchResultCafes,
-  shareUuid
+  shareUuid,
+  onCreateMapClick
 }) => {
   const { mapMode, selectedMap, setSelectedMap, setMapList } = useMap(); // ✅ setMapListも取得
   const { registerSharedMap } = useMapActions();
@@ -213,6 +215,17 @@ const Map: React.FC<MapProps> = ({
           onCustomApplied={handleCustomApplied} // ✅ Custom適用後のコールバックを渡す
           initialCustomId={selectedMap?.custom_id} // ✅ 初期選択するCustomIDを渡す
         />
+      )}
+
+      {/* ✅ 右下のマップ作成ボタン */}
+      {onCreateMapClick && (
+        <button
+          onClick={onCreateMapClick}
+          className="absolute bottom-20 md:bottom-6 right-6 z-10 w-14 h-14 bg-[#FFC800] text-white rounded-full shadow-lg hover:bg-[#D8A900] transition-colors flex items-center justify-center text-2xl font-bold cursor-pointer"
+          aria-label="新しいマップを作成"
+        >
+          +
+        </button>
       )}
 
       <GoogleMap
