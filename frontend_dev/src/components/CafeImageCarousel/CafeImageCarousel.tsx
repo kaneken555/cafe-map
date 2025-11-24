@@ -23,7 +23,7 @@ const CafeImageCarousel: React.FC<CafeImageCarouselProps> = ({ photoUrls, altTex
       <img
         src={photoUrls[currentIndex]}
         alt={altText}
-        className="rounded-xl w-full object-cover"
+        className="rounded-xl w-full max-h-65 object-cover"
       />
 
       {/* ← / → ボタン */}
