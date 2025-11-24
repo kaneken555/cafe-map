@@ -63,7 +63,7 @@ const CafeDetailCard: React.FC<CafeDetailCardProps> = ({
   return (
     <div className="h-[calc(100vh-4rem-2rem)] flex flex-col px-2">
       {/* タイトルとアクションボタン（お気に入り・共有） */}
-      <div className="flex justify-between items-start mt-4 mb-3">
+      <div className="flex justify-between items-start mt-4 mb-1">
         <div>
           <h2 className="text-lg sm:text-xl font-bold">{cafe.name}</h2>
           {/* <h3 className="text-xl font-black">{cafe.name_en}</h3> */}
@@ -104,7 +104,7 @@ const CafeDetailCard: React.FC<CafeDetailCardProps> = ({
 
       <div className="overflow-y-auto flex-1 pr-1">
         {/* 営業情報とGoogle Mapリンク */}
-        <div className="mt-3 flex justify-between items-start">
+        <div className="mt-1 flex justify-between items-start">
           {/* 左側：営業情報 */}
           <div className="text-xs sm:text-sm text-gray-800">
             {/* <div className="flex space-x-4"> */}
