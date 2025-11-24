@@ -9,6 +9,7 @@ import { useAuth } from "../../contexts/AuthContext";
 
 interface LoginMenuProps {
   isOpen: boolean;
+  onClose: () => void;
   onGuestLogin: () => void;
   onGoogleLogin: () => void;
   onLogout: () => void;
@@ -17,6 +18,7 @@ interface LoginMenuProps {
 
 const LoginMenu: React.FC<LoginMenuProps> = ({
   isOpen,
+  onClose,
   onGuestLogin,
   onGoogleLogin,
   onLogout,
@@ -35,39 +37,51 @@ const LoginMenu: React.FC<LoginMenuProps> = ({
   );
 
   return (
-    <div className="absolute right-0 mt-2 w-64 bg-white border rounded shadow-lg z-50">
-      {!user ? (
-        <>
-          <button className={menuButtonClass} onClick={onGuestLogin}>
-            <UserIcon size={16} />
-            <span>ゲストユーザーとしてログイン</span>
-          </button>
-          <button className={menuButtonClass} onClick={onGoogleLogin}>
-            <LogIn size={16} />
-            <span>Googleアカウントでログイン</span>
-          </button>
-        </>
-      ) : (
-        <>
-          {/* ✅ ログイン中ならグループボタンを表示 */}
-          <button className={menuButtonClass} onClick={onOpenGroupList}>
-            <Users size={16} />
-            <span>グループ</span>
-          </button>
+    <>
+      {/* 背景オーバーレイ */}
+      <div
+        className="fixed inset-0 z-40"
+        onClick={onClose}
+      />
 
-          <button className={menuButtonClass} onClick={() => navigate("/analyze")}>
-            <BarChart3 size={16} />
-            <span>アナライズ</span>
-          </button>
+      {/* メニュー本体 */}
+      <div
+        className="absolute right-0 mt-2 w-64 bg-white border rounded shadow-lg z-50"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {!user ? (
+          <>
+            <button className={menuButtonClass} onClick={onGuestLogin}>
+              <UserIcon size={16} />
+              <span>ゲストユーザーとしてログイン</span>
+            </button>
+            <button className={menuButtonClass} onClick={onGoogleLogin}>
+              <LogIn size={16} />
+              <span>Googleアカウントでログイン</span>
+            </button>
+          </>
+        ) : (
+          <>
+            {/* ✅ ログイン中ならグループボタンを表示 */}
+            <button className={menuButtonClass} onClick={onOpenGroupList}>
+              <Users size={16} />
+              <span>グループ</span>
+            </button>
 
-          <button className={menuButtonClass} onClick={onLogout}>
-            <ArrowRightToLine size={16} />
-            <span>ログアウト</span>
-          </button>
-        </>
+            <button className={menuButtonClass} onClick={() => navigate("/analyze")}>
+              <BarChart3 size={16} />
+              <span>アナライズ</span>
+            </button>
 
-      )}
-    </div>
+            <button className={menuButtonClass} onClick={onLogout}>
+              <ArrowRightToLine size={16} />
+              <span>ログアウト</span>
+            </button>
+          </>
+
+        )}
+      </div>
+    </>
   );
 };
 
