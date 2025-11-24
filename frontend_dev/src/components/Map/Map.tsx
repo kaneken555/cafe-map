@@ -17,7 +17,7 @@ import darkJson from "../../assets/mapstyles/dark.json";                       /
 import monoJson from "../../assets/mapstyles/mono.json";                       // ★ 追加
 import { CustomApiClient } from "../../api/customApiClient"; // ✅ Custom APIクライアントをインポート
 import type { Custom } from "../../types/custom"; // ✅ Custom型をインポート
-import { Search, Settings, RefreshCw } from "lucide-react"; // ✅ アイコンをインポート
+import { Search, Settings, Loader2 } from "lucide-react"; // ✅ アイコンをインポート
 import SearchSettingsModal from "../SearchSettingsModal/SearchSettingsModal"; // ✅ 検索設定モーダルをインポート
 
 interface MapProps {
@@ -56,6 +56,9 @@ const Map: React.FC<MapProps> = ({
 
   // ✅ 検索設定モーダルの状態
   const [isSearchSettingsOpen, setIsSearchSettingsOpen] = useState(false);
+
+  // ✅ 検索中の状態
+  const [isSearching, setIsSearching] = useState(false);
 
   // ✅ Custom適用後にselectedMapとmapListのcustom_idを更新
   const handleCustomApplied = (customId: number) => {
@@ -153,19 +156,18 @@ const Map: React.FC<MapProps> = ({
   };
 
 
-  const handleSearchClick = async () => {
-    const center = getMapCenter();
-    if (!center) return;
-    await fetchCafes(center); // 通常検索
-
-  };
-
   // ✅ インライン検索用のハンドラー（キーワードをstateから取得）
   const handleInlineKeywordSearch = async () => {
     console.log("📡 キーワード検索実行:", keyword);
     const center = getMapCenter();
     if (!center) return;
-    await fetchCafes(center, keyword); // キーワード検索
+
+    setIsSearching(true);
+    try {
+      await fetchCafes(center, keyword); // キーワード検索
+    } finally {
+      setIsSearching(false);
+    }
   };
 
   const handleKeywordSearchClick = async (keyword: string) => {
@@ -206,11 +208,6 @@ const Map: React.FC<MapProps> = ({
           type="text"
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              handleInlineKeywordSearch();
-            }
-          }}
           placeholder="Search keyword..."
           className="w-64 px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
@@ -218,10 +215,15 @@ const Map: React.FC<MapProps> = ({
         {/* 検索アイコンボタン（検索実行） */}
         <button
           onClick={handleInlineKeywordSearch}
-          className="p-2 hover:bg-gray-100 rounded-md transition-colors"
+          disabled={isSearching}
+          className="p-2 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           aria-label="キーワード検索を実行"
         >
-          <Search className="w-5 h-5 text-blue-600" />
+          {isSearching ? (
+            <Loader2 className="w-5 h-5 text-blue-600 animate-spin" />
+          ) : (
+            <Search className="w-5 h-5 text-blue-600" />
+          )}
         </button>
 
         {/* 検索設定ボタン */}
@@ -231,15 +233,6 @@ const Map: React.FC<MapProps> = ({
           aria-label="検索設定を開く"
         >
           <Settings className="w-5 h-5 text-gray-600" />
-        </button>
-
-        {/* 更新アイコンボタン */}
-        <button
-          onClick={handleSearchClick}
-          className="p-2 hover:bg-gray-100 rounded-md transition-colors"
-          aria-label="マップを更新"
-        >
-          <RefreshCw className="w-5 h-5 text-green-600" />
         </button>
       </div>
 
