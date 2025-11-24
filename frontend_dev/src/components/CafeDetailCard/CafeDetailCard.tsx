@@ -115,7 +115,7 @@ const CafeDetailCard: React.FC<CafeDetailCardProps> = ({
               <span className="text-blue-600 font-semibold">{cafe.status}</span>
               {cafe.openTime && (
                 <span className="text-gray-600">
-                  営業時間: {getTodayOpenTime(cafe.openTime) ?? "不明"}
+                  {getTodayOpenTime(cafe.openTime) ?? "営業時間不明"}
                 </span>
               )}
             </div>
