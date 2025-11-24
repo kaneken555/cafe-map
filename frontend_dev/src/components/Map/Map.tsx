@@ -17,6 +17,8 @@ import darkJson from "../../assets/mapstyles/dark.json";                       /
 import monoJson from "../../assets/mapstyles/mono.json";                       // ★ 追加
 import { CustomApiClient } from "../../api/customApiClient"; // ✅ Custom APIクライアントをインポート
 import type { Custom } from "../../types/custom"; // ✅ Custom型をインポート
+import { Search, Settings, RefreshCw } from "lucide-react"; // ✅ アイコンをインポート
+import SearchSettingsModal from "../SearchSettingsModal/SearchSettingsModal"; // ✅ 検索設定モーダルをインポート
 
 interface MapProps {
   cafes: Cafe[];
@@ -48,6 +50,12 @@ const Map: React.FC<MapProps> = ({
 
   // ★ カスタマイズモーダルの状態
   const [isCustomizeOpen, setIsCustomizeOpen] = useState(false);
+
+  // ✅ キーワード検索用のstate（インライン入力欄）
+  const [keyword, setKeyword] = useState("");
+
+  // ✅ 検索設定モーダルの状態
+  const [isSearchSettingsOpen, setIsSearchSettingsOpen] = useState(false);
 
   // ✅ Custom適用後にselectedMapとmapListのcustom_idを更新
   const handleCustomApplied = (customId: number) => {
@@ -152,6 +160,14 @@ const Map: React.FC<MapProps> = ({
 
   };
 
+  // ✅ インライン検索用のハンドラー（キーワードをstateから取得）
+  const handleInlineKeywordSearch = async () => {
+    console.log("📡 キーワード検索実行:", keyword);
+    const center = getMapCenter();
+    if (!center) return;
+    await fetchCafes(center, keyword); // キーワード検索
+  };
+
   const handleKeywordSearchClick = async (keyword: string) => {
     console.log("📡 キーワード検索実行:", keyword);
     const center = getMapCenter();
@@ -180,11 +196,55 @@ const Map: React.FC<MapProps> = ({
         />
       )}
 
-      {/* ボタン表示 */}
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 flex space-x-4">
-        <MapButton label="更新" onClick={handleSearchClick} />
-        <MapButton label="キーワード検索" onClick={() => setIsKeywordSearchOpen(true)} />
-        {/* ★ カスタマイズを追加 */}
+      {/* ✅ 新しいボタンレイアウト：[検索アイコン][キーワード入力欄][検索アイコン][設定][更新アイコン] */}
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 flex items-center space-x-2 bg-white rounded-lg shadow-lg px-4 py-2">
+        {/* 検索アイコン（装飾） */}
+        {/* <Search className="w-5 h-5 text-gray-500" /> */}
+
+        {/* キーワード入力欄 */}
+        <input
+          type="text"
+          value={keyword}
+          onChange={(e) => setKeyword(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              handleInlineKeywordSearch();
+            }
+          }}
+          placeholder="Search keyword..."
+          className="w-64 px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+
+        {/* 検索アイコンボタン（検索実行） */}
+        <button
+          onClick={handleInlineKeywordSearch}
+          className="p-2 hover:bg-gray-100 rounded-md transition-colors"
+          aria-label="キーワード検索を実行"
+        >
+          <Search className="w-5 h-5 text-blue-600" />
+        </button>
+
+        {/* 検索設定ボタン */}
+        <button
+          onClick={() => setIsSearchSettingsOpen(true)}
+          className="p-2 hover:bg-gray-100 rounded-md transition-colors"
+          aria-label="検索設定を開く"
+        >
+          <Settings className="w-5 h-5 text-gray-600" />
+        </button>
+
+        {/* 更新アイコンボタン */}
+        <button
+          onClick={handleSearchClick}
+          className="p-2 hover:bg-gray-100 rounded-md transition-colors"
+          aria-label="マップを更新"
+        >
+          <RefreshCw className="w-5 h-5 text-green-600" />
+        </button>
+      </div>
+
+      {/* ★ カスタマイズボタン（別の場所に配置） */}
+      <div className="absolute top-20 left-1/2 -translate-x-1/2 z-10">
         <MapButton label="カスタマイズ" onClick={() => setIsCustomizeOpen(true)} />
       </div>
 
@@ -214,6 +274,14 @@ const Map: React.FC<MapProps> = ({
           selectedMapId={selectedMap?.id} // ✅ selectedMapIdを渡す
           onCustomApplied={handleCustomApplied} // ✅ Custom適用後のコールバックを渡す
           initialCustomId={selectedMap?.custom_id} // ✅ 初期選択するCustomIDを渡す
+        />
+      )}
+
+      {/* ✅ 検索設定モーダル */}
+      {isSearchSettingsOpen && (
+        <SearchSettingsModal
+          isOpen={isSearchSettingsOpen}
+          onClose={() => setIsSearchSettingsOpen(false)}
         />
       )}
 
