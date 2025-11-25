@@ -201,13 +201,13 @@ const MapCustomizeModal: React.FC<Props> = ({ value, onChange, onClose, previewP
       {/* backdrop */}
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
       {/* panel */}
-      <div className="relative z-10 w-[900px] max-w-[95vw] rounded-xl bg-white p-5 shadow-lg max-h-[90vh] overflow-y-auto">
+      <div className="relative z-10 w-[900px] max-w-[95vw] rounded-xl bg-white p-3 shadow-lg max-h-[90vh] overflow-y-auto">
         <CloseModalButton onClose={onClose} />
-        <h2 className="mb-4 text-lg font-semibold">表示カスタマイズ</h2>
+        <h2 className="mb-2 text-lg font-semibold">表示カスタマイズ</h2>
 
         {/* ✅ Custom選択セクション */}
-        <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-          <label className="block text-sm font-medium mb-2">カスタマイズプリセット</label>
+        <div className="mb-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
+          <label className="block text-sm font-medium mb-1">カスタマイズプリセット</label>
           <div className="flex gap-2">
             <select
               className="flex-1 rounded border p-2 text-sm md:text-base"
@@ -252,14 +252,14 @@ const MapCustomizeModal: React.FC<Props> = ({ value, onChange, onClose, previewP
               <Trash2 className="w-5 h-5" />
             </button>
           </div>
-          <p className="text-xs text-gray-500 mt-2">
+          <p className="text-xs text-gray-500 mt-1">
             プリセットから選択するか、下の設定を変更して新規作成できます
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {/* 左：フォーム */}
-          <div className="space-y-4">
+          <div className="space-y-2">
             {/* スタイル */}
             <div>
               <label className="block text-sm font-medium mb-1">マップスタイル</label>
@@ -329,9 +329,9 @@ const MapCustomizeModal: React.FC<Props> = ({ value, onChange, onClose, previewP
             </div>
 
             {/* レイヤー */}
-            <fieldset className="border rounded p-3">
-              <legend className="text-sm font-medium">レイヤー</legend>
-              <div className="mt-1 flex flex-wrap gap-4">
+            <fieldset className="border rounded p-2">
+              <legend className="text-sm font-medium px-1">レイヤー</legend>
+              <div className="flex flex-wrap gap-3">
                 <label className="flex items-center gap-2 text-sm md:text-base">
                   <input
                     type="checkbox"
@@ -368,16 +368,16 @@ const MapCustomizeModal: React.FC<Props> = ({ value, onChange, onClose, previewP
 
           {/* 右：ライブプレビュー */}
           <div>
-            <div className="mb-2 text-sm font-medium text-gray-700 flex items-center justify-between">
+            <div className="mb-1 text-sm font-medium text-gray-700 flex items-center justify-between">
               <span>プレビュー</span>
               <span className="text-xs text-gray-500">{dirty ? "未保存の変更があります" : "保存済み"}</span>
             </div>
             <MapPreview options={local} points={previewPoints} height={previewHeight} />
-            <p className="text-xs text-gray-500 mt-2">※ Google Maps API が未ロードの場合は簡易プレビューで表示されます。</p>
+            <p className="text-xs text-gray-500 mt-1">※ Google Maps API が未ロードの場合は簡易プレビューで表示されます。</p>
           </div>
         </div>
 
-        <div className="mt-5 flex flex-wrap justify-end gap-2">
+        <div className="mt-3 flex flex-wrap justify-end gap-2">
           <button className="rounded border px-4 py-2 text-sm md:text-base" onClick={reset} disabled={!dirty}>
             リセット
           </button>
