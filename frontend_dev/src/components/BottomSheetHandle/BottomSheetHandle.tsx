@@ -12,7 +12,7 @@ const BottomSheetHandle: React.FC<BottomSheetHandleProps> = ({
 }) => {
   return (
     <div
-      className="flex flex-col items-center py-2 cursor-pointer"
+      className="flex flex-col items-center py-2 cursor-pointer border-b border-gray-200"
       onClick={onClick}
     >
       {/* Chevron icon */}
