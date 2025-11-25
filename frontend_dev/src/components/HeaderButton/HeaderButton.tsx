@@ -20,6 +20,8 @@ const HeaderButton: React.FC<HeaderButtonProps> = ({ onClick, disabled, icon, la
       disabled={disabled}
       className={clsx(
         "flex items-center justify-center border rounded",
+        // ✅ フォーカス状態の視覚化
+        "focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all",
         // ✅ 表示方向に応じてクラスを切り替え
         {
           "flex-col": orientation === "vertical",
@@ -32,8 +34,8 @@ const HeaderButton: React.FC<HeaderButtonProps> = ({ onClick, disabled, icon, la
         },
         {
           "bg-gray-300 text-gray-500 border-gray-400 cursor-not-allowed": disabled,
-          "bg-blue-500 text-white border-blue-600": !disabled && active,
-          "bg-white text-black border-black hover:bg-gray-100 cursor-pointer": !disabled && !active,
+          "bg-blue-500 text-white border-blue-600 focus:ring-blue-500": !disabled && active,
+          "bg-white text-black border-black hover:bg-gray-100 cursor-pointer focus:ring-gray-400": !disabled && !active,
         }
       )}
     >
