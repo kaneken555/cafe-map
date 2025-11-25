@@ -6,6 +6,7 @@ import type { Custom } from "../../types/custom";
 import { toast } from "react-hot-toast";
 import { Plus, Trash2 } from "lucide-react"; // ✅ アイコンをインポート
 import CloseModalButton from "../CloseModalButton/CloseModalButton"; // ✅ 閉じるボタンをインポート
+import { useIsMobile } from "../../hooks/useMediaQuery";
 
 interface Props {
   value: MapDisplayOptions;
@@ -34,19 +35,21 @@ const iconVariants: { label: string; value: IconVariant }[] = [
 const MapCustomizeModal: React.FC<Props> = ({ value, onChange, onClose, previewPoints, selectedMapId, onCustomApplied, initialCustomId }) => {
   const [local, setLocal] = useState<MapDisplayOptions>(value);
   const dirty = useMemo(() => JSON.stringify(local) !== JSON.stringify(value), [local, value]);
+  const isMobile = useIsMobile();
 
   // ✅ Custom選択機能
   const [customs, setCustoms] = useState<Custom[]>([]);
   const [selectedCustomId, setSelectedCustomId] = useState<number | null>(initialCustomId ?? null);
   const [loading, setLoading] = useState(false);
+  const [showPresets, setShowPresets] = useState(false); // プリセットセクションの表示状態
 
   // ✅ プレビューの高さをレスポンシブ対応
   const [previewHeight, setPreviewHeight] = useState<number>(300);
 
   useEffect(() => {
     const updatePreviewHeight = () => {
-      // 768px (md) 未満の場合は200px、以上の場合は300px
-      setPreviewHeight(window.innerWidth < 768 ? 200 : 300);
+      // 768px (md) 未満の場合は150px、以上の場合は300px
+      setPreviewHeight(window.innerWidth < 768 ? 150 : 300);
     };
 
     updatePreviewHeight();
@@ -201,14 +204,29 @@ const MapCustomizeModal: React.FC<Props> = ({ value, onChange, onClose, previewP
       {/* backdrop */}
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
       {/* panel */}
-      <div className="relative z-10 w-[900px] max-w-[95vw] rounded-xl bg-white p-3 shadow-lg max-h-[90vh] overflow-y-auto">
+      <div className={`relative z-10 w-[900px] max-w-[95vw] rounded-xl bg-white p-3 shadow-lg overflow-y-auto ${
+        isMobile ? "max-h-[calc(90vh-3.5rem)]" : "max-h-[90vh]"
+      }`}>
         <CloseModalButton onClose={onClose} />
         <h2 className="mb-2 text-lg font-semibold">表示カスタマイズ</h2>
 
-        {/* ✅ Custom選択セクション */}
-        <div className="mb-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
-          <label className="block text-sm font-medium mb-1">カスタマイズプリセット</label>
-          <div className="flex gap-2">
+        {/* ✅ Custom選択セクション - 折りたたみ対応 */}
+        <div className="mb-4">
+          <button
+            onClick={() => setShowPresets(!showPresets)}
+            className="w-full flex items-center justify-between px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded border border-gray-200 transition-colors"
+          >
+            <span className="text-xs font-medium">
+              カスタマイズプリセット {selectedCustomId && `(${customs.find(c => c.id === selectedCustomId)?.name || '選択中'})`}
+            </span>
+            <span className="text-xs text-gray-600">
+              {showPresets ? '▲' : '▼'}
+            </span>
+          </button>
+
+          {showPresets && (
+            <div className="mt-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
+              <div className="flex gap-2">
             <select
               className="flex-1 rounded border p-2 text-sm md:text-base"
               value={selectedCustomId?.toString() || "none"}
@@ -255,6 +273,8 @@ const MapCustomizeModal: React.FC<Props> = ({ value, onChange, onClose, previewP
           <p className="text-xs text-gray-500 mt-1">
             プリセットから選択するか、下の設定を変更して新規作成できます
           </p>
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
