@@ -4,7 +4,7 @@ import { MapPreview } from "./MapPreview";
 import { CustomApiClient } from "../../api/customApiClient";
 import type { Custom } from "../../types/custom";
 import { toast } from "react-hot-toast";
-import { Plus, Trash2 } from "lucide-react"; // ✅ アイコンをインポート
+import { Plus, Trash2, ChevronUp, ChevronDown } from "lucide-react"; // ✅ アイコンをインポート
 import CloseModalButton from "../CloseModalButton/CloseModalButton"; // ✅ 閉じるボタンをインポート
 import { useIsMobile } from "../../hooks/useMediaQuery";
 
@@ -41,10 +41,10 @@ const MapCustomizeModal: React.FC<Props> = ({ value, onChange, onClose, previewP
   const [customs, setCustoms] = useState<Custom[]>([]);
   const [selectedCustomId, setSelectedCustomId] = useState<number | null>(initialCustomId ?? null);
   const [loading, setLoading] = useState(false);
-  const [showPresets, setShowPresets] = useState(false); // プリセットセクションの表示状態
 
   // ✅ プレビューの高さをレスポンシブ対応
   const [previewHeight, setPreviewHeight] = useState<number>(300);
+  const [showPreview, setShowPreview] = useState<boolean>(true);
 
   useEffect(() => {
     const updatePreviewHeight = () => {
@@ -210,25 +210,12 @@ const MapCustomizeModal: React.FC<Props> = ({ value, onChange, onClose, previewP
         <CloseModalButton onClose={onClose} />
         <h2 className="mb-2 text-lg font-semibold">表示カスタマイズ</h2>
 
-        {/* ✅ Custom選択セクション - 折りたたみ対応 */}
-        <div className="mb-4">
-          <button
-            onClick={() => setShowPresets(!showPresets)}
-            className="w-full flex items-center justify-between px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded border border-gray-200 transition-colors"
-          >
-            <span className="text-xs font-medium">
-              カスタマイズプリセット {selectedCustomId && `(${customs.find(c => c.id === selectedCustomId)?.name || '選択中'})`}
-            </span>
-            <span className="text-xs text-gray-600">
-              {showPresets ? '▲' : '▼'}
-            </span>
-          </button>
-
-          {showPresets && (
-            <div className="mt-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
-              <div className="flex gap-2">
+        {/* ✅ Custom選択セクション */}
+        <div className="mb-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
+          <label className="block text-sm font-medium mb-1">カスタマイズプリセット</label>
+          <div className="flex gap-2">
             <select
-              className="flex-1 rounded border p-2 text-sm md:text-base"
+              className="flex-1 rounded border p-1 md:p-2 text-sm md:text-base"
               value={selectedCustomId?.toString() || "none"}
               onChange={(e) => handleCustomSelect(e.target.value)}
               disabled={loading}
@@ -251,7 +238,7 @@ const MapCustomizeModal: React.FC<Props> = ({ value, onChange, onClose, previewP
             </select>
             {/* 新規作成アイコンボタン */}
             <button
-              className="p-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:bg-gray-400 transition-colors cursor-pointer"
+              className="p-1 md:p-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:bg-gray-400 transition-colors cursor-pointer"
               onClick={handleCreateCustom}
               disabled={loading}
               aria-label="新規作成"
@@ -261,7 +248,7 @@ const MapCustomizeModal: React.FC<Props> = ({ value, onChange, onClose, previewP
             </button>
             {/* 削除アイコンボタン */}
             <button
-              className="p-2 bg-red-600 text-white rounded hover:bg-red-700 disabled:bg-gray-400 transition-colors cursor-pointer"
+              className="p-1 md:p-2 bg-red-600 text-white rounded hover:bg-red-700 disabled:bg-gray-400 transition-colors cursor-pointer"
               onClick={handleDeleteCustom}
               disabled={!selectedCustomId || loading || customs.find(c => c.id === selectedCustomId)?.is_public}
               aria-label="削除"
@@ -273,8 +260,6 @@ const MapCustomizeModal: React.FC<Props> = ({ value, onChange, onClose, previewP
           <p className="text-xs text-gray-500 mt-1">
             プリセットから選択するか、下の設定を変更して新規作成できます
           </p>
-            </div>
-          )}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -284,7 +269,7 @@ const MapCustomizeModal: React.FC<Props> = ({ value, onChange, onClose, previewP
             <div>
               <label className="block text-sm font-medium mb-1">マップスタイル</label>
               <select
-                className="w-full rounded border p-2 text-sm md:text-base"
+                className="w-full rounded border p-1 md:p-2 text-sm md:text-base"
                 value={local.style}
                 onChange={(e) => setLocal({ ...local, style: e.target.value as MapStyleKey })}
               >
@@ -300,7 +285,7 @@ const MapCustomizeModal: React.FC<Props> = ({ value, onChange, onClose, previewP
             <div>
               <label className="block text-sm font-medium mb-1">アイコン表現</label>
               <select
-                className="w-full rounded border p-2 text-sm md:text-base"
+                className="w-full rounded border p-1 md:p-2 text-sm md:text-base"
                 value={local.iconVariant}
                 onChange={(e) => setLocal({ ...local, iconVariant: e.target.value as IconVariant })}
               >
@@ -325,16 +310,20 @@ const MapCustomizeModal: React.FC<Props> = ({ value, onChange, onClose, previewP
             {/* アイコンサイズ */}
             <div>
               <label className="block text-sm font-medium mb-1">アイコンサイズ</label>
-              <input
-                type="range"
-                min={24}
-                max={96}
-                step={4}
-                value={local.iconSize}
-                onChange={(e) => setLocal({ ...local, iconSize: Number(e.target.value) })}
-                className="w-full accent-blue-500"
-              />
-              <p className="text-xs text-gray-600 mt-1">{local.iconSize}px</p>
+              <div className="flex items-center gap-3">
+                <input
+                  type="range"
+                  min={24}
+                  max={96}
+                  step={4}
+                  value={local.iconSize}
+                  onChange={(e) => setLocal({ ...local, iconSize: Number(e.target.value) })}
+                  className="flex-1 accent-blue-500"
+                />
+                <span className="text-sm font-medium text-gray-700 min-w-[3rem]">
+                  {local.iconSize}px
+                </span>
+              </div>
             </div>
 
             {/* ラベル */}
@@ -390,10 +379,21 @@ const MapCustomizeModal: React.FC<Props> = ({ value, onChange, onClose, previewP
           <div>
             <div className="mb-1 text-sm font-medium text-gray-700 flex items-center justify-between">
               <span>プレビュー</span>
-              <span className="text-xs text-gray-500">{dirty ? "未保存の変更があります" : "保存済み"}</span>
+              <button
+                onClick={() => setShowPreview(!showPreview)}
+                className="text-xs text-blue-600 hover:text-blue-800 flex items-center gap-1 transition-colors"
+                aria-label={showPreview ? "プレビューを非表示" : "プレビューを表示"}
+              >
+                {showPreview ? "非表示" : "表示"}
+                {showPreview ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+              </button>
             </div>
-            <MapPreview options={local} points={previewPoints} height={previewHeight} />
-            <p className="text-xs text-gray-500 mt-1">※ Google Maps API が未ロードの場合は簡易プレビューで表示されます。</p>
+            {showPreview && (
+              <>
+                <MapPreview options={local} points={previewPoints} height={previewHeight} />
+                <p className="text-xs text-gray-500 mt-1">※ Google Maps API が未ロードの場合は簡易プレビューで表示されます。</p>
+              </>
+            )}
           </div>
         </div>
 
