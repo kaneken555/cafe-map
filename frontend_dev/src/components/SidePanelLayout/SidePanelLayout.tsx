@@ -72,19 +72,19 @@ const SidePanelLayout: React.FC<SidePanelLayoutProps> = ({
         `}
       >
         {isMobile ? (
-          <>
+          <div className="flex flex-col h-full">
             {/* Mobile: Handle bar */}
             <BottomSheetHandle
               onClick={handleHandleBarClick}
               state={sheetHeight}
             />
-            <div className="px-3 pb-3">
+            <div className="px-3 pb-3 flex-1 flex flex-col overflow-hidden">
               <div className="text-2xl font-bold mb-4">{title}</div>
-              <div className="overflow-y-auto" style={{ maxHeight: 'calc(100% - 4rem)' }}>
+              <div className="flex-1 overflow-y-auto">
                 {children}
               </div>
             </div>
-          </>
+          </div>
         ) : (
           <>
             {/* Desktop: Close button */}
