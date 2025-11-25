@@ -34,6 +34,7 @@ const FooterActions: React.FC<Props> = ({
         label="My Café List"
         active={isMyCafeListOpen}
         size="small"
+        orientation="horizontal"
       />
       <HeaderButton
         onClick={onShowMyCafeMap}
@@ -42,6 +43,7 @@ const FooterActions: React.FC<Props> = ({
         label="My Café Map"
         active={mapMode === "mycafe"}
         size="small"
+        orientation="horizontal"
       />
       <HeaderButton
         onClick={onOpenMapList}
@@ -50,6 +52,7 @@ const FooterActions: React.FC<Props> = ({
         label={selectedMap?.name || "My Map List"}
         active={!!selectedMap}
         size="small"
+        orientation="horizontal"
       />
     </div>
   );
