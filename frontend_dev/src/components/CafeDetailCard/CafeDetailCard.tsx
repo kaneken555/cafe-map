@@ -63,9 +63,9 @@ const CafeDetailCard: React.FC<CafeDetailCardProps> = ({
   return (
     <div className="h-[calc(100vh-4rem-2rem)] flex flex-col px-2">
       {/* タイトルとアクションボタン（お気に入り・共有） */}
-      <div className="flex justify-between items-start mt-4 mb-3">
+      <div className="flex justify-between items-start mt-4 mb-1">
         <div>
-          <h2 className="text-xl font-bold">{cafe.name}</h2>
+          <h2 className="text-lg sm:text-xl font-bold">{cafe.name}</h2>
           {/* <h3 className="text-xl font-black">{cafe.name_en}</h3> */}
         </div>
         <div className="flex space-x-2 mt-1">
@@ -104,9 +104,9 @@ const CafeDetailCard: React.FC<CafeDetailCardProps> = ({
 
       <div className="overflow-y-auto flex-1 pr-1">
         {/* 営業情報とGoogle Mapリンク */}
-        <div className="mt-3 flex justify-between items-start">
+        <div className="mt-1 flex justify-between items-start">
           {/* 左側：営業情報 */}
-          <div className="text-sm text-gray-800">
+          <div className="text-xs sm:text-sm text-gray-800">
             {/* <div className="flex space-x-4"> */}
               {/* <span>昼：{cafe.price_day || "不明"}</span> */}
               {/* <span>夜：{cafe.price_night || "不明"}</span> */}
@@ -115,7 +115,7 @@ const CafeDetailCard: React.FC<CafeDetailCardProps> = ({
               <span className="text-blue-600 font-semibold">{cafe.status}</span>
               {cafe.openTime && (
                 <span className="text-gray-600">
-                  営業時間: {getTodayOpenTime(cafe.openTime) ?? "不明"}
+                  {getTodayOpenTime(cafe.openTime) ?? "営業時間不明"}
                 </span>
               )}
             </div>

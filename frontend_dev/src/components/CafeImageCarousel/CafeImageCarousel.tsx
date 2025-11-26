@@ -18,12 +18,12 @@ const CafeImageCarousel: React.FC<CafeImageCarouselProps> = ({ photoUrls, altTex
   };
 
   return (
-    <div className="mt-4 relative">
+    <div className="mt-2 relative">
       {/* 現在の画像 */}
       <img
         src={photoUrls[currentIndex]}
         alt={altText}
-        className="rounded-xl w-full object-cover"
+        className="rounded-xl w-full max-h-65 object-cover"
       />
 
       {/* ← / → ボタン */}

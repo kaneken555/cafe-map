@@ -77,6 +77,7 @@ const UserMenu: React.FC<Props> = ({
       {/* ▼ ドロップダウンメニュー */}
       <LoginMenu
         isOpen={isOpen}
+        onClose={onToggle}
         onGuestLogin={onGuestLogin}
         onGoogleLogin={handleGoogleLogin}
         onLogout={onLogout}
