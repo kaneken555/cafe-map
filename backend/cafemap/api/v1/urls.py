@@ -29,6 +29,7 @@ urlpatterns = [
     path('fetch-cafes/keyword/', views.search_cafes_by_keyword, name='search_cafes_by_keyword'),
     path("get-cafe-photo", views.get_cafe_photo, name="get_cafe_photo"),
     path("fetch-cafe-detail/", views.get_cafe_detail, name="cafe_detail"),
+    path("fetch-cafes-details-batch/", views.get_cafe_details_batch, name="cafe_details_batch"),
     path('guest-login/', views.guest_login, name='guest-login'),
 
     # APIViewを使用したエンドポイント
