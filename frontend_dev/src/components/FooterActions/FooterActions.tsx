@@ -20,9 +20,6 @@ const FooterActions: React.FC<Props> = ({
   const { user } = useAuth();
   const { selectedMap } = useMap();
 
-  if (!user) return null;
-
-
   return (
     <div className="fixed bottom-0 w-full h-14 bg-white border-t border-gray-300 grid grid-cols-2 items-center md:hidden z-50">
       <HeaderButton

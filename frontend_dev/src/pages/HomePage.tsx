@@ -84,7 +84,7 @@ const HomePage: React.FC = () => {
 
 
   return (
-    <div className="flex flex-col h-screen w-full">
+    <div className="flex flex-col fixed inset-0 overflow-hidden">
       <Header
         closeCafeListPanel={() => setIsMyCafeListOpen(false)}
         isMyCafeListOpen={isMyCafeListOpen}
@@ -150,7 +150,7 @@ const HomePage: React.FC = () => {
       />
 
       {/* Map */}
-      <div className="flex-grow">
+      <div className="flex-grow pb-14 md:pb-0">
         <Map
           cafes={
             mapMode === MAP_MODES.mycafe
