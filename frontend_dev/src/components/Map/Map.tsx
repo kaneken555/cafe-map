@@ -40,7 +40,7 @@ const Map: React.FC<MapProps> = ({
   shareUuid,
   onCreateMapClick
 }) => {
-  const { mapMode, selectedMap, setSelectedMap, setMapList } = useMap(); // ✅ setMapListも取得
+  const { mapMode, selectedMap, setSelectedMap, setMapList, setMapMode } = useMap(); // ✅ setMapMode も取得
   const { registerSharedMap } = useMapActions();
   const { fetchCafes } = useCafeSearch(setSearchResultCafes);
 
@@ -236,8 +236,37 @@ const Map: React.FC<MapProps> = ({
         </button>
       </div>
 
+      {/* ✅ マップモード切り替えトグル（検索モード/マイカフェモード時のみ表示） */}
+      {mapMode !== MAP_MODES.share && (
+        <div className="absolute top-20 left-1/2 -translate-x-1/2 z-10 flex items-center bg-white rounded-lg shadow-lg overflow-hidden">
+          <button
+            onClick={() => setMapMode(MAP_MODES.search)}
+            className={`px-3 md:px-6 py-2 font-medium text-sm md:text-base whitespace-nowrap cursor-pointer transition-colors ${
+              mapMode === MAP_MODES.search
+                ? 'bg-blue-600 text-white'
+                : 'bg-white text-gray-600 hover:bg-gray-50'
+            }`}
+          >
+            検索結果
+          </button>
+          <button
+            onClick={() => selectedMap && setMapMode(MAP_MODES.mycafe)}
+            disabled={!selectedMap}
+            className={`px-3 md:px-6 py-2 font-medium text-sm md:text-base whitespace-nowrap transition-colors ${
+              mapMode === MAP_MODES.mycafe
+                ? 'bg-blue-600 text-white cursor-pointer'
+                : selectedMap
+                ? 'bg-white text-gray-600 hover:bg-gray-50 cursor-pointer'
+                : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+            }`}
+          >
+            登録カフェ
+          </button>
+        </div>
+      )}
+
       {/* ★ カスタマイズボタン（別の場所に配置） */}
-      <div className="absolute top-20 left-1/2 -translate-x-1/2 z-10">
+      <div className="absolute top-32 left-1/2 -translate-x-1/2 z-10">
         <MapButton label="カスタマイズ" onClick={() => setIsCustomizeOpen(true)} />
       </div>
 

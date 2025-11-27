@@ -33,7 +33,7 @@ const HomePage: React.FC = () => {
     searchResultCafes, setSearchResultCafes,
     selectedRegisteredCafe, setSelectedRegisteredCafe,
    } = useCafe(); // カフェコンテキストからcafeListとsetCafeListを取得
-  const { selectedMap, mapMode, setMapMode } = useMap(); // マップコンテキストからmapModeとsetMapModeを取得
+  const { selectedMap, mapMode } = useMap(); // マップコンテキストからmapModeを取得
 
   const {
     isCafeMapAssignModalOpen, openCafeMapAssignModal, closeCafeMapAssignModal,
@@ -81,9 +81,6 @@ const HomePage: React.FC = () => {
 
   const handleOpenCafeList = () =>
     requireMapSelected(selectedMap, () => setIsMyCafeListOpen(true));
-  
-  const handleShowMyCafeMap = () =>
-    requireMapSelected(selectedMap, () => setMapMode(MAP_MODES.mycafe));
 
 
   return (
@@ -93,7 +90,6 @@ const HomePage: React.FC = () => {
         isMyCafeListOpen={isMyCafeListOpen}
         setShareUuid={setShareUuid} // ✅ シェアマップのUUIDをセットする関数
         onOpenCafeList={handleOpenCafeList}
-        onShowMyCafeMap={handleShowMyCafeMap} // ✅ 追加
         onOpenMapList={handleOpenMapList} // ✅ 共通の関数を渡す
       />
       {/* マイカフェ一覧パネル */}
@@ -184,7 +180,6 @@ const HomePage: React.FC = () => {
       <FooterActions
         onOpenCafeList={handleOpenCafeList}
         onOpenMapList={handleOpenMapList} // ✅ 同じ関数を再利用
-        onShowMyCafeMap={handleShowMyCafeMap} // ✅ 追加
         isMyCafeListOpen={isMyCafeListOpen}
       />
 
