@@ -49,10 +49,6 @@ const WithProviders = () => {
     setIsMyCafeListOpen((prev) => !prev);
   };
 
-  const handleShowMyCafeMap = () => {
-    setMapMode("mycafe");
-  };
-
   const handleOpenMapList = () => {
     setSelectedMap((prev) => (prev ? null : mockMap));
   };
@@ -68,7 +64,6 @@ const WithProviders = () => {
         isMyCafeListOpen={isMyCafeListOpen}
         onOpenCafeList={handleCafeList}
         onOpenMapList={handleOpenMapList}
-        onShowMyCafeMap={handleShowMyCafeMap}
       />
 
       {/* ✅ mapMode 切り替えUI */}

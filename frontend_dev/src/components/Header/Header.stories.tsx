@@ -58,7 +58,6 @@ export const LoggedIn: Story = {
           isMyCafeListOpen={isMyCafeListOpen}
           setShareUuid={setShareUuid}
           onOpenCafeList={() => setIsMyCafeListOpen(true)}
-          onShowMyCafeMap={() => console.log("MyCafeMap表示")}
           onOpenMapList={() => console.log("MapList表示")}
         />
       </Wrapper>
@@ -79,7 +78,6 @@ export const NotLoggedIn: Story = {
           isMyCafeListOpen={isMyCafeListOpen}
           setShareUuid={setShareUuid}
           onOpenCafeList={() => setIsMyCafeListOpen(true)}
-          onShowMyCafeMap={() => console.log("MyCafeMap表示")}
           onOpenMapList={() => console.log("MapList表示")}
         />
       </Wrapper>
