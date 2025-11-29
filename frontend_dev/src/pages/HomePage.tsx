@@ -190,7 +190,7 @@ const HomePage: React.FC = () => {
       {/* マップ作成FAB */}
       <button
         onClick={() => setIsMapCreateOpen(true)}
-        className="fixed bottom-[136px] md:bottom-6 right-6 md:right-24 w-14 h-14 bg-[#FFC800] text-white rounded-full shadow-lg hover:bg-[#D8A900] transition-colors flex items-center justify-center text-2xl font-bold cursor-pointer z-50"
+        className="fixed bottom-[136px] md:bottom-6 right-6 md:right-24 w-14 h-14 bg-[#FFC800] text-white rounded-full shadow-lg hover:bg-[#D8A900] transition-colors flex items-center justify-center text-2xl font-bold cursor-pointer z-60"
         aria-label="新しいマップを作成"
       >
         +

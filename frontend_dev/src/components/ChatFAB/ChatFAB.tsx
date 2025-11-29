@@ -17,7 +17,7 @@ const ChatFAB: React.FC<ChatFABProps> = ({ onClick, isOpen }) => {
         transition-all duration-300 ease-in-out
         hover:scale-110 active:scale-95
         cursor-pointer
-        z-50
+        z-60
         ${isOpen
           ? 'bg-gray-600 hover:bg-gray-700'
           : 'bg-blue-600 hover:bg-blue-700'

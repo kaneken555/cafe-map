@@ -50,14 +50,14 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
     <>
       {/* Background overlay for mobile (click to close, but not darkened) */}
       {isMobile && isOpen && (
-        <div className="fixed inset-0 z-30" onClick={onClose} />
+        <div className="fixed inset-0 z-45" onClick={onClose} />
       )}
 
       {/* Panel/Bottom Sheet */}
       <div
         ref={panelRef}
         className={`
-          fixed bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-40
+          fixed bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-50
           ${isMobile
             ? `bottom-0 left-0 right-0 rounded-t-2xl ${getHeightClass()} ${
                 isOpen ? "translate-y-0" : "translate-y-full"
