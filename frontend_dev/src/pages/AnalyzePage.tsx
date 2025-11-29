@@ -135,7 +135,6 @@ const AnalyzePage: React.FC = () => {
           isMyCafeListOpen={false}
           setShareUuid={() => {}}
           onOpenCafeList={dummyFunction}
-          onShowMyCafeMap={dummyFunction}
           onOpenMapList={dummyFunction}
         />
         <div
@@ -176,7 +175,6 @@ const AnalyzePage: React.FC = () => {
         isMyCafeListOpen={false}
         setShareUuid={() => {}}
         onOpenCafeList={dummyFunction}
-        onShowMyCafeMap={dummyFunction}
         onOpenMapList={dummyFunction}
       />
       <div style={{ padding: "20px", maxWidth: "1200px", margin: "0 auto" }}>
