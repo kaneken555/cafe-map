@@ -4,7 +4,8 @@ from .models import (
     User, Cafe, Map, Tag, Memo, ShareMap, MapUserRelation, CafeMapRelation,
     CafeTagRelation, CafeMemoRelation, CafeShareMapRelation, Group,
     UserGroupRelation, GroupMapRelation, SharedMap, ShareChannel,
-    SharedMapAnalyzeLink, Custom, SystemSetting, UserCustomRelation
+    SharedMapAnalyzeLink, Custom, SystemSetting, UserCustomRelation,
+    ChatSession, ChatMessage
 )
 
 class UserAdmin(BaseUserAdmin):
@@ -171,3 +172,59 @@ class UserCustomRelationAdmin(admin.ModelAdmin):
     list_filter = ("custom__is_public", "created_at")
     readonly_fields = ("created_at",)
     ordering = ("-created_at",)
+
+
+# ==================== チャット機能 ====================
+
+@admin.register(ChatSession)
+class ChatSessionAdmin(admin.ModelAdmin):
+    list_display = ("id", "user", "title", "context_type", "is_active", "last_message_at", "created_at")
+    search_fields = ("user__name", "title")
+    list_filter = ("context_type", "is_active", "created_at")
+    readonly_fields = ("created_at", "updated_at", "last_message_at")
+    ordering = ("-last_message_at",)
+
+    fieldsets = (
+        ("基本情報", {
+            "fields": ("user", "map", "title")
+        }),
+        ("コンテキスト", {
+            "fields": ("context_type", "context_data")
+        }),
+        ("ステータス", {
+            "fields": ("is_active",)
+        }),
+        ("日時", {
+            "fields": ("created_at", "updated_at", "last_message_at")
+        }),
+    )
+
+
+@admin.register(ChatMessage)
+class ChatMessageAdmin(admin.ModelAdmin):
+    list_display = ("id", "session", "role", "content_preview", "tokens_used", "response_time_ms", "created_at")
+    search_fields = ("content", "session__user__name")
+    list_filter = ("role", "created_at")
+    readonly_fields = ("created_at",)
+    ordering = ("-created_at",)
+
+    fieldsets = (
+        ("基本情報", {
+            "fields": ("session", "role", "content")
+        }),
+        ("メタデータ", {
+            "fields": ("tokens_used", "response_time_ms", "model_name")
+        }),
+        ("コンテキスト連携", {
+            "fields": ("related_cafes", "related_location"),
+            "classes": ("collapse",)
+        }),
+        ("日時", {
+            "fields": ("created_at",)
+        }),
+    )
+
+    def content_preview(self, obj):
+        """コンテンツのプレビュー表示"""
+        return obj.content[:100] + "..." if len(obj.content) > 100 else obj.content
+    content_preview.short_description = "メッセージ内容"

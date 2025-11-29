@@ -18,6 +18,11 @@ from .views import (
     MapCustomAPIView,
     CustomListAPIView,
     CustomDetailAPIView,
+    # チャット関連
+    ChatSessionListAPIView,
+    ChatSessionDetailAPIView,
+    ChatMessageListAPIView,
+    ChatMessageCreateAPIView,
 )
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 
@@ -75,6 +80,12 @@ urlpatterns = [
     # カスタマイズ設定関連のルーティング
     path('customs/', CustomListAPIView.as_view(), name='custom-list'),
     path('customs/<int:pk>/', CustomDetailAPIView.as_view(), name='custom-detail'),
+
+    # チャット関連のルーティング
+    path('chat/sessions/', ChatSessionListAPIView.as_view(), name='chat-session-list'),
+    path('chat/sessions/<int:session_id>/', ChatSessionDetailAPIView.as_view(), name='chat-session-detail'),
+    path('chat/sessions/<int:session_id>/messages/', ChatMessageListAPIView.as_view(), name='chat-message-list'),
+    path('chat/messages/', ChatMessageCreateAPIView.as_view(), name='chat-message-create'),
 
     # OpenAPIスキーマ(JSON形式)
     path('schema/', SpectacularAPIView.as_view(), name='schema'),

@@ -340,3 +340,66 @@ SharedMap.add_to_class(
         blank=True
     )
 )
+
+
+# ==================== チャット機能 ====================
+
+class ChatSession(models.Model):
+    """チャットセッション（会話単位）"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='chat_sessions')
+    map = models.ForeignKey(Map, on_delete=models.SET_NULL, null=True, blank=True, related_name='chat_sessions')
+
+    # コンテキスト情報
+    context_type = models.CharField(max_length=50, default='general')  # general, cafe_search, map_creation
+    context_data = models.JSONField(null=True, blank=True)  # 位置情報、選択中のカフェIDなど
+
+    # メタ情報
+    title = models.CharField(max_length=255, blank=True, null=True)  # 自動生成または手動設定
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    last_message_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'chat_session'
+        indexes = [
+            models.Index(fields=['user', '-last_message_at']),
+            models.Index(fields=['user', 'is_active']),
+        ]
+
+    def __str__(self):
+        return f"{self.user.name} - {self.title or 'Untitled'} ({self.id})"
+
+
+class ChatMessage(models.Model):
+    """チャットメッセージ"""
+    ROLE_CHOICES = [
+        ('user', 'ユーザー'),
+        ('assistant', 'AI'),
+        ('system', 'システム'),
+    ]
+
+    session = models.ForeignKey(ChatSession, on_delete=models.CASCADE, related_name='messages')
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES)
+    content = models.TextField()
+
+    # メタデータ
+    tokens_used = models.IntegerField(null=True, blank=True)  # トークン数記録
+    response_time_ms = models.IntegerField(null=True, blank=True)  # 応答時間（ミリ秒）
+    model_name = models.CharField(max_length=50, null=True, blank=True)  # 使用モデル
+
+    # コンテキスト連携（フェーズ2用、今は未使用）
+    related_cafes = models.JSONField(null=True, blank=True)  # 関連カフェID配列
+    related_location = models.JSONField(null=True, blank=True)  # 緯度経度
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'chat_message'
+        indexes = [
+            models.Index(fields=['session', 'created_at']),
+        ]
+        ordering = ['created_at']
+
+    def __str__(self):
+        return f"{self.role}: {self.content[:50]}..."

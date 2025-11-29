@@ -1099,3 +1099,196 @@ class CustomDetailAPIView(APIView):
                 {"error": "カスタマイズ設定の削除に失敗しました"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+
+# ==================== チャット機能 ====================
+
+from cafemap.models import ChatSession, ChatMessage
+from cafemap.serializers.chat_serializer import (
+    ChatSessionSerializer,
+    ChatSessionDetailSerializer,
+    ChatMessageSerializer,
+    SendMessageSerializer
+)
+from cafemap.services.chat_services import (
+    get_sessions_for_user,
+    create_session_for_user,
+    get_session_messages,
+    delete_session,
+    process_chat_message
+)
+
+
+class ChatSessionListAPIView(APIView):
+    """チャットセッション一覧・作成"""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        """ユーザーのチャットセッション一覧を取得"""
+        try:
+            sessions = get_sessions_for_user(request.user)
+            serializer = ChatSessionSerializer(sessions, many=True)
+            return Response({'sessions': serializer.data}, status=status.HTTP_200_OK)
+        except Exception as e:
+            logger.error(f"セッション一覧取得エラー: {str(e)}")
+            return Response(
+                {"error": "セッション一覧の取得に失敗しました"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+    def post(self, request):
+        """新しいチャットセッションを作成"""
+        try:
+            context_type = request.data.get('context_type', 'general')
+            context_data = request.data.get('context_data')
+            map_id = request.data.get('map_id')
+
+            session = create_session_for_user(
+                user=request.user,
+                context_type=context_type,
+                context_data=context_data,
+                map_id=map_id
+            )
+
+            serializer = ChatSessionSerializer(session)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            logger.error(f"セッション作成エラー: {str(e)}")
+            return Response(
+                {"error": "セッションの作成に失敗しました"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+class ChatSessionDetailAPIView(APIView):
+    """チャットセッション詳細・削除"""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, session_id: int):
+        """セッション詳細を取得"""
+        try:
+            session = ChatSession.objects.get(id=session_id, user=request.user)
+            serializer = ChatSessionDetailSerializer(session)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except ChatSession.DoesNotExist:
+            return Response(
+                {"error": "セッションが見つかりません"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            logger.error(f"セッション詳細取得エラー: {str(e)}")
+            return Response(
+                {"error": "セッション詳細の取得に失敗しました"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+    def delete(self, request, session_id: int):
+        """セッションを削除"""
+        try:
+            success = delete_session(session_id, request.user)
+            if success:
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            else:
+                return Response(
+                    {"error": "セッションが見つかりません"},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+        except Exception as e:
+            logger.error(f"セッション削除エラー: {str(e)}")
+            return Response(
+                {"error": "セッションの削除に失敗しました"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+class ChatMessageListAPIView(APIView):
+    """チャットメッセージ一覧"""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, session_id: int):
+        """セッション内のメッセージ一覧を取得"""
+        try:
+            # セッションの存在確認と権限チェック
+            session = ChatSession.objects.get(id=session_id, user=request.user)
+
+            # クエリパラメータ
+            limit = request.GET.get('limit')
+            offset = int(request.GET.get('offset', 0))
+
+            if limit:
+                limit = int(limit)
+
+            messages = get_session_messages(session_id, limit=limit, offset=offset)
+            serializer = ChatMessageSerializer(messages, many=True)
+
+            return Response({
+                'messages': serializer.data,
+                'count': len(messages)
+            }, status=status.HTTP_200_OK)
+
+        except ChatSession.DoesNotExist:
+            return Response(
+                {"error": "セッションが見つかりません"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            logger.error(f"メッセージ一覧取得エラー: {str(e)}")
+            return Response(
+                {"error": "メッセージ一覧の取得に失敗しました"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+class ChatMessageCreateAPIView(APIView):
+    """チャットメッセージ送信"""
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        """メッセージを送信してAI応答を取得"""
+        try:
+            # リクエストデータのバリデーション
+            serializer = SendMessageSerializer(data=request.data)
+            if not serializer.is_valid():
+                return Response(
+                    {"error": "Invalid request data", "details": serializer.errors},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            validated_data = serializer.validated_data
+            session_id = validated_data['session_id']
+            content = validated_data['content']
+            context = validated_data.get('context')
+
+            # メッセージ処理
+            result = process_chat_message(
+                session_id=session_id,
+                user=request.user,
+                content=content,
+                context=context
+            )
+
+            # レスポンスをシリアライズ
+            user_message_serializer = ChatMessageSerializer(result['user_message'])
+            assistant_message_serializer = ChatMessageSerializer(result['assistant_message'])
+
+            return Response({
+                'user_message': user_message_serializer.data,
+                'assistant_message': assistant_message_serializer.data
+            }, status=status.HTTP_200_OK)
+
+        except ChatSession.DoesNotExist:
+            return Response(
+                {"error": "セッションが見つかりません"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except PermissionError as e:
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        except Exception as e:
+            logger.error(f"メッセージ送信エラー: {str(e)}")
+            return Response(
+                {"error": "メッセージの送信に失敗しました", "details": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
