@@ -16,6 +16,7 @@ import ChatPanel from "../components/ChatPanel/ChatPanel"; // ✅ チャット�
 import ChatUI from "../components/ChatUI/ChatUI"; // ✅ チャットUI
 import { AddActionFAB } from "../components/AddActionFAB"; // ✅ AddActionFAB
 import { CustomPlaceFormModal } from "../components/CustomPlaceFormModal"; // ✅ カスタム地点登録フォーム
+import CustomPlaceDetailPanel from "../components/CustomPlaceDetailPanel/CustomPlaceDetailPanel"; // ✅ カスタム地点詳細パネル
 
 import { MAP_MODES } from "../constants/map";
 import { MapItem, SharedMapItem } from "../types/map";
@@ -31,7 +32,7 @@ import { useMapActions } from "../hooks/useMapActions"; // ✅ マップアク�
 // Utils
 import { requireMapSelected } from "../utils/mapUtils";
 // Services
-import { getCustomPlacesByMap } from "../services/customPlaceService"; // ✅ カスタム地点取得サービス
+import { getCustomPlacesByMap, deleteCustomPlace } from "../services/customPlaceService"; // ✅ カスタム地点取得サービス
 
 
 const HomePage: React.FC = () => {
@@ -58,8 +59,11 @@ const HomePage: React.FC = () => {
   const [isChatOpen, setIsChatOpen] = useState(false); // ✅ チャットパネルの表示
   const [customPlaces, setCustomPlaces] = useState<CustomPlace[]>([]); // ✅ カスタム地点
   const [selectedCustomPlaceId, setSelectedCustomPlaceId] = useState<number | null>(null); // ✅ 選択中のカスタム地点ID
+  const [selectedCustomPlace, setSelectedCustomPlace] = useState<CustomPlace | null>(null); // ✅ 選択中のカスタム地点
   const [isCustomPlaceFormOpen, setIsCustomPlaceFormOpen] = useState(false); // ✅ カスタム地点登録フォーム表示
   const [customPlaceInitialLocation, setCustomPlaceInitialLocation] = useState<{ lat: number; lng: number } | undefined>(undefined); // ✅ カスタム地点の初期位置
+  const [isSelectingLocation, setIsSelectingLocation] = useState(false); // ✅ 位置選択モード
+  const [tempLocation, setTempLocation] = useState<{ lat: number; lng: number } | null>(null); // ✅ 仮の位置
 
   const { handleAddToMaps } = useCafeMapAssign(
     selectedSearchedCafe || selectedRegisteredCafe,
@@ -117,7 +121,7 @@ const HomePage: React.FC = () => {
   // ✅ カスタム地点クリックハンドラー
   const handleCustomPlaceClick = (place: CustomPlace) => {
     console.log("カスタム地点がクリックされました:", place);
-    // TODO: カスタム地点詳細パネルを実装する場合はここで設定
+    setSelectedCustomPlace(place);
     setSelectedCustomPlaceId(place.id);
   };
 
@@ -132,6 +136,46 @@ const HomePage: React.FC = () => {
         console.error("カスタム地点の再取得に失敗しました:", error);
       }
     }
+  };
+
+  // ✅ カスタム地点削除ハンドラー
+  const handleCustomPlaceDelete = async (place: CustomPlace) => {
+    if (!window.confirm(`「${place.name}」を削除してもよろしいですか？`)) {
+      return;
+    }
+
+    try {
+      await deleteCustomPlace(place.id);
+      setSelectedCustomPlace(null);
+      setSelectedCustomPlaceId(null);
+
+      // カスタム地点を再取得
+      if (selectedMap?.id) {
+        const response = await getCustomPlacesByMap(selectedMap.id);
+        setCustomPlaces(response.custom_places);
+      }
+    } catch (error) {
+      console.error("カスタム地点の削除に失敗しました:", error);
+      alert("カスタム地点の削除に失敗しました");
+    }
+  };
+
+  // ✅ 位置選択ハンドラー
+  const handleLocationSelected = (lat: number, lng: number) => {
+    // 緯度・経度を小数点以下6桁に丸める（約10cm単位の精度）
+    const roundedLat = Math.round(lat * 1000000) / 1000000;
+    const roundedLng = Math.round(lng * 1000000) / 1000000;
+
+    setIsSelectingLocation(false); // 位置選択モード終了
+    setTempLocation({ lat: roundedLat, lng: roundedLng }); // 仮ピンを表示
+    setCustomPlaceInitialLocation({ lat: roundedLat, lng: roundedLng }); // フォームに渡す初期位置を設定
+    setIsCustomPlaceFormOpen(true); // フォームを開く
+  };
+
+  // ✅ フォームを閉じたときに仮ピンをクリア
+  const handleCustomPlaceFormClose = () => {
+    setIsCustomPlaceFormOpen(false);
+    setTempLocation(null);
   };
 
   return (
@@ -228,6 +272,9 @@ const HomePage: React.FC = () => {
           onCustomPlaceClick={handleCustomPlaceClick} // ✅ カスタム地点クリックハンドラーを渡す
           selectedCustomPlaceId={selectedCustomPlaceId} // ✅ 選択中のカスタム地点IDを渡す
           setSelectedCustomPlaceId={setSelectedCustomPlaceId} // ✅ カスタム地点ID設定関数を渡す
+          isSelectingLocation={isSelectingLocation} // ✅ 位置選択モード
+          onLocationSelected={handleLocationSelected} // ✅ 位置選択ハンドラー
+          tempLocation={tempLocation} // ✅ 仮の位置
         />
       </div>
 
@@ -237,12 +284,33 @@ const HomePage: React.FC = () => {
         isMyCafeListOpen={isMyCafeListOpen}
       />
 
+      {/* ✅ 位置選択モードのガイダンス */}
+      {isSelectingLocation && (
+        <>
+          {/* ガイドメッセージ */}
+          <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 bg-blue-600 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2">
+            <span className="text-lg">📍</span>
+            <span className="font-medium">マップ上の位置をクリックしてください</span>
+          </div>
+
+          {/* キャンセルボタン */}
+          <button
+            onClick={() => {
+              setIsSelectingLocation(false);
+              setTempLocation(null);
+            }}
+            className="fixed bottom-24 md:bottom-6 right-6 z-50 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors shadow-lg"
+          >
+            キャンセル
+          </button>
+        </>
+      )}
+
       {/* ✅ AddActionFAB（マップ作成 + カスタム地点登録） */}
       <AddActionFAB
         onCreateMap={() => setIsMapCreateOpen(true)}
         onAddCustomPlace={() => {
-          setCustomPlaceInitialLocation(undefined); // 初期位置なし（フォームでマップ中心座標を使用）
-          setIsCustomPlaceFormOpen(true);
+          setIsSelectingLocation(true); // 位置選択モード開始
         }}
         isMapSelected={!!selectedMap}
       />
@@ -250,11 +318,25 @@ const HomePage: React.FC = () => {
       {/* ✅ カスタム地点登録フォームモーダル */}
       <CustomPlaceFormModal
         isOpen={isCustomPlaceFormOpen}
-        onClose={() => setIsCustomPlaceFormOpen(false)}
+        onClose={handleCustomPlaceFormClose}
         onSuccess={handleCustomPlaceSuccess}
         initialLocation={customPlaceInitialLocation}
         availableMaps={selectedMap ? [selectedMap] : []}
         defaultMapId={selectedMap?.id}
+      />
+
+      {/* ✅ カスタム地点詳細パネル */}
+      <CustomPlaceDetailPanel
+        customPlace={selectedCustomPlace}
+        onClose={() => {
+          setSelectedCustomPlace(null);
+          setSelectedCustomPlaceId(null);
+        }}
+        onEdit={() => {
+          // TODO: 編集機能は次のフェーズで実装
+          alert('編集機能は準備中です');
+        }}
+        onDelete={handleCustomPlaceDelete}
       />
 
       {/* チャットFAB */}

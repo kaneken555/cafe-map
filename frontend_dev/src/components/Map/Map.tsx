@@ -1,6 +1,6 @@
 // components/Map.tsx
 import React, { useState, useRef, useEffect } from "react";
-import { GoogleMap, TrafficLayer, TransitLayer, BicyclingLayer } from "@react-google-maps/api";
+import { GoogleMap, TrafficLayer, TransitLayer, BicyclingLayer, Marker } from "@react-google-maps/api";
 import MapButton from "../MapButton/MapButton";
 import CafeOverlayIcon from "../CafeOverlayIcon/CafeOverlayIcon"; // ✅ 切り出したカフェアイコン表示用コンポーネント
 import CustomPlaceOverlayIcon from "../CustomPlaceOverlayIcon/CustomPlaceOverlayIcon"; // ✅ カスタム地点アイコン表示用コンポーネント
@@ -33,6 +33,9 @@ interface MapProps {
   onCustomPlaceClick: (place: CustomPlace) => void; // ✅ カスタム地点クリック時のコールバック
   selectedCustomPlaceId: number | null; // ✅ 選択中のカスタム地点ID
   setSelectedCustomPlaceId: (id: number | null) => void; // ✅ カスタム地点IDをセットする関数
+  isSelectingLocation?: boolean; // ✅ 位置選択モード
+  onLocationSelected?: (lat: number, lng: number) => void; // ✅ 位置選択時のコールバック
+  tempLocation?: { lat: number; lng: number } | null; // ✅ 仮の位置（ピン表示用）
 }
 
 
@@ -47,6 +50,9 @@ const Map: React.FC<MapProps> = ({
   onCustomPlaceClick,
   selectedCustomPlaceId,
   setSelectedCustomPlaceId,
+  isSelectingLocation = false,
+  onLocationSelected,
+  tempLocation,
 }) => {
   const { mapMode, selectedMap, setSelectedMap, setMapList, setMapMode } = useMap(); // ✅ setMapMode も取得
   const { registerSharedMap } = useMapActions();
@@ -321,10 +327,20 @@ const Map: React.FC<MapProps> = ({
         zoom={15}
         onLoad={handleMapLoad}
         onUnmount={() => { mapRef.current = null; }}
+        onClick={(e) => {
+          // 位置選択モードの場合、クリック位置を親に通知
+          if (isSelectingLocation && e.latLng && onLocationSelected) {
+            const lat = e.latLng.lat();
+            const lng = e.latLng.lng();
+            onLocationSelected(lat, lng);
+          }
+        }}
         options={{
           mapTypeControl: false,
           streetViewControl: false,
           ...(MAP_STYLES[displayOptions.style] ? { styles: MAP_STYLES[displayOptions.style] } : {}),
+          // 位置選択モード時はカーソルを十字線に
+          ...(isSelectingLocation ? { draggableCursor: 'crosshair' } : {}),
         }}
       >
         {/* レイヤー */}
@@ -362,6 +378,22 @@ const Map: React.FC<MapProps> = ({
             }}
           />
         ))}
+
+        {/* ✅ 仮ピン表示（位置選択時） */}
+        {tempLocation && (
+          <Marker
+            position={{ lat: tempLocation.lat, lng: tempLocation.lng }}
+            icon={{
+              path: google.maps.SymbolPath.CIRCLE,
+              scale: 10,
+              fillColor: '#4285F4',
+              fillOpacity: 0.8,
+              strokeColor: '#ffffff',
+              strokeWeight: 2,
+            }}
+            animation={google.maps.Animation.DROP}
+          />
+        )}
 
         {/* TODO:
             displayOptions.clustering → MarkerClusterer に切替

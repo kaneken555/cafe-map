@@ -87,6 +87,11 @@ export const Default: Story = {
             }}
             selectedCustomPlaceId={selectedCustomPlaceId}
             setSelectedCustomPlaceId={setSelectedCustomPlaceId}
+            isSelectingLocation={false}
+            onLocationSelected={(lat, lng) => {
+              alert(`位置が選択されました: ${lat}, ${lng}`);
+            }}
+            tempLocation={null}
           />
         </div>
       </Wrapper>
