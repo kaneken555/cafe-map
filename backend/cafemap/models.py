@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.core.validators import MinValueValidator, MaxValueValidator
 import uuid
 
 
@@ -84,6 +85,97 @@ class CafeMapRelation(models.Model):
     map = models.ForeignKey(Map, on_delete=models.CASCADE)
     cafe = models.ForeignKey(Cafe, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+# ==================== カスタム地点 ====================
+
+class CustomPlace(models.Model):
+    """ユーザーが独自に登録する地点"""
+
+    PLACE_TYPE_CHOICES = [
+        ('photo_spot', '写真スポット'),
+        ('meeting_point', '待ち合わせ場所'),
+        ('viewpoint', '景色の良い場所'),
+        ('memorial', '記念碑・モニュメント'),
+        ('other', 'その他'),
+    ]
+
+    # 基本情報
+    owner = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='custom_places'
+    )
+    name = models.CharField(max_length=100)
+
+    # 位置情報
+    latitude = models.FloatField(
+        validators=[MinValueValidator(-90), MaxValueValidator(90)]
+    )
+    longitude = models.FloatField(
+        validators=[MinValueValidator(-180), MaxValueValidator(180)]
+    )
+
+    # 追加情報
+    image = models.ImageField(
+        upload_to='custom_places/',
+        null=True,
+        blank=True
+    )
+    place_type = models.CharField(
+        max_length=50,
+        null=True,
+        blank=True,
+        choices=PLACE_TYPE_CHOICES
+    )
+    memo = models.TextField(null=True, blank=True)
+
+    # タイムスタンプ
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'custom_place'
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['owner', '-created_at']),
+            models.Index(fields=['latitude', 'longitude']),
+        ]
+
+    def __str__(self):
+        return f"{self.name} (by {self.owner.name})"
+
+
+class CustomPlaceMapRelation(models.Model):
+    """カスタム地点とマップの関連"""
+
+    map = models.ForeignKey(
+        Map,
+        on_delete=models.CASCADE,
+        related_name='custom_place_relations'
+    )
+    custom_place = models.ForeignKey(
+        CustomPlace,
+        on_delete=models.CASCADE,
+        related_name='map_relations'
+    )
+
+    # 表示設定
+    is_visible = models.BooleanField(default=True)
+
+    # タイムスタンプ
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'custom_place_map_relation'
+        unique_together = [['map', 'custom_place']]
+        indexes = [
+            models.Index(fields=['map', 'is_visible']),
+        ]
+
+    def __str__(self):
+        return f"{self.custom_place.name} in {self.map.name}"
+
 
 class Tag(models.Model):
     name = models.CharField(max_length=255, unique=True)
