@@ -16,6 +16,7 @@ import ChatPanel from "../components/ChatPanel/ChatPanel"; // ✅ チャット�
 import ChatUI from "../components/ChatUI/ChatUI"; // ✅ チャットUI
 import { AddActionFAB } from "../components/AddActionFAB"; // ✅ AddActionFAB
 import { CustomPlaceFormModal } from "../components/CustomPlaceFormModal"; // ✅ カスタム地点登録フォーム
+import CustomPlaceDetailPanel from "../components/CustomPlaceDetailPanel/CustomPlaceDetailPanel"; // ✅ カスタム地点詳細パネル
 
 import { MAP_MODES } from "../constants/map";
 import { MapItem, SharedMapItem } from "../types/map";
@@ -31,7 +32,7 @@ import { useMapActions } from "../hooks/useMapActions"; // ✅ マップアク�
 // Utils
 import { requireMapSelected } from "../utils/mapUtils";
 // Services
-import { getCustomPlacesByMap } from "../services/customPlaceService"; // ✅ カスタム地点取得サービス
+import { getCustomPlacesByMap, deleteCustomPlace } from "../services/customPlaceService"; // ✅ カスタム地点取得サービス
 
 
 const HomePage: React.FC = () => {
@@ -58,6 +59,7 @@ const HomePage: React.FC = () => {
   const [isChatOpen, setIsChatOpen] = useState(false); // ✅ チャットパネルの表示
   const [customPlaces, setCustomPlaces] = useState<CustomPlace[]>([]); // ✅ カスタム地点
   const [selectedCustomPlaceId, setSelectedCustomPlaceId] = useState<number | null>(null); // ✅ 選択中のカスタム地点ID
+  const [selectedCustomPlace, setSelectedCustomPlace] = useState<CustomPlace | null>(null); // ✅ 選択中のカスタム地点
   const [isCustomPlaceFormOpen, setIsCustomPlaceFormOpen] = useState(false); // ✅ カスタム地点登録フォーム表示
   const [customPlaceInitialLocation, setCustomPlaceInitialLocation] = useState<{ lat: number; lng: number } | undefined>(undefined); // ✅ カスタム地点の初期位置
 
@@ -117,7 +119,7 @@ const HomePage: React.FC = () => {
   // ✅ カスタム地点クリックハンドラー
   const handleCustomPlaceClick = (place: CustomPlace) => {
     console.log("カスタム地点がクリックされました:", place);
-    // TODO: カスタム地点詳細パネルを実装する場合はここで設定
+    setSelectedCustomPlace(place);
     setSelectedCustomPlaceId(place.id);
   };
 
@@ -131,6 +133,28 @@ const HomePage: React.FC = () => {
       } catch (error) {
         console.error("カスタム地点の再取得に失敗しました:", error);
       }
+    }
+  };
+
+  // ✅ カスタム地点削除ハンドラー
+  const handleCustomPlaceDelete = async (place: CustomPlace) => {
+    if (!window.confirm(`「${place.name}」を削除してもよろしいですか？`)) {
+      return;
+    }
+
+    try {
+      await deleteCustomPlace(place.id);
+      setSelectedCustomPlace(null);
+      setSelectedCustomPlaceId(null);
+
+      // カスタム地点を再取得
+      if (selectedMap?.id) {
+        const response = await getCustomPlacesByMap(selectedMap.id);
+        setCustomPlaces(response.custom_places);
+      }
+    } catch (error) {
+      console.error("カスタム地点の削除に失敗しました:", error);
+      alert("カスタム地点の削除に失敗しました");
     }
   };
 
@@ -255,6 +279,20 @@ const HomePage: React.FC = () => {
         initialLocation={customPlaceInitialLocation}
         availableMaps={selectedMap ? [selectedMap] : []}
         defaultMapId={selectedMap?.id}
+      />
+
+      {/* ✅ カスタム地点詳細パネル */}
+      <CustomPlaceDetailPanel
+        customPlace={selectedCustomPlace}
+        onClose={() => {
+          setSelectedCustomPlace(null);
+          setSelectedCustomPlaceId(null);
+        }}
+        onEdit={() => {
+          // TODO: 編集機能は次のフェーズで実装
+          alert('編集機能は準備中です');
+        }}
+        onDelete={handleCustomPlaceDelete}
       />
 
       {/* チャットFAB */}
