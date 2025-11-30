@@ -139,7 +139,7 @@ const CafeDetailPanel: React.FC<CafeDetailPanelProps> = ({
       {/* Background overlay for mobile (click to close, but not darkened) */}
       {isMobile && cafe && (
         <div
-          className="fixed inset-0 z-30"
+          className="fixed inset-0 z-45"
           onClick={onClose}
         />
       )}
@@ -148,7 +148,7 @@ const CafeDetailPanel: React.FC<CafeDetailPanelProps> = ({
       <div
         ref={panelRef}
         className={`
-          fixed bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-40
+          fixed bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-50
           ${isMobile
             ? `bottom-0 left-0 right-0 rounded-t-2xl ${getHeightClass()} ${
                 cafe ? "translate-y-0" : "translate-y-full"

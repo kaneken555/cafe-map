@@ -1,4 +1,4 @@
-// components/SidePanelLayout.tsx
+// components/ChatPanel/ChatPanel.tsx
 import React, { useState, useEffect, useRef } from "react";
 import CloseButton from "../CloseButton/CloseButton";
 import BottomSheetHandle from "../BottomSheetHandle/BottomSheetHandle";
@@ -6,18 +6,15 @@ import { useIsMobile } from "../../hooks/useMediaQuery";
 
 type SheetHeight = "medium" | "full";
 
-
-interface SidePanelLayoutProps {
+interface ChatPanelProps {
   isOpen: boolean;
   onClose: () => void;
-  title: string;
   children: React.ReactNode;
 }
 
-const SidePanelLayout: React.FC<SidePanelLayoutProps> = ({
+const ChatPanel: React.FC<ChatPanelProps> = ({
   isOpen,
   onClose,
-  title,
   children,
 }) => {
   const isMobile = useIsMobile();
@@ -46,7 +43,7 @@ const SidePanelLayout: React.FC<SidePanelLayoutProps> = ({
 
   const getHeightClass = () => {
     if (!isMobile) return "h-[calc(100vh-4rem)]";
-    return sheetHeight === "full" ? "h-[90vh]" : "h-[40vh]";
+    return sheetHeight === "full" ? "h-[90vh]" : "h-[50vh]";
   };
 
   return (
@@ -65,8 +62,8 @@ const SidePanelLayout: React.FC<SidePanelLayoutProps> = ({
             ? `bottom-0 left-0 right-0 rounded-t-2xl ${getHeightClass()} ${
                 isOpen ? "translate-y-0" : "translate-y-full"
               }`
-            : `left-0 top-16 h-[calc(100vh-4rem)] w-[400px] ${
-                isOpen ? "translate-x-0" : "-translate-x-full"
+            : `right-0 top-16 h-[calc(100vh-4rem)] w-[450px] max-w-[40vw] ${
+                isOpen ? "translate-x-0" : "translate-x-full"
               }`
           }
         `}
@@ -78,9 +75,9 @@ const SidePanelLayout: React.FC<SidePanelLayoutProps> = ({
               onClick={handleHandleBarClick}
               state={sheetHeight}
             />
-            <div className="px-3 pb-3 flex-1 flex flex-col overflow-hidden">
-              <div className="text-2xl font-bold mb-4">{title}</div>
-              <div className="flex-1 overflow-y-auto">
+            <div className="px-4 pb-3 flex-1 flex flex-col overflow-hidden">
+              <div className="text-xl font-bold mb-4">チャット</div>
+              <div className="flex-1 overflow-hidden">
                 {children}
               </div>
             </div>
@@ -88,10 +85,14 @@ const SidePanelLayout: React.FC<SidePanelLayoutProps> = ({
         ) : (
           <>
             {/* Desktop: Close button */}
-            <div className="h-full p-3 relative flex flex-col">
-              <CloseButton onClick={onClose} />
-              <div className="text-2xl font-bold mb-4">{title}</div>
-              {children}
+            <div className="h-full p-4 relative flex flex-col">
+              <div className="flex items-center justify-between mb-4">
+                <div className="text-xl font-bold">チャット</div>
+                <CloseButton onClick={onClose} />
+              </div>
+              <div className="flex-1 overflow-hidden">
+                {children}
+              </div>
             </div>
           </>
         )}
@@ -100,5 +101,4 @@ const SidePanelLayout: React.FC<SidePanelLayoutProps> = ({
   );
 };
 
-export default SidePanelLayout;
-
+export default ChatPanel;

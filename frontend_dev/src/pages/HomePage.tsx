@@ -11,6 +11,9 @@ import MapCreateModal from "../components/MapCreateModal/MapCreateModal"; // ✅
 import MapListModal from "../components/MapListModal/MapListModal";
 import MyCafeListPanel from "../components/MyCafeListPanel/MyCafeListPanel"; // ✅ カフェ一覧パネル
 import SearchResultPanel from "../components/SearchResultPanel/SearchResultPanel";
+import ChatFAB from "../components/ChatFAB/ChatFAB"; // ✅ チャットFAB
+import ChatPanel from "../components/ChatPanel/ChatPanel"; // ✅ チャットパネル
+import ChatUI from "../components/ChatUI/ChatUI"; // ✅ チャットUI
 
 import { MAP_MODES } from "../constants/map";
 import { MapItem, SharedMapItem } from "../types/map";
@@ -47,6 +50,7 @@ const HomePage: React.FC = () => {
   const [shareUuid, setShareUuid] = useState<string | null>(null);
   const [isMapListOpen, setIsMapListOpen] = useState(false); // ✅ mapモーダル状態
   const [isMapCreateOpen, setIsMapCreateOpen] = useState(false); // ✅ マップ作成モーダル状態
+  const [isChatOpen, setIsChatOpen] = useState(false); // ✅ チャットパネルの表示
 
   const { handleAddToMaps } = useCafeMapAssign(
     selectedSearchedCafe || selectedRegisteredCafe,
@@ -173,7 +177,6 @@ const HomePage: React.FC = () => {
             setIsSearchResultOpen(true); // ✅ 検索結果パネル表示
           }}
           shareUuid={shareUuid} // ✅ シェアマップのUUIDを渡す
-          onCreateMapClick={() => setIsMapCreateOpen(true)} // ✅ マップ作成ボタンクリック時の処理
         />
       </div>
 
@@ -182,6 +185,27 @@ const HomePage: React.FC = () => {
         onOpenMapList={handleOpenMapList} // ✅ 同じ関数を再利用
         isMyCafeListOpen={isMyCafeListOpen}
       />
+
+      {/* ✅ FABボタングループ */}
+      {/* マップ作成FAB */}
+      <button
+        onClick={() => setIsMapCreateOpen(true)}
+        className="fixed bottom-[136px] md:bottom-6 right-6 md:right-24 w-14 h-14 bg-[#FFC800] text-white rounded-full shadow-lg hover:bg-[#D8A900] transition-colors flex items-center justify-center text-2xl font-bold cursor-pointer z-60"
+        aria-label="新しいマップを作成"
+      >
+        +
+      </button>
+
+      {/* チャットFAB */}
+      <ChatFAB
+        onClick={() => setIsChatOpen(!isChatOpen)}
+        isOpen={isChatOpen}
+      />
+
+      {/* チャットパネル */}
+      <ChatPanel isOpen={isChatOpen} onClose={() => setIsChatOpen(false)}>
+        <ChatUI />
+      </ChatPanel>
 
     </div>
   );
