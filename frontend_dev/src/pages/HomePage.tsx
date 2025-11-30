@@ -1,5 +1,5 @@
 // pages/HomePage.tsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 // Components
 import CafeDetailPanel from "../components/CafeDetailPanel/CafeDetailPanel";
@@ -14,9 +14,12 @@ import SearchResultPanel from "../components/SearchResultPanel/SearchResultPanel
 import ChatFAB from "../components/ChatFAB/ChatFAB"; // ✅ チャットFAB
 import ChatPanel from "../components/ChatPanel/ChatPanel"; // ✅ チャットパネル
 import ChatUI from "../components/ChatUI/ChatUI"; // ✅ チャットUI
+import { AddActionFAB } from "../components/AddActionFAB"; // ✅ AddActionFAB
+import { CustomPlaceFormModal } from "../components/CustomPlaceFormModal"; // ✅ カスタム地点登録フォーム
 
 import { MAP_MODES } from "../constants/map";
 import { MapItem, SharedMapItem } from "../types/map";
+import { CustomPlace } from "../types/customPlace"; // ✅ CustomPlace型
 // Contexts
 import { useCafe } from "../contexts/CafeContext";
 import { useMap } from "../contexts/MapContext";
@@ -27,6 +30,8 @@ import { useCafeMapAssign } from "../hooks/useCafeMapAssign"; // ✅ カフェ�
 import { useMapActions } from "../hooks/useMapActions"; // ✅ マップアクションフックをインポート
 // Utils
 import { requireMapSelected } from "../utils/mapUtils";
+// Services
+import { getCustomPlacesByMap } from "../services/customPlaceService"; // ✅ カスタム地点取得サービス
 
 
 const HomePage: React.FC = () => {
@@ -51,6 +56,10 @@ const HomePage: React.FC = () => {
   const [isMapListOpen, setIsMapListOpen] = useState(false); // ✅ mapモーダル状態
   const [isMapCreateOpen, setIsMapCreateOpen] = useState(false); // ✅ マップ作成モーダル状態
   const [isChatOpen, setIsChatOpen] = useState(false); // ✅ チャットパネルの表示
+  const [customPlaces, setCustomPlaces] = useState<CustomPlace[]>([]); // ✅ カスタム地点
+  const [selectedCustomPlaceId, setSelectedCustomPlaceId] = useState<number | null>(null); // ✅ 選択中のカスタム地点ID
+  const [isCustomPlaceFormOpen, setIsCustomPlaceFormOpen] = useState(false); // ✅ カスタム地点登録フォーム表示
+  const [customPlaceInitialLocation, setCustomPlaceInitialLocation] = useState<{ lat: number; lng: number } | undefined>(undefined); // ✅ カスタム地点の初期位置
 
   const { handleAddToMaps } = useCafeMapAssign(
     selectedSearchedCafe || selectedRegisteredCafe,
@@ -86,6 +95,44 @@ const HomePage: React.FC = () => {
   const handleOpenCafeList = () =>
     requireMapSelected(selectedMap, () => setIsMyCafeListOpen(true));
 
+  // ✅ カスタム地点を取得するuseEffect
+  useEffect(() => {
+    const fetchCustomPlaces = async () => {
+      if (selectedMap?.id && mapMode === MAP_MODES.mycafe) {
+        try {
+          const response = await getCustomPlacesByMap(selectedMap.id);
+          setCustomPlaces(response.custom_places);
+        } catch (error) {
+          console.error("カスタム地点の取得に失敗しました:", error);
+          setCustomPlaces([]);
+        }
+      } else {
+        setCustomPlaces([]);
+      }
+    };
+
+    fetchCustomPlaces();
+  }, [selectedMap?.id, mapMode]);
+
+  // ✅ カスタム地点クリックハンドラー
+  const handleCustomPlaceClick = (place: CustomPlace) => {
+    console.log("カスタム地点がクリックされました:", place);
+    // TODO: カスタム地点詳細パネルを実装する場合はここで設定
+    setSelectedCustomPlaceId(place.id);
+  };
+
+  // ✅ カスタム地点登録成功時のハンドラー
+  const handleCustomPlaceSuccess = async () => {
+    // カスタム地点を再取得
+    if (selectedMap?.id) {
+      try {
+        const response = await getCustomPlacesByMap(selectedMap.id);
+        setCustomPlaces(response.custom_places);
+      } catch (error) {
+        console.error("カスタム地点の再取得に失敗しました:", error);
+      }
+    }
+  };
 
   return (
     <div className="flex flex-col fixed inset-0 overflow-hidden">
@@ -177,6 +224,10 @@ const HomePage: React.FC = () => {
             setIsSearchResultOpen(true); // ✅ 検索結果パネル表示
           }}
           shareUuid={shareUuid} // ✅ シェアマップのUUIDを渡す
+          customPlaces={customPlaces} // ✅ カスタム地点を渡す
+          onCustomPlaceClick={handleCustomPlaceClick} // ✅ カスタム地点クリックハンドラーを渡す
+          selectedCustomPlaceId={selectedCustomPlaceId} // ✅ 選択中のカスタム地点IDを渡す
+          setSelectedCustomPlaceId={setSelectedCustomPlaceId} // ✅ カスタム地点ID設定関数を渡す
         />
       </div>
 
@@ -186,15 +237,25 @@ const HomePage: React.FC = () => {
         isMyCafeListOpen={isMyCafeListOpen}
       />
 
-      {/* ✅ FABボタングループ */}
-      {/* マップ作成FAB */}
-      <button
-        onClick={() => setIsMapCreateOpen(true)}
-        className="fixed bottom-[136px] md:bottom-6 right-6 md:right-24 w-14 h-14 bg-[#FFC800] text-white rounded-full shadow-lg hover:bg-[#D8A900] transition-colors flex items-center justify-center text-2xl font-bold cursor-pointer z-60"
-        aria-label="新しいマップを作成"
-      >
-        +
-      </button>
+      {/* ✅ AddActionFAB（マップ作成 + カスタム地点登録） */}
+      <AddActionFAB
+        onCreateMap={() => setIsMapCreateOpen(true)}
+        onAddCustomPlace={() => {
+          setCustomPlaceInitialLocation(undefined); // 初期位置なし（フォームでマップ中心座標を使用）
+          setIsCustomPlaceFormOpen(true);
+        }}
+        isMapSelected={!!selectedMap}
+      />
+
+      {/* ✅ カスタム地点登録フォームモーダル */}
+      <CustomPlaceFormModal
+        isOpen={isCustomPlaceFormOpen}
+        onClose={() => setIsCustomPlaceFormOpen(false)}
+        onSuccess={handleCustomPlaceSuccess}
+        initialLocation={customPlaceInitialLocation}
+        availableMaps={selectedMap ? [selectedMap] : []}
+        defaultMapId={selectedMap?.id}
+      />
 
       {/* チャットFAB */}
       <ChatFAB

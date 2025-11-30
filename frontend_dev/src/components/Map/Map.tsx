@@ -3,9 +3,11 @@ import React, { useState, useRef, useEffect } from "react";
 import { GoogleMap, TrafficLayer, TransitLayer, BicyclingLayer } from "@react-google-maps/api";
 import MapButton from "../MapButton/MapButton";
 import CafeOverlayIcon from "../CafeOverlayIcon/CafeOverlayIcon"; // ✅ 切り出したカフェアイコン表示用コンポーネント
+import CustomPlaceOverlayIcon from "../CustomPlaceOverlayIcon/CustomPlaceOverlayIcon"; // ✅ カスタム地点アイコン表示用コンポーネント
 import KeywordSearchModal from "../KeywordSearchModal/KeywordSearchModal"; // ✅ キーワード検索モーダルをインポート
 import LoadingOverlay from "../LoadingOverlay/LoadingOverlay"; // ✅ ローディングオーバーレイコンポーネントをインポート
 import { Cafe } from "../../types/cafe";
+import { CustomPlace } from "../../types/customPlace"; // ✅ カスタム地点型をインポート
 import { DEFAULT_CENTER, MAP_CONTAINER_STYLE, MAP_MODES } from "../../constants/map";
 import { useMap } from "../../contexts/MapContext";
 import { useMapActions } from "../../hooks/useMapActions";
@@ -27,6 +29,10 @@ interface MapProps {
   setSelectedCafeId: (id: number | null) => void;
   setSearchResultCafes: (cafes: Cafe[]) => void; // ✅ 検索結果をセットする関数
   shareUuid: string | null; // ✅ シェアマップのUUIDをセットする関数
+  customPlaces: CustomPlace[]; // ✅ カスタム地点の配列
+  onCustomPlaceClick: (place: CustomPlace) => void; // ✅ カスタム地点クリック時のコールバック
+  selectedCustomPlaceId: number | null; // ✅ 選択中のカスタム地点ID
+  setSelectedCustomPlaceId: (id: number | null) => void; // ✅ カスタム地点IDをセットする関数
 }
 
 
@@ -37,6 +43,10 @@ const Map: React.FC<MapProps> = ({
   setSelectedCafeId,
   setSearchResultCafes,
   shareUuid,
+  customPlaces,
+  onCustomPlaceClick,
+  selectedCustomPlaceId,
+  setSelectedCustomPlaceId,
 }) => {
   const { mapMode, selectedMap, setSelectedMap, setMapList, setMapMode } = useMap(); // ✅ setMapMode も取得
   const { registerSharedMap } = useMapActions();
@@ -335,6 +345,20 @@ const Map: React.FC<MapProps> = ({
             onClick={() => {
               onCafeIconClick(cafe);
               setSelectedCafeId(cafe.id);
+            }}
+          />
+        ))}
+
+        {/* ✅ カスタム地点アイコン */}
+        {customPlaces.map((place) => (
+          <CustomPlaceOverlayIcon
+            key={place.id}
+            place={place}
+            isSelected={selectedCustomPlaceId === place.id}
+            showLabel={displayOptions.showLabels}
+            onClick={(place) => {
+              onCustomPlaceClick(place);
+              setSelectedCustomPlaceId(place.id);
             }}
           />
         ))}

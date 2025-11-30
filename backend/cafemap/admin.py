@@ -5,7 +5,7 @@ from .models import (
     CafeTagRelation, CafeMemoRelation, CafeShareMapRelation, Group,
     UserGroupRelation, GroupMapRelation, SharedMap, ShareChannel,
     SharedMapAnalyzeLink, Custom, SystemSetting, UserCustomRelation,
-    ChatSession, ChatMessage
+    ChatSession, ChatMessage, CustomPlace, CustomPlaceMapRelation
 )
 
 class UserAdmin(BaseUserAdmin):
@@ -228,3 +228,36 @@ class ChatMessageAdmin(admin.ModelAdmin):
         """コンテンツのプレビュー表示"""
         return obj.content[:100] + "..." if len(obj.content) > 100 else obj.content
     content_preview.short_description = "メッセージ内容"
+
+
+@admin.register(CustomPlace)
+class CustomPlaceAdmin(admin.ModelAdmin):
+    list_display = ("id", "name", "owner", "place_type", "latitude", "longitude", "created_at")
+    search_fields = ("name", "owner__name", "memo")
+    list_filter = ("place_type", "created_at")
+    readonly_fields = ("created_at", "updated_at")
+    ordering = ("-created_at",)
+
+    fieldsets = (
+        ("基本情報", {
+            "fields": ("owner", "name")
+        }),
+        ("位置情報", {
+            "fields": ("latitude", "longitude")
+        }),
+        ("追加情報", {
+            "fields": ("image", "place_type", "memo")
+        }),
+        ("日時", {
+            "fields": ("created_at", "updated_at")
+        }),
+    )
+
+
+@admin.register(CustomPlaceMapRelation)
+class CustomPlaceMapRelationAdmin(admin.ModelAdmin):
+    list_display = ("id", "custom_place", "map", "is_visible", "created_at")
+    search_fields = ("custom_place__name", "map__name")
+    list_filter = ("is_visible", "created_at")
+    readonly_fields = ("created_at",)
+    ordering = ("-created_at",)

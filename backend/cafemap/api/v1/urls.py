@@ -2,6 +2,7 @@ from django.urls import path, include
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.contrib.auth import logout
+from rest_framework.routers import DefaultRouter
 from . import views
 from .views import (
     MapAPIView, MapDetailAPIView, CafeAPIView, CafeDetailAPIView, TagAPIView, TagDetailAPIView, CafeTagAPIView, CafeTagDetailAPIView, CafeMemoAPIView,
@@ -24,10 +25,18 @@ from .views import (
     ChatMessageListAPIView,
     ChatMessageCreateAPIView,
 )
+from .custom_place_views import CustomPlaceViewSet
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
+
+# Router設定
+router = DefaultRouter()
+router.register(r'custom-places', CustomPlaceViewSet, basename='custom-place')
 
 
 urlpatterns = [
+    # Router URLs
+    path('', include(router.urls)),
+
     # TODO: エンドポイントを修正(RESTful APIの設計に従う)
     path('google-maps-key/', views.get_google_maps_api_key, name='google_maps_key'),
     path('fetch-cafes/', views.get_cafes, name='cafes'),
