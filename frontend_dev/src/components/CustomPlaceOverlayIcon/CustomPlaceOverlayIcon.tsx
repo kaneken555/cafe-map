@@ -56,14 +56,9 @@ const CustomPlaceOverlayIcon: React.FC<Props> = ({
         {/* 画像がある場合は画像を表示、ない場合はアイコンを表示 */}
         {hasImage ? (
           <div
-            className="overflow-hidden border-2 shadow-md rounded-full border-white"
-            style={{
-              width: isSelected ? 48 : 40,
-              height: isSelected ? 48 : 40,
-              boxShadow: isSelected
-                ? `0 0 0 3px ${color}40`
-                : '0 2px 4px rgba(0,0,0,0.2)',
-            }}
+            className={`overflow-hidden border-2 shadow-md rounded-full border-white ${
+              isSelected ? 'w-16 h-16 ring-4 ring-blue-500' : 'w-12 h-12 ring-2 ring-sky-300'
+            }`}
           >
             <img
               src={place.image_url}

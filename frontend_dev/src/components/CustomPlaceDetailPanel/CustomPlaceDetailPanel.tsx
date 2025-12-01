@@ -92,7 +92,7 @@ const CustomPlaceDetailPanel: React.FC<CustomPlaceDetailPanelProps> = ({
               ? `left-0 right-0 bottom-0 rounded-t-3xl transition-all duration-300 ${
                   sheetHeight === 'full' ? 'top-20' : 'top-[40vh]'
                 }`
-              : 'top-16 left-0 h-[calc(100vh-4rem)] w-96 transform transition-transform duration-300'
+              : 'top-16 left-0 h-[calc(100vh-4rem)] w-[400px] transform transition-transform duration-300'
           }
         `}
       >
