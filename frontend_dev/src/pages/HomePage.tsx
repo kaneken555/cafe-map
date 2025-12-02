@@ -33,6 +33,8 @@ import { useMapActions } from "../hooks/useMapActions"; // ✅ マップアク�
 import { requireMapSelected } from "../utils/mapUtils";
 // Services
 import { getCustomPlacesByMap, deleteCustomPlace } from "../services/customPlaceService"; // ✅ カスタム地点取得サービス
+// Config
+import { FEATURES } from "../config/features"; // ✅ フィーチャーフラグ
 
 
 const HomePage: React.FC = () => {
@@ -79,7 +81,7 @@ const HomePage: React.FC = () => {
   const {
     mapSelectHandler,
     sharedMapSelectHandler,
-  } = useHeaderActions({ closeCafeListPanel, setShareUuid });
+  } = useHeaderActions({ closeCafeListPanel, setShareUuid, setCustomPlaces });
 
 
   const handleOpenMapList = () => {
@@ -102,6 +104,13 @@ const HomePage: React.FC = () => {
   // ✅ カスタム地点を取得するuseEffect
   useEffect(() => {
     const fetchCustomPlaces = async () => {
+      // 統合API使用時は、mapSelectHandlerで既に取得済みなのでスキップ
+      if (FEATURES.USE_UNIFIED_POINTS_API) {
+        console.log("統合API使用中: カスタム地点は既に取得済み");
+        return;
+      }
+
+      // 既存API使用時: カスタム地点を個別に取得
       if (selectedMap?.id && mapMode === MAP_MODES.mycafe) {
         try {
           const response = await getCustomPlacesByMap(selectedMap.id);

@@ -10,14 +10,19 @@ import { fetchGroupList } from "../services/groupService";
 import { toast } from "react-hot-toast";
 import { MapItem, SharedMapItem } from "../types/map";
 import { MAP_MODES } from "../constants/map";
+import { CustomPlace } from "../types/customPlace";
+import { FEATURES } from "../config/features";
+import { fetchMapPoints } from "../api/points";
+import { separatePoints } from "../utils/pointConverters";
 
 
 interface UseHeaderActionsParams {
   closeCafeListPanel: () => void;
   setShareUuid: React.Dispatch<React.SetStateAction<string | null>>;
+  setCustomPlaces?: React.Dispatch<React.SetStateAction<CustomPlace[]>>;
 }
 
-export const useHeaderActions = ({ closeCafeListPanel }: UseHeaderActionsParams) => {
+export const useHeaderActions = ({ closeCafeListPanel, setCustomPlaces }: UseHeaderActionsParams) => {
 
   const { setUser, resetAuthContext } = useAuth();
   const { setMapList, setSelectedMap, setSharedMapList, setMapMode } = useMap();
@@ -63,9 +68,31 @@ export const useHeaderActions = ({ closeCafeListPanel }: UseHeaderActionsParams)
 
   const mapSelectHandler = async (map: MapItem) => {
     setSelectedMap(map);
-    const cafes = await getCafeList(map.id);
-    setCafeList(cafes);
-    setMyCafeList(cafes);
+
+    // フィーチャーフラグで統合APIを使用するか判定
+    if (FEATURES.USE_UNIFIED_POINTS_API) {
+      // 統合API使用: 1回のAPIコールでカフェとカスタム地点を取得
+      try {
+        const response = await fetchMapPoints(map.id);
+        const { cafes, customPlaces } = separatePoints(response.points);
+
+        setCafeList(cafes);
+        setMyCafeList(cafes);
+
+        // カスタム地点も同時に更新
+        if (setCustomPlaces) {
+          setCustomPlaces(customPlaces);
+        }
+      } catch (error) {
+        console.error("統合API呼び出しに失敗しました:", error);
+        toast.error("データの取得に失敗しました");
+      }
+    } else {
+      // 既存API使用: カフェのみ取得（カスタム地点は別途取得）
+      const cafes = await getCafeList(map.id);
+      setCafeList(cafes);
+      setMyCafeList(cafes);
+    }
   };
 
   const sharedMapSelectHandler = async (map: SharedMapItem) => {

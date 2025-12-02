@@ -26,6 +26,7 @@ from .views import (
     ChatMessageCreateAPIView,
 )
 from .custom_place_views import CustomPlaceViewSet
+from .point_views import MapPointsView
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 
 # Router設定
@@ -50,6 +51,11 @@ urlpatterns = [
     path('maps/', MapAPIView.as_view(), name='maps'),
     path('maps/<int:map_id>/', MapDetailAPIView.as_view(), name='map'),
     path('maps/<int:map_id>/custom/', MapCustomAPIView.as_view(), name='map-custom'),
+
+    # 統合API（フェーズ2）
+    path('maps/<int:map_id>/points/', MapPointsView.as_view(), name='map-points'),
+
+    # 既存のAPI（後方互換性のため維持）
     path('maps/<int:map_id>/cafes/', CafeAPIView.as_view(), name='cafes'),
     path('maps/<int:map_id>/cafes/<int:cafe_id>/', CafeDetailAPIView.as_view(), name='cafe'),
     path('tags/', TagAPIView.as_view(), name='tags'),
