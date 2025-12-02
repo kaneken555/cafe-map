@@ -66,6 +66,7 @@ const Wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 export const Default: Story = {
   render: () => {
     const [selectedCafeId, setSelectedCafeId] = useState<number | null>(null);
+    const [selectedCustomPlaceId, setSelectedCustomPlaceId] = useState<number | null>(null);
     const [_shareUuidsearchResultCafes, setSearchResultCafes] = useState<Cafe[]>([]);
 
     return (
@@ -80,6 +81,17 @@ export const Default: Story = {
             setSelectedCafeId={setSelectedCafeId}
             setSearchResultCafes={setSearchResultCafes}
             shareUuid={null}
+            customPlaces={[]}
+            onCustomPlaceClick={(place) => {
+              alert(`「${place.name}」がクリックされました`);
+            }}
+            selectedCustomPlaceId={selectedCustomPlaceId}
+            setSelectedCustomPlaceId={setSelectedCustomPlaceId}
+            isSelectingLocation={false}
+            onLocationSelected={(lat, lng) => {
+              alert(`位置が選択されました: ${lat}, ${lng}`);
+            }}
+            tempLocation={null}
           />
         </div>
       </Wrapper>

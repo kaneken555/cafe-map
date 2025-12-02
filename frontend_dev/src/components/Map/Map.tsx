@@ -1,12 +1,18 @@
 // components/Map.tsx
 import React, { useState, useRef, useEffect } from "react";
-import { GoogleMap, TrafficLayer, TransitLayer, BicyclingLayer } from "@react-google-maps/api";
+import { GoogleMap, TrafficLayer, TransitLayer, BicyclingLayer, Marker } from "@react-google-maps/api";
 import MapButton from "../MapButton/MapButton";
 import CafeOverlayIcon from "../CafeOverlayIcon/CafeOverlayIcon"; // ✅ 切り出したカフェアイコン表示用コンポーネント
+import CustomPlaceOverlayIcon from "../CustomPlaceOverlayIcon/CustomPlaceOverlayIcon"; // ✅ カスタム地点アイコン表示用コンポーネント
+import UnifiedPointOverlayIcon from "../UnifiedPointOverlayIcon/UnifiedPointOverlayIcon"; // ✅ 統合ポイント表示コンポーネント
 import KeywordSearchModal from "../KeywordSearchModal/KeywordSearchModal"; // ✅ キーワード検索モーダルをインポート
 import LoadingOverlay from "../LoadingOverlay/LoadingOverlay"; // ✅ ローディングオーバーレイコンポーネントをインポート
 import { Cafe } from "../../types/cafe";
+import { CustomPlace } from "../../types/customPlace"; // ✅ カスタム地点型をインポート
+import { isCafePoint, isCustomPlacePoint } from "../../types/point"; // ✅ 統合ポイント型をインポート
+import { convertCafeToCafePoint, convertCustomPlaceToCustomPlacePoint } from "../../utils/pointConverters"; // ✅ 型変換ユーティリティ
 import { DEFAULT_CENTER, MAP_CONTAINER_STYLE, MAP_MODES } from "../../constants/map";
+import { FEATURES } from "../../config/features"; // ✅ フィーチャーフラグ
 import { useMap } from "../../contexts/MapContext";
 import { useMapActions } from "../../hooks/useMapActions";
 import { useCafeSearch } from "../../hooks/useCafeSearch"; // ✅ カフェ検索フックをインポート
@@ -27,7 +33,13 @@ interface MapProps {
   setSelectedCafeId: (id: number | null) => void;
   setSearchResultCafes: (cafes: Cafe[]) => void; // ✅ 検索結果をセットする関数
   shareUuid: string | null; // ✅ シェアマップのUUIDをセットする関数
-  onCreateMapClick?: () => void; // ✅ マップ作成ボタンクリック時のコールバック
+  customPlaces: CustomPlace[]; // ✅ カスタム地点の配列
+  onCustomPlaceClick: (place: CustomPlace) => void; // ✅ カスタム地点クリック時のコールバック
+  selectedCustomPlaceId: number | null; // ✅ 選択中のカスタム地点ID
+  setSelectedCustomPlaceId: (id: number | null) => void; // ✅ カスタム地点IDをセットする関数
+  isSelectingLocation?: boolean; // ✅ 位置選択モード
+  onLocationSelected?: (lat: number, lng: number) => void; // ✅ 位置選択時のコールバック
+  tempLocation?: { lat: number; lng: number } | null; // ✅ 仮の位置（ピン表示用）
 }
 
 
@@ -38,7 +50,13 @@ const Map: React.FC<MapProps> = ({
   setSelectedCafeId,
   setSearchResultCafes,
   shareUuid,
-  onCreateMapClick
+  customPlaces,
+  onCustomPlaceClick,
+  selectedCustomPlaceId,
+  setSelectedCustomPlaceId,
+  isSelectingLocation = false,
+  onLocationSelected,
+  tempLocation,
 }) => {
   const { mapMode, selectedMap, setSelectedMap, setMapList, setMapMode } = useMap(); // ✅ setMapMode も取得
   const { registerSharedMap } = useMapActions();
@@ -307,27 +325,26 @@ const Map: React.FC<MapProps> = ({
         />
       )}
 
-      {/* ✅ 右下のマップ作成ボタン */}
-      {onCreateMapClick && (
-        <button
-          onClick={onCreateMapClick}
-          className="absolute bottom-20 md:bottom-6 right-6 z-10 w-14 h-14 bg-[#FFC800] text-white rounded-full shadow-lg hover:bg-[#D8A900] transition-colors flex items-center justify-center text-2xl font-bold cursor-pointer"
-          aria-label="新しいマップを作成"
-        >
-          +
-        </button>
-      )}
-
       <GoogleMap
         mapContainerStyle={MAP_CONTAINER_STYLE}
         center={DEFAULT_CENTER}
         zoom={15}
         onLoad={handleMapLoad}
         onUnmount={() => { mapRef.current = null; }}
+        onClick={(e) => {
+          // 位置選択モードの場合、クリック位置を親に通知
+          if (isSelectingLocation && e.latLng && onLocationSelected) {
+            const lat = e.latLng.lat();
+            const lng = e.latLng.lng();
+            onLocationSelected(lat, lng);
+          }
+        }}
         options={{
           mapTypeControl: false,
           streetViewControl: false,
           ...(MAP_STYLES[displayOptions.style] ? { styles: MAP_STYLES[displayOptions.style] } : {}),
+          // 位置選択モード時はカーソルを十字線に
+          ...(isSelectingLocation ? { draggableCursor: 'crosshair' } : {}),
         }}
       >
         {/* レイヤー */}
@@ -335,22 +352,99 @@ const Map: React.FC<MapProps> = ({
         {displayOptions.layers.transit && <TransitLayer />}
         {displayOptions.layers.bicycling && <BicyclingLayer />}
 
-        {/* カフェアイコン */}
-        {cafes.map((cafe) => (
-          <CafeOverlayIcon
-            key={cafe.id}
-            cafe={cafe}
-            isSelected={selectedCafeId === cafe.id}
-            showLabel={displayOptions.showLabels}         // ★ 反映
-            variant={displayOptions.iconVariant}          // ★ 反映（コンポーネント側対応）
-            color={displayOptions.iconColor} // ✅ カラー反映
-            size={displayOptions.iconSize} // ✅ 追加！
-            onClick={() => {
-              onCafeIconClick(cafe);
-              setSelectedCafeId(cafe.id);
+        {/* 統合コンポーネント使用（オプション - フィーチャーフラグで制御可能） */}
+        {FEATURES.USE_UNIFIED_POINTS_API ? (
+          // 統合APIを使用する場合: UnifiedPointOverlayIconを使用
+          <>
+            {/* カフェを統合ポイントとして表示 */}
+            {cafes.map((cafe) => {
+              const point = convertCafeToCafePoint(cafe);
+              return (
+                <UnifiedPointOverlayIcon
+                  key={`cafe-${cafe.id}`}
+                  point={point}
+                  isSelected={selectedCafeId === cafe.id}
+                  showLabel={displayOptions.showLabels}
+                  onClick={(point) => {
+                    if (isCafePoint(point)) {
+                      onCafeIconClick(cafe);
+                      setSelectedCafeId(cafe.id);
+                    }
+                  }}
+                />
+              );
+            })}
+
+            {/* カスタム地点を統合ポイントとして表示 */}
+            {customPlaces.map((place) => {
+              const point = convertCustomPlaceToCustomPlacePoint(place);
+              return (
+                <UnifiedPointOverlayIcon
+                  key={`custom-place-${place.id}`}
+                  point={point}
+                  isSelected={selectedCustomPlaceId === place.id}
+                  showLabel={displayOptions.showLabels}
+                  onClick={(point) => {
+                    if (isCustomPlacePoint(point)) {
+                      onCustomPlaceClick(place);
+                      setSelectedCustomPlaceId(place.id);
+                    }
+                  }}
+                />
+              );
+            })}
+          </>
+        ) : (
+          // 既存API使用: 個別のコンポーネントを使用
+          <>
+            {/* カフェアイコン */}
+            {cafes.map((cafe) => (
+              <CafeOverlayIcon
+                key={cafe.id}
+                cafe={cafe}
+                isSelected={selectedCafeId === cafe.id}
+                showLabel={displayOptions.showLabels}         // ★ 反映
+                variant={displayOptions.iconVariant}          // ★ 反映（コンポーネント側対応）
+                color={displayOptions.iconColor} // ✅ カラー反映
+                size={displayOptions.iconSize} // ✅ 追加！
+                onClick={() => {
+                  onCafeIconClick(cafe);
+                  setSelectedCafeId(cafe.id);
+                }}
+              />
+            ))}
+
+            {/* ✅ カスタム地点アイコン */}
+            {customPlaces.map((place) => (
+              <CustomPlaceOverlayIcon
+                key={place.id}
+                place={place}
+                isSelected={selectedCustomPlaceId === place.id}
+                showLabel={displayOptions.showLabels}
+                onClick={(place) => {
+                  onCustomPlaceClick(place);
+                  setSelectedCustomPlaceId(place.id);
+                }}
+              />
+            ))}
+          </>
+        )}
+
+        {/* ✅ 仮ピン表示（位置選択時） */}
+        {tempLocation && (
+          <Marker
+            position={{ lat: tempLocation.lat, lng: tempLocation.lng }}
+            icon={{
+              path: google.maps.SymbolPath.CIRCLE,
+              scale: 10,
+              fillColor: '#4285F4',
+              fillOpacity: 0.8,
+              strokeColor: '#ffffff',
+              strokeWeight: 2,
             }}
+            animation={google.maps.Animation.DROP}
           />
-        ))}
+        )}
 
         {/* TODO:
             displayOptions.clustering → MarkerClusterer に切替

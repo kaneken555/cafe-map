@@ -2,6 +2,7 @@ from django.urls import path, include
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.contrib.auth import logout
+from rest_framework.routers import DefaultRouter
 from . import views
 from .views import (
     MapAPIView, MapDetailAPIView, CafeAPIView, CafeDetailAPIView, TagAPIView, TagDetailAPIView, CafeTagAPIView, CafeTagDetailAPIView, CafeMemoAPIView,
@@ -18,11 +19,25 @@ from .views import (
     MapCustomAPIView,
     CustomListAPIView,
     CustomDetailAPIView,
+    # チャット関連
+    ChatSessionListAPIView,
+    ChatSessionDetailAPIView,
+    ChatMessageListAPIView,
+    ChatMessageCreateAPIView,
 )
+from .custom_place_views import CustomPlaceViewSet
+from .point_views import MapPointsView
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
+
+# Router設定
+router = DefaultRouter()
+router.register(r'custom-places', CustomPlaceViewSet, basename='custom-place')
 
 
 urlpatterns = [
+    # Router URLs
+    path('', include(router.urls)),
+
     # TODO: エンドポイントを修正(RESTful APIの設計に従う)
     path('google-maps-key/', views.get_google_maps_api_key, name='google_maps_key'),
     path('fetch-cafes/', views.get_cafes, name='cafes'),
@@ -36,6 +51,11 @@ urlpatterns = [
     path('maps/', MapAPIView.as_view(), name='maps'),
     path('maps/<int:map_id>/', MapDetailAPIView.as_view(), name='map'),
     path('maps/<int:map_id>/custom/', MapCustomAPIView.as_view(), name='map-custom'),
+
+    # 統合API（フェーズ2）
+    path('maps/<int:map_id>/points/', MapPointsView.as_view(), name='map-points'),
+
+    # 既存のAPI（後方互換性のため維持）
     path('maps/<int:map_id>/cafes/', CafeAPIView.as_view(), name='cafes'),
     path('maps/<int:map_id>/cafes/<int:cafe_id>/', CafeDetailAPIView.as_view(), name='cafe'),
     path('tags/', TagAPIView.as_view(), name='tags'),
@@ -75,6 +95,12 @@ urlpatterns = [
     # カスタマイズ設定関連のルーティング
     path('customs/', CustomListAPIView.as_view(), name='custom-list'),
     path('customs/<int:pk>/', CustomDetailAPIView.as_view(), name='custom-detail'),
+
+    # チャット関連のルーティング
+    path('chat/sessions/', ChatSessionListAPIView.as_view(), name='chat-session-list'),
+    path('chat/sessions/<int:session_id>/', ChatSessionDetailAPIView.as_view(), name='chat-session-detail'),
+    path('chat/sessions/<int:session_id>/messages/', ChatMessageListAPIView.as_view(), name='chat-message-list'),
+    path('chat/messages/', ChatMessageCreateAPIView.as_view(), name='chat-message-create'),
 
     # OpenAPIスキーマ(JSON形式)
     path('schema/', SpectacularAPIView.as_view(), name='schema'),

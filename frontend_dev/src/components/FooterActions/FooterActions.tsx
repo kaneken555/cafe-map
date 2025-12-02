@@ -21,7 +21,7 @@ const FooterActions: React.FC<Props> = ({
   const { selectedMap } = useMap();
 
   return (
-    <div className="fixed bottom-0 w-full h-14 bg-white border-t border-gray-300 grid grid-cols-2 items-center md:hidden z-50">
+    <div className="fixed bottom-0 w-full h-14 bg-white border-t border-gray-300 grid grid-cols-2 items-center md:hidden z-40">
       <HeaderButton
         onClick={onOpenCafeList}
         disabled={!user}

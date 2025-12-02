@@ -7,7 +7,7 @@ on:
     branches:
       - main
     paths:
-      - 'frontend/**'
+      - 'frontend_dev/**'
       - '.github/workflows/frontend-deploy.yml'
 
 jobs:

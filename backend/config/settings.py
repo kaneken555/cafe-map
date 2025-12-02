@@ -185,6 +185,10 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # ← collectstatic でここに集まる
 
+# Media files (User uploaded files)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
@@ -257,13 +261,13 @@ LOGGING = {
 }
 
 # Sentry 設定
-if not DEBUG:
-    sentry_sdk.init(
-        dsn=os.environ.get("SENTRY_DSN"),
-        integrations=[DjangoIntegration()],
-        send_default_pii=True,
-        traces_sample_rate=1.0,
-    )
+# if not DEBUG:
+#     sentry_sdk.init(
+#         dsn=os.environ.get("SENTRY_DSN"),
+#         integrations=[DjangoIntegration()],
+#         send_default_pii=True,
+#         traces_sample_rate=1.0,
+#     )
 
 # DRF Spectacular 設定
 SPECTACULAR_SETTINGS = {
@@ -272,3 +276,14 @@ SPECTACULAR_SETTINGS = {
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
 }
+
+# ========== チャット機能設定 ==========
+
+# OpenAI API (フェーズ2で使用予定)
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', '')
+OPENAI_MODEL = os.getenv('OPENAI_MODEL', 'gpt-4-turbo-preview')
+
+# チャット設定
+CHAT_MAX_MESSAGES_PER_SESSION = 100  # セッションあたりの最大メッセージ数
+CHAT_HISTORY_CONTEXT_SIZE = 10  # AI送信時の履歴件数
+CHAT_MAX_MESSAGE_LENGTH = 2000  # メッセージ最大文字数
