@@ -4,11 +4,15 @@ import { GoogleMap, TrafficLayer, TransitLayer, BicyclingLayer, Marker } from "@
 import MapButton from "../MapButton/MapButton";
 import CafeOverlayIcon from "../CafeOverlayIcon/CafeOverlayIcon"; // ✅ 切り出したカフェアイコン表示用コンポーネント
 import CustomPlaceOverlayIcon from "../CustomPlaceOverlayIcon/CustomPlaceOverlayIcon"; // ✅ カスタム地点アイコン表示用コンポーネント
+import UnifiedPointOverlayIcon from "../UnifiedPointOverlayIcon/UnifiedPointOverlayIcon"; // ✅ 統合ポイント表示コンポーネント
 import KeywordSearchModal from "../KeywordSearchModal/KeywordSearchModal"; // ✅ キーワード検索モーダルをインポート
 import LoadingOverlay from "../LoadingOverlay/LoadingOverlay"; // ✅ ローディングオーバーレイコンポーネントをインポート
 import { Cafe } from "../../types/cafe";
 import { CustomPlace } from "../../types/customPlace"; // ✅ カスタム地点型をインポート
+import { isCafePoint, isCustomPlacePoint } from "../../types/point"; // ✅ 統合ポイント型をインポート
+import { convertCafeToCafePoint, convertCustomPlaceToCustomPlacePoint } from "../../utils/pointConverters"; // ✅ 型変換ユーティリティ
 import { DEFAULT_CENTER, MAP_CONTAINER_STYLE, MAP_MODES } from "../../constants/map";
+import { FEATURES } from "../../config/features"; // ✅ フィーチャーフラグ
 import { useMap } from "../../contexts/MapContext";
 import { useMapActions } from "../../hooks/useMapActions";
 import { useCafeSearch } from "../../hooks/useCafeSearch"; // ✅ カフェ検索フックをインポート
@@ -348,36 +352,83 @@ const Map: React.FC<MapProps> = ({
         {displayOptions.layers.transit && <TransitLayer />}
         {displayOptions.layers.bicycling && <BicyclingLayer />}
 
-        {/* カフェアイコン */}
-        {cafes.map((cafe) => (
-          <CafeOverlayIcon
-            key={cafe.id}
-            cafe={cafe}
-            isSelected={selectedCafeId === cafe.id}
-            showLabel={displayOptions.showLabels}         // ★ 反映
-            variant={displayOptions.iconVariant}          // ★ 反映（コンポーネント側対応）
-            color={displayOptions.iconColor} // ✅ カラー反映
-            size={displayOptions.iconSize} // ✅ 追加！
-            onClick={() => {
-              onCafeIconClick(cafe);
-              setSelectedCafeId(cafe.id);
-            }}
-          />
-        ))}
+        {/* 統合コンポーネント使用（オプション - フィーチャーフラグで制御可能） */}
+        {FEATURES.USE_UNIFIED_POINTS_API ? (
+          // 統合APIを使用する場合: UnifiedPointOverlayIconを使用
+          <>
+            {/* カフェを統合ポイントとして表示 */}
+            {cafes.map((cafe) => {
+              const point = convertCafeToCafePoint(cafe);
+              return (
+                <UnifiedPointOverlayIcon
+                  key={`cafe-${cafe.id}`}
+                  point={point}
+                  isSelected={selectedCafeId === cafe.id}
+                  showLabel={displayOptions.showLabels}
+                  onClick={(point) => {
+                    if (isCafePoint(point)) {
+                      onCafeIconClick(cafe);
+                      setSelectedCafeId(cafe.id);
+                    }
+                  }}
+                />
+              );
+            })}
 
-        {/* ✅ カスタム地点アイコン */}
-        {customPlaces.map((place) => (
-          <CustomPlaceOverlayIcon
-            key={place.id}
-            place={place}
-            isSelected={selectedCustomPlaceId === place.id}
-            showLabel={displayOptions.showLabels}
-            onClick={(place) => {
-              onCustomPlaceClick(place);
-              setSelectedCustomPlaceId(place.id);
-            }}
-          />
-        ))}
+            {/* カスタム地点を統合ポイントとして表示 */}
+            {customPlaces.map((place) => {
+              const point = convertCustomPlaceToCustomPlacePoint(place);
+              return (
+                <UnifiedPointOverlayIcon
+                  key={`custom-place-${place.id}`}
+                  point={point}
+                  isSelected={selectedCustomPlaceId === place.id}
+                  showLabel={displayOptions.showLabels}
+                  onClick={(point) => {
+                    if (isCustomPlacePoint(point)) {
+                      onCustomPlaceClick(place);
+                      setSelectedCustomPlaceId(place.id);
+                    }
+                  }}
+                />
+              );
+            })}
+          </>
+        ) : (
+          // 既存API使用: 個別のコンポーネントを使用
+          <>
+            {/* カフェアイコン */}
+            {cafes.map((cafe) => (
+              <CafeOverlayIcon
+                key={cafe.id}
+                cafe={cafe}
+                isSelected={selectedCafeId === cafe.id}
+                showLabel={displayOptions.showLabels}         // ★ 反映
+                variant={displayOptions.iconVariant}          // ★ 反映（コンポーネント側対応）
+                color={displayOptions.iconColor} // ✅ カラー反映
+                size={displayOptions.iconSize} // ✅ 追加！
+                onClick={() => {
+                  onCafeIconClick(cafe);
+                  setSelectedCafeId(cafe.id);
+                }}
+              />
+            ))}
+
+            {/* ✅ カスタム地点アイコン */}
+            {customPlaces.map((place) => (
+              <CustomPlaceOverlayIcon
+                key={place.id}
+                place={place}
+                isSelected={selectedCustomPlaceId === place.id}
+                showLabel={displayOptions.showLabels}
+                onClick={(place) => {
+                  onCustomPlaceClick(place);
+                  setSelectedCustomPlaceId(place.id);
+                }}
+              />
+            ))}
+          </>
+        )}
 
         {/* ✅ 仮ピン表示（位置選択時） */}
         {tempLocation && (

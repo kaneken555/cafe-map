@@ -25,10 +25,25 @@ def get_cafes_for_map(map_obj):
     ]
 
 def get_cafes_for_map_id(map_id: int):
-    """指定されたマップに紐づくカフェ一覧を取得"""
+    """指定されたマップに紐づくカフェ一覧を取得（詳細情報含む）"""
     target_map = Map.objects.get(id=map_id)
     cafes = Cafe.objects.filter(cafemaprelation__map=target_map)
-    return [{"id": cafe.id, "place_id": cafe.place_id, "name": cafe.name} for cafe in cafes]
+    return [{
+        "id": cafe.id,
+        "place_id": cafe.place_id,
+        "name": cafe.name,
+        "latitude": float(cafe.latitude) if cafe.latitude else None,
+        "longitude": float(cafe.longitude) if cafe.longitude else None,
+        "photo_url": cafe.photo_urls[0] if cafe.photo_urls and len(cafe.photo_urls) > 0 else None,
+        "photo_urls": cafe.photo_urls,
+        "rating": cafe.rating,
+        "user_ratings_total": cafe.user_ratings_total,
+        "address": cafe.address,
+        "phone_number": cafe.phone_number,
+        "opening_hours": cafe.opening_hours,
+        "website": cafe.website,
+        "price_level": cafe.price_level,
+    } for cafe in cafes]
 
 
 def create_cafe_and_relation(map_id: int, cafe_data: dict):
