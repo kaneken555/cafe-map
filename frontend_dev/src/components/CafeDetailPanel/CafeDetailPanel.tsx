@@ -173,7 +173,7 @@ const CafeDetailPanel: React.FC<CafeDetailPanelProps> = ({
         ) : (
           <>
             {/* Close button for desktop */}
-            <div className="p-1">
+            <div className="p-2">
               <CloseButton onClick={onClose} />
             </div>
             {renderCafeDetailCard()}
