@@ -5,7 +5,7 @@ import SideMenu from "../SideMenu/SideMenu";
 import HeaderButton from "../HeaderButton/HeaderButton";
 import UserMenu from "../UserMenu/UserMenu";
 import GroupListModal from "../GroupListModal/GroupListModal";
-import { Coffee, Map as MapIcon, List as ListIcon, Layers, Menu } from "lucide-react";
+import { Coffee, List as ListIcon, Layers, Menu } from "lucide-react";
 // import { MapItem, SharedMapItem } from "../types/map";
 import { APP_TITLE } from "../../constants/app"; // アプリタイトルをインポート
 import { ICON_SIZES } from "../../constants/ui";
@@ -25,7 +25,6 @@ interface HeaderProps {
   isMyCafeListOpen: boolean;
   setShareUuid: React.Dispatch<React.SetStateAction<string | null>>; // ✅ シェアマップのUUIDをセットする関数
   onOpenCafeList: () => void; // ✅ カフェ一覧パネルを開く関数
-  onShowMyCafeMap: () => void; // ✅ 追加
   onOpenMapList: () => void; // ✅ 追加
   isSharedMapView?: boolean; // ✅ シェアマップビューかどうか
   sharedMapName?: string; // ✅ シェアマップの名前
@@ -36,13 +35,12 @@ const Header: React.FC<HeaderProps> = ({
   isMyCafeListOpen,
   setShareUuid, // ✅ シェアマップのUUIDをセットする関数
   onOpenCafeList, // ✅ カフェ一覧パネルを開く関数
-  onShowMyCafeMap, // ✅ 追加
   onOpenMapList,
   isSharedMapView = false, // ✅ デフォルトはfalse
   sharedMapName, // ✅ シェアマップの名前
 }) => {    
   const { user } = useAuth();
-  const { selectedMap, mapMode } = useMap(); // マップリストとセット関数をコンテキストから取得
+  const { selectedMap } = useMap(); // マップリストとセット関数をコンテキストから取得
   const { setSelectedGroup, setSelectedGroupId } = useGroup(); // グループリストのセット関数をコンテキストから取得
 
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
@@ -131,14 +129,6 @@ const Header: React.FC<HeaderProps> = ({
                   icon={<ListIcon size={ICON_SIZES.MEDIUM} />}
                   label="My Café List"
                   active={isMyCafeListOpen}
-                />
-
-                <HeaderButton
-                  onClick={onShowMyCafeMap}
-                  disabled={!user}
-                  icon={<MapIcon size={ICON_SIZES.MEDIUM} />}
-                  label="My Café Map"
-                  active={mapMode === "mycafe"} // ✅ 現在のモードによって強調
                 />
               </>
             )}

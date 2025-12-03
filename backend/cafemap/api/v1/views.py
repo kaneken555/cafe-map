@@ -177,6 +177,178 @@ def get_cafe_detail(request):
     return JsonResponse({"error": "Failed to fetch cafe details"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+def fetch_single_cafe_detail(place_id: str) -> dict:
+    """
+    単一のplace_idに対してGoogle Places API Detailsを呼び出す
+
+    Args:
+        place_id: Google PlaceのID
+
+    Returns:
+        カフェ詳細情報の辞書。エラー時はNone
+    """
+    url = "https://maps.googleapis.com/maps/api/place/details/json"
+    params = {
+        "place_id": place_id,
+        "fields": (
+            "name,"
+            "formatted_address,"
+            "formatted_phone_number,"
+            "website,"
+            "opening_hours,"
+            "photos,"
+            "geometry,"
+            "rating,"
+            "user_ratings_total,"
+            "business_status,"
+            "price_level"
+        ),
+        "language": "ja",
+        "key": GOOGLE_MAPS_API_KEY,
+    }
+
+    try:
+        response = requests.get(url, params=params, timeout=5)
+
+        if response.status_code == 200:
+            data = response.json()
+            if data.get("status") == "OK":
+                result = data.get("result", {})
+                location = result.get("geometry", {}).get("location", {})
+
+                return {
+                    "name": result.get("name", ""),
+                    "address": result.get("formatted_address", ""),
+                    "place_id": place_id,
+                    "rating": result.get("rating", 0),
+                    "user_ratings_total": result.get("user_ratings_total", 0),
+                    "opening_hours": result.get("opening_hours", {}).get("weekday_text", []),
+                    "photos": [
+                        f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference={photo['photo_reference']}&key={GOOGLE_MAPS_API_KEY}"
+                        for photo in result.get("photos", [])[:5]
+                    ],
+                    "latitude": location.get("lat"),
+                    "longitude": location.get("lng"),
+                    "phone_number": result.get("formatted_phone_number", ""),
+                    "website": result.get("website", ""),
+                    "business_status": result.get("business_status", ""),
+                    "price_level": result.get("price_level", None),
+                }
+        logger.warning(f"Failed to fetch details for place_id={place_id}: status={response.status_code}")
+        return None
+    except Exception as e:
+        logger.error(f"Error in fetch_single_cafe_detail for place_id={place_id}: {e}")
+        return None
+
+
+def fetch_multiple_cafe_details(place_ids: list) -> list:
+    """
+    複数のplace_idに対して並列でGoogle Places API Detailsを呼び出す
+
+    Args:
+        place_ids: place_idのリスト
+
+    Returns:
+        カフェ詳細情報のリスト
+    """
+    import concurrent.futures
+
+    cafes = []
+
+    # ThreadPoolExecutorで並列処理（最大10スレッド）
+    with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+        # 各place_idに対してfetch_single_cafe_detailを実行
+        future_to_place_id = {
+            executor.submit(fetch_single_cafe_detail, place_id): place_id
+            for place_id in place_ids
+        }
+
+        # 結果を収集
+        for future in concurrent.futures.as_completed(future_to_place_id):
+            place_id = future_to_place_id[future]
+            try:
+                cafe_detail = future.result(timeout=5)  # 5秒タイムアウト
+                if cafe_detail:
+                    cafes.append(cafe_detail)
+            except concurrent.futures.TimeoutError:
+                logger.warning(f"Timeout fetching details for place_id={place_id}")
+                continue
+            except Exception as e:
+                # エラーログを出力するが、他の処理は継続
+                logger.error(f"Error fetching details for place_id={place_id}: {e}")
+                continue
+
+    return cafes
+
+
+@csrf_exempt
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def get_cafe_details_batch(request):
+    """
+    複数のplace_idを一度に処理して詳細情報を返す
+
+    Request Body:
+    {
+        "place_ids": ["ChIJ...", "ChIJ...", ...]
+    }
+
+    Response:
+    {
+        "cafes": [...],
+        "count": 10
+    }
+    """
+    import json
+
+    try:
+        # リクエストボディからplace_idsを取得
+        data = json.loads(request.body)
+        place_ids = data.get("place_ids", [])
+
+        if not place_ids:
+            return JsonResponse(
+                {"error": "place_ids is required"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if not isinstance(place_ids, list):
+            return JsonResponse(
+                {"error": "place_ids must be an array"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if len(place_ids) > 50:  # 最大件数制限
+            return JsonResponse(
+                {"error": "Maximum 50 place_ids allowed"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        logger.info(f"Batch fetching details for {len(place_ids)} place_ids")
+
+        # 並列処理で詳細情報を取得
+        cafes = fetch_multiple_cafe_details(place_ids)
+
+        logger.info(f"Successfully fetched {len(cafes)} cafe details")
+
+        return JsonResponse({
+            "cafes": cafes,
+            "count": len(cafes)
+        })
+
+    except json.JSONDecodeError:
+        return JsonResponse(
+            {"error": "Invalid JSON"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    except Exception as e:
+        logger.error(f"Error in get_cafe_details_batch: {e}")
+        return JsonResponse(
+            {"error": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
 @api_view(['POST'])
 @permission_classes([AllowAny])  # ✅ 認証なしでもアクセス可能にする
 @csrf_exempt  # CSRF チェックを無効化
@@ -925,5 +1097,198 @@ class CustomDetailAPIView(APIView):
             logger.error(f"Custom削除エラー: {str(e)}")
             return Response(
                 {"error": "カスタマイズ設定の削除に失敗しました"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+# ==================== チャット機能 ====================
+
+from cafemap.models import ChatSession, ChatMessage
+from cafemap.serializers.chat_serializer import (
+    ChatSessionSerializer,
+    ChatSessionDetailSerializer,
+    ChatMessageSerializer,
+    SendMessageSerializer
+)
+from cafemap.services.chat_services import (
+    get_sessions_for_user,
+    create_session_for_user,
+    get_session_messages,
+    delete_session,
+    process_chat_message
+)
+
+
+class ChatSessionListAPIView(APIView):
+    """チャットセッション一覧・作成"""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        """ユーザーのチャットセッション一覧を取得"""
+        try:
+            sessions = get_sessions_for_user(request.user)
+            serializer = ChatSessionSerializer(sessions, many=True)
+            return Response({'sessions': serializer.data}, status=status.HTTP_200_OK)
+        except Exception as e:
+            logger.error(f"セッション一覧取得エラー: {str(e)}")
+            return Response(
+                {"error": "セッション一覧の取得に失敗しました"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+    def post(self, request):
+        """新しいチャットセッションを作成"""
+        try:
+            context_type = request.data.get('context_type', 'general')
+            context_data = request.data.get('context_data')
+            map_id = request.data.get('map_id')
+
+            session = create_session_for_user(
+                user=request.user,
+                context_type=context_type,
+                context_data=context_data,
+                map_id=map_id
+            )
+
+            serializer = ChatSessionSerializer(session)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            logger.error(f"セッション作成エラー: {str(e)}")
+            return Response(
+                {"error": "セッションの作成に失敗しました"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+class ChatSessionDetailAPIView(APIView):
+    """チャットセッション詳細・削除"""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, session_id: int):
+        """セッション詳細を取得"""
+        try:
+            session = ChatSession.objects.get(id=session_id, user=request.user)
+            serializer = ChatSessionDetailSerializer(session)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except ChatSession.DoesNotExist:
+            return Response(
+                {"error": "セッションが見つかりません"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            logger.error(f"セッション詳細取得エラー: {str(e)}")
+            return Response(
+                {"error": "セッション詳細の取得に失敗しました"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+    def delete(self, request, session_id: int):
+        """セッションを削除"""
+        try:
+            success = delete_session(session_id, request.user)
+            if success:
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            else:
+                return Response(
+                    {"error": "セッションが見つかりません"},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+        except Exception as e:
+            logger.error(f"セッション削除エラー: {str(e)}")
+            return Response(
+                {"error": "セッションの削除に失敗しました"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+class ChatMessageListAPIView(APIView):
+    """チャットメッセージ一覧"""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, session_id: int):
+        """セッション内のメッセージ一覧を取得"""
+        try:
+            # セッションの存在確認と権限チェック
+            session = ChatSession.objects.get(id=session_id, user=request.user)
+
+            # クエリパラメータ
+            limit = request.GET.get('limit')
+            offset = int(request.GET.get('offset', 0))
+
+            if limit:
+                limit = int(limit)
+
+            messages = get_session_messages(session_id, limit=limit, offset=offset)
+            serializer = ChatMessageSerializer(messages, many=True)
+
+            return Response({
+                'messages': serializer.data,
+                'count': len(messages)
+            }, status=status.HTTP_200_OK)
+
+        except ChatSession.DoesNotExist:
+            return Response(
+                {"error": "セッションが見つかりません"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            logger.error(f"メッセージ一覧取得エラー: {str(e)}")
+            return Response(
+                {"error": "メッセージ一覧の取得に失敗しました"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+class ChatMessageCreateAPIView(APIView):
+    """チャットメッセージ送信"""
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        """メッセージを送信してAI応答を取得"""
+        try:
+            # リクエストデータのバリデーション
+            serializer = SendMessageSerializer(data=request.data)
+            if not serializer.is_valid():
+                return Response(
+                    {"error": "Invalid request data", "details": serializer.errors},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            validated_data = serializer.validated_data
+            session_id = validated_data['session_id']
+            content = validated_data['content']
+            context = validated_data.get('context')
+
+            # メッセージ処理
+            result = process_chat_message(
+                session_id=session_id,
+                user=request.user,
+                content=content,
+                context=context
+            )
+
+            # レスポンスをシリアライズ
+            user_message_serializer = ChatMessageSerializer(result['user_message'])
+            assistant_message_serializer = ChatMessageSerializer(result['assistant_message'])
+
+            return Response({
+                'user_message': user_message_serializer.data,
+                'assistant_message': assistant_message_serializer.data
+            }, status=status.HTTP_200_OK)
+
+        except ChatSession.DoesNotExist:
+            return Response(
+                {"error": "セッションが見つかりません"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except PermissionError as e:
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        except Exception as e:
+            logger.error(f"メッセージ送信エラー: {str(e)}")
+            return Response(
+                {"error": "メッセージの送信に失敗しました", "details": str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )

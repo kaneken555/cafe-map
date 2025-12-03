@@ -116,7 +116,6 @@ const SharedMapViewPage: React.FC = () => {
         isMyCafeListOpen={isMyCafeListOpen}
         setShareUuid={() => {}} // 共有マップビューでは使用しない
         onOpenCafeList={() => {}} // 共有マップビューでは使用しない
-        onShowMyCafeMap={() => {}} // 共有マップビューでは使用しない
         onOpenMapList={() => navigate("/")} // ホームへ遷移
         isSharedMapView={true} // シェアマップビュー
         sharedMapName={mapData?.name} // シェアマップの名前
