@@ -86,15 +86,17 @@ const MapCustomizeModal: React.FC<Props> = ({ value, onChange, onClose, previewP
 
     try {
       const custom = await CustomApiClient.getCustomById(id);
+
       // Custom設定をlocalに反映
-      setLocal({
+      const newLocal = {
         ...local,
         style: custom.map_style,
         iconVariant: custom.icon_variant,
         iconColor: custom.icon_color,
         iconSize: custom.icon_size,
         showLabels: custom.show_labels,
-      });
+      };
+      setLocal(newLocal);
       toast.success(`「${custom.name}」を読み込みました`);
     } catch (error) {
       console.error("Custom読み込みエラー:", error);
@@ -168,14 +170,20 @@ const MapCustomizeModal: React.FC<Props> = ({ value, onChange, onClose, previewP
     // ✅ selectedMapIdがある場合、バックエンドに適用
     if (selectedMapId) {
       try {
-        if (selectedCustomId) {
-          // プリセットが選択されている場合、そのCustomを適用
-          await CustomApiClient.applyCustomToMap(selectedMapId, selectedCustomId);
-          onCustomApplied?.(selectedCustomId);
-          toast.success("カスタマイズ設定をマップに適用しました");
-        } else {
-          // 手動で設定を変更した場合、新しいCustomを作成して適用
-          const customName = `カスタム設定（自動保存）`;
+        if (!selectedCustomId) {
+          // プリセットが選択されていない場合、新しいCustomを作成
+          const now = new Date();
+          const timestamp = `${now.getMonth() + 1}/${now.getDate()} ${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+          const features = [];
+          if (local.iconSize !== 48) features.push(`サイズ${local.iconSize}`);
+          if (local.showLabels) features.push('ラベル表示');
+          if (local.style !== 'default') features.push(`${local.style}スタイル`);
+          if (local.iconVariant !== 'photo') features.push(`${local.iconVariant}アイコン`);
+
+          const featureText = features.length > 0 ? ` (${features.join(', ')})` : '';
+          const customName = `カスタム設定 ${timestamp}${featureText}`;
+
           const newCustom = await CustomApiClient.createCustom({
             name: customName,
             description: "",
@@ -189,6 +197,67 @@ const MapCustomizeModal: React.FC<Props> = ({ value, onChange, onClose, previewP
           await CustomApiClient.applyCustomToMap(selectedMapId, newCustom.id);
           onCustomApplied?.(newCustom.id);
           toast.success("カスタマイズ設定を保存してマップに適用しました");
+          onClose();
+          return;
+        }
+
+        // プリセットが選択されている場合、設定が変更されているかチェック
+        const selectedCustom = await CustomApiClient.getCustomById(selectedCustomId);
+        const isModified =
+          local.style !== selectedCustom.map_style ||
+          local.iconVariant !== selectedCustom.icon_variant ||
+          local.iconColor !== selectedCustom.icon_color ||
+          local.iconSize !== selectedCustom.icon_size ||
+          local.showLabels !== selectedCustom.show_labels;
+
+        if (!isModified) {
+          // 設定が変更されていない場合、既存のCustomをそのまま適用
+          await CustomApiClient.applyCustomToMap(selectedMapId, selectedCustomId);
+          onCustomApplied?.(selectedCustomId);
+          toast.success("カスタマイズ設定をマップに適用しました");
+        } else {
+          // 設定が変更された場合
+          if (selectedCustom.is_public) {
+            // 公開プリセットの場合、新しいCustomを作成
+            const now = new Date();
+            const timestamp = `${now.getMonth() + 1}/${now.getDate()} ${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+            const features = [];
+            if (local.iconSize !== 48) features.push(`サイズ${local.iconSize}`);
+            if (local.showLabels) features.push('ラベル表示');
+            if (local.style !== 'default') features.push(`${local.style}スタイル`);
+            if (local.iconVariant !== 'photo') features.push(`${local.iconVariant}アイコン`);
+
+            const featureText = features.length > 0 ? ` (${features.join(', ')})` : '';
+            const customName = `カスタム設定 ${timestamp}${featureText}`;
+
+            const newCustom = await CustomApiClient.createCustom({
+              name: customName,
+              description: "",
+              map_style: local.style,
+              icon_variant: local.iconVariant,
+              icon_color: local.iconColor,
+              icon_size: local.iconSize,
+              show_labels: local.showLabels,
+            });
+
+            await CustomApiClient.applyCustomToMap(selectedMapId, newCustom.id);
+            onCustomApplied?.(newCustom.id);
+            toast.success("カスタマイズ設定を保存してマップに適用しました");
+          } else {
+            // 自分が作成したCustomの場合、既存のCustomを更新
+            const updatedCustom = await CustomApiClient.updateCustom(selectedCustomId, {
+              map_style: local.style,
+              icon_variant: local.iconVariant,
+              icon_color: local.iconColor,
+              icon_size: local.iconSize,
+              show_labels: local.showLabels,
+            });
+
+            // すでに適用されているので、applyCustomToMapは不要
+            onCustomApplied?.(updatedCustom.id);
+            toast.success("カスタマイズ設定を更新しました");
+          }
         }
       } catch (error) {
         console.error("Custom適用エラー:", error);
