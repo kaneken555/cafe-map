@@ -284,6 +284,7 @@ const HomePage: React.FC = () => {
           isSelectingLocation={isSelectingLocation} // ✅ 位置選択モード
           onLocationSelected={handleLocationSelected} // ✅ 位置選択ハンドラー
           tempLocation={tempLocation} // ✅ 仮の位置
+          selectedMapId={selectedMapId} // ✅ カスタマイズ設定保存用に追加
         />
       </div>
 

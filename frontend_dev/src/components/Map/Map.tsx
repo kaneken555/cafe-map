@@ -40,6 +40,7 @@ interface MapProps {
   isSelectingLocation?: boolean; // ✅ 位置選択モード
   onLocationSelected?: (lat: number, lng: number) => void; // ✅ 位置選択時のコールバック
   tempLocation?: { lat: number; lng: number } | null; // ✅ 仮の位置（ピン表示用）
+  selectedMapId?: number | null; // ✅ カスタマイズ設定保存用のマップID
 }
 
 
@@ -57,6 +58,7 @@ const Map: React.FC<MapProps> = ({
   isSelectingLocation = false,
   onLocationSelected,
   tempLocation,
+  selectedMapId,
 }) => {
   const { mapMode, selectedMap, setSelectedMap, setMapList, setMapMode } = useMap(); // ✅ setMapMode も取得
   const { registerSharedMap } = useMapActions();
@@ -311,7 +313,7 @@ const Map: React.FC<MapProps> = ({
           value={displayOptions}
           onChange={setDisplayOptions}
           onClose={() => setIsCustomizeOpen(false)}
-          selectedMapId={selectedMap?.id} // ✅ selectedMapIdを渡す
+          selectedMapId={selectedMapId || selectedMap?.id} // ✅ propsのselectedMapIdを優先、なければコンテキストから取得
           onCustomApplied={handleCustomApplied} // ✅ Custom適用後のコールバックを渡す
           initialCustomId={selectedMap?.custom_id} // ✅ 初期選択するCustomIDを渡す
         />
